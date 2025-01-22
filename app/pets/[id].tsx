@@ -44,14 +44,11 @@ const AnimalDetails = () => {
   const displayTabContent = () => {
     switch (activeTab) {
       case "Feedings":
-        return <Feedings title="Feedings" />;
-
+        return <Feedings petId={id} title="Feedings" />;
       case "Log":
         return <Log title="Log" />;
-
       case "Profile":
         return <PetProfile title="Profile" />;
-
       default:
         return null;
     }
