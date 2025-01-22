@@ -21,7 +21,7 @@ const buttonStyle = (
   paddingVertical: SIZES.medium,
   paddingHorizontal: SIZES.xLarge,
   backgroundColor: name === activeTab ? activeColor : subtleTextColor,
-  borderRadius: SIZES.medium,
+  borderRadius: SIZES.xSmall,
   marginLeft: 2,
   shadowColor: iconColor,
 });

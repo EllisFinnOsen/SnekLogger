@@ -17,10 +17,9 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 SplashScreen.preventAutoHideAsync();
 
 // Function to initialize the database
-// Function to initialize the database
 async function initializeDatabase(db: SQLiteDatabase) {
   // Ensure the pets table exists
-  console.log("Ensuring table exists...");
+  console.log("Ensuring pets table exists...");
   await db.execAsync(`
     CREATE TABLE IF NOT EXISTS pets (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -32,46 +31,26 @@ async function initializeDatabase(db: SQLiteDatabase) {
       imageURL TEXT
     );
   `);
-  console.log("Table creation check completed.");
+  console.log("Pets table creation check completed.");
 
-  // Fetch the table info to check existing columns
-  const columns: Array<{ name: string }> = await db.getAllAsync(
-    `PRAGMA table_info(pets);`
-  );
+  // Ensure the feedings table exists
+  console.log("Ensuring feedings table exists...");
+  await db.execAsync(`
+    CREATE TABLE IF NOT EXISTS feedings (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      petId INTEGER NOT NULL,
+      feedingDate TEXT NOT NULL,
+      preyType TEXT NOT NULL,
+      preyWeight REAL,
+      notes TEXT,
+      FOREIGN KEY (petId) REFERENCES pets (id) ON DELETE CASCADE
+    );
+  `);
+  console.log("Feedings table creation check completed.");
 
-  const columnNames = columns.map((col) => col.name);
-
-  // Add missing columns
-  if (!columnNames.includes("species")) {
-    await db.execAsync(`ALTER TABLE pets ADD COLUMN species TEXT;`);
-  }
-
-  if (!columnNames.includes("morph")) {
-    await db.execAsync(`ALTER TABLE pets ADD COLUMN morph TEXT;`);
-  }
-
-  if (!columnNames.includes("birthDate")) {
-    await db.execAsync(`ALTER TABLE pets ADD COLUMN birthDate TEXT;`);
-  }
-
-  if (!columnNames.includes("weight")) {
-    await db.execAsync(`ALTER TABLE pets ADD COLUMN weight REAL;`);
-  }
-
-  if (!columnNames.includes("imageURL")) {
-    await db.execAsync(`ALTER TABLE pets ADD COLUMN imageURL TEXT;`);
-  }
-
-  // Insert sample data
-  const existingPets: Array<{
-    name: string;
-    birthDate: string;
-    species: string;
-    morph: string;
-    weight: number;
-    imageURL: string;
-  }> = await db.getAllAsync("SELECT * FROM pets");
-
+  // Insert sample pets
+  const existingPets: Array<{ id: number; name: string }> =
+    await db.getAllAsync("SELECT * FROM pets");
   if (existingPets.length === 0) {
     await db.execAsync(`
       INSERT INTO pets (name, birthDate, species, morph, weight, imageURL)
@@ -83,9 +62,21 @@ async function initializeDatabase(db: SQLiteDatabase) {
     `);
   }
 
-  // Retrieve and log all data from the pets table
-  const allPets = await db.getAllAsync("SELECT * FROM pets");
-  //console.log("All pets in the database:", allPets);
+  // Insert sample feedings for each pet
+  const existingFeedings: Array<{ id: number }> = await db.getAllAsync(
+    "SELECT * FROM feedings"
+  );
+  if (existingFeedings.length === 0) {
+    const pets = await db.getAllAsync("SELECT id FROM pets");
+    for (const pet of pets) {
+      await db.execAsync(`
+        INSERT INTO feedings (petId, feedingDate, preyType, preyWeight, notes)
+        VALUES
+          (${pet.id}, '2025-01-01T08:00:00', 'Mouse', 1.5, 'First feeding of the year'),
+          (${pet.id}, '2025-01-15T08:00:00', 'Rat', 2.0, 'Increased size for growth');
+      `);
+    }
+  }
 }
 
 export default function RootLayout() {
