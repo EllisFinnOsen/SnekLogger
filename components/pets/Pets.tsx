@@ -30,7 +30,11 @@ const Pets = () => {
     <ThemedView>
       <ThemedView style={styles.header}>
         <ThemedText type="subtitle">Your Pets</ThemedText>
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            router.push(`/collection`);
+          }}
+        >
           <ThemedText type="link">Show all</ThemedText>
         </TouchableOpacity>
       </ThemedView>

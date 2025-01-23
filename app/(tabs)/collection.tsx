@@ -10,15 +10,14 @@ import Search from "@/components/search/Search";
 import Pets from "@/components/pets/Pets";
 import Upcoming from "@/components/upcoming/Upcoming";
 
-export default function HomeScreen() {
+export default function Collection() {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
 
   return (
     <ThemedScrollView>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Hello, Ellis</ThemedText>
-        <HelloWave />
+        <ThemedText type="title">Your Collection</ThemedText>
       </ThemedView>
       <Search
         searchTerm={searchTerm}

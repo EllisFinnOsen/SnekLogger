@@ -10,6 +10,7 @@ import Animated, {
 import { ThemedView } from "@/components/ThemedView";
 import { useBottomTabOverflow } from "@/components/ui/TabBarBackground";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { checkImageURL } from "@/utils";
 
 const HEADER_HEIGHT = 250;
 
@@ -57,7 +58,11 @@ export default function PetParallaxScrollView({
         contentContainerStyle={{ paddingBottom: bottom }}
       >
         <ImageBackground
-          source={{ uri: headerImageSrc }}
+          source={{
+            uri: checkImageURL(headerImageSrc)
+              ? headerImageSrc
+              : "https://files.oaiusercontent.com/file-DjW5L9b81xAoE1CS5dgfGf?se=2025-01-22T19%3A04%3A19Z&sp=r&sv=2024-08-04&sr=b&rscc=max-age%3D604800%2C%20immutable%2C%20private&rscd=attachment%3B%20filename%3D4bc93413-3775-4d04-bb36-d00efe395407.webp&sig=4s4GNu/F9s40L9WCGzcndpvr4bnYlv6ftC7%2BPRitiO0%3D",
+          }}
           style={[
             styles.header,
             headerAnimatedStyle,
