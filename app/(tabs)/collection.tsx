@@ -9,6 +9,7 @@ import { ThemedView } from "@/components/ThemedView";
 import Search from "@/components/search/Search";
 import Pets from "@/components/pets/Pets";
 import Upcoming from "@/components/upcoming/Upcoming";
+import Groups from "@/components/Groups";
 
 export default function Collection() {
   const router = useRouter();
@@ -29,19 +30,7 @@ export default function Collection() {
         }}
       />
       <ThemedView style={styles.stepContainer}>
-        <Pets />
-        <Upcoming />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Something Else</ThemedText>
-        <ThemedText>
-          When you're ready, run{" "}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText>{" "}
-          to get a fresh <ThemedText type="defaultSemiBold">app</ThemedText>{" "}
-          directory. This will move the current{" "}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{" "}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
+        <Groups />
       </ThemedView>
     </ThemedScrollView>
   );

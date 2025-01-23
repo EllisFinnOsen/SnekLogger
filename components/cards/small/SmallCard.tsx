@@ -58,11 +58,12 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     flexDirection: "column",
     gap: 5,
+    paddingBottom: SIZES.small,
   },
   imageContainer: {
     width: 160,
     height: 100,
-    borderRadius: SIZES.medium,
+    borderRadius: SIZES.small,
     justifyContent: "center",
     alignItems: "center",
     overflow: "hidden",
