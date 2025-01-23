@@ -18,8 +18,8 @@ const buttonStyle = (
   subtleTextColor: string,
   iconColor: string
 ) => ({
-  paddingVertical: SIZES.medium,
-  paddingHorizontal: SIZES.xLarge,
+  paddingVertical: SIZES.small,
+  paddingHorizontal: SIZES.large,
   backgroundColor: name === activeTab ? activeColor : subtleTextColor,
   borderRadius: SIZES.xSmall,
   marginLeft: 2,
@@ -33,7 +33,7 @@ const buttonTextStyle = (
   bgColor: string
 ) => ({
   fontFamily: FONT.medium,
-  fontSize: SIZES.small,
+  fontSize: SIZES.medium,
   color: name === activeTab ? textColor : bgColor,
 });
 
