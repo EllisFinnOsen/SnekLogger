@@ -39,6 +39,27 @@ const LogCard = ({
       console.error("Error updating feeding record:", error);
     }
   };
+  // Formatting the date into mm/dd/yy
+  const [year, month, day] = feedingDate.split("-");
+  const dateObj = new Date(year, month - 1, day);
+  const formattedDate = dateObj.toLocaleDateString("en-US", {
+    month: "2-digit",
+    day: "2-digit",
+    year: "2-digit",
+  });
+
+  // Formatting the time into h:mm am/pm
+  const [hours, minutes] = feedingTime.split(":");
+  const dateForTime = new Date();
+  dateForTime.setHours(Number(hours), Number(minutes));
+  const formattedTime = dateForTime.toLocaleTimeString([], {
+    hour: "numeric",
+    minute: "2-digit",
+  });
+  console.log("feedingDate:" + feedingDate);
+  console.log("feedingTime:" + feedingTime);
+  console.log("formattedDate:" + formattedDate);
+  console.log("formattedTime:" + formattedTime);
 
   return (
     <>
@@ -75,7 +96,7 @@ const LogCard = ({
                 color: isChecked ? textColor : bgColor,
               }}
             >
-              {feedingDate}
+              {formattedDate}
             </ThemedText>
           </View>
 
@@ -95,7 +116,7 @@ const LogCard = ({
                 color: isChecked ? textColor : bgColor,
               }}
             >
-              ({feedingTime})
+              ({formattedTime})
             </ThemedText>
           </View>
         </TouchableOpacity>

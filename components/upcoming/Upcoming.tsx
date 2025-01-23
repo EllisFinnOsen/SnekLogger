@@ -52,24 +52,14 @@ ORDER BY
         ) : (
           <View style={styles.displayCards}>
             {data.map((item) => {
-              const dateObj = new Date(item.feedingDate);
-              const formattedDate = new Intl.DateTimeFormat("en-US", {
-                month: "numeric",
-                day: "numeric",
-                year: "numeric",
-              }).format(dateObj);
+              // Formatting the date into mm/dd/yy
 
-              const formattedTime = new Intl.DateTimeFormat("en-US", {
-                hour: "numeric",
-                minute: "numeric",
-                hour12: true,
-              }).format(dateObj);
-
+              // Pass the formatted date and time into LogCard
               return (
                 <LogCard
                   key={item.id}
-                  feedingDate={formattedDate}
-                  feedingTime={formattedTime}
+                  feedingDate={item.feedingDate}
+                  feedingTime={item.feedingTime}
                   preyType={item.preyType}
                   initialComplete={item.complete}
                   feedingId={item.id}
