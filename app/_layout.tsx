@@ -10,6 +10,8 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import "react-native-reanimated";
 import { SQLiteDatabase, SQLiteProvider } from "expo-sqlite";
+import { Provider } from "react-redux";
+import store from "../store"; // Adjust the import path if your store file is in a different directory
 
 import { useColorScheme } from "@/hooks/useColorScheme";
 
@@ -19,7 +21,6 @@ SplashScreen.preventAutoHideAsync();
 // Function to initialize the database
 async function initializeDatabase(db: SQLiteDatabase) {
   // Ensure the pets table exists
-  //console.log("Ensuring pets table exists...");
   await db.execAsync(`
     CREATE TABLE IF NOT EXISTS pets (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -31,10 +32,8 @@ async function initializeDatabase(db: SQLiteDatabase) {
       imageURL TEXT
     );
   `);
-  //console.log("Pets table creation check completed.");
 
   // Ensure the feedings table exists
-  //console.log("Ensuring feedings table exists...");
   await db.execAsync(`
     CREATE TABLE IF NOT EXISTS feedings (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -48,13 +47,11 @@ async function initializeDatabase(db: SQLiteDatabase) {
       FOREIGN KEY (petId) REFERENCES pets (id) ON DELETE CASCADE
     );
   `);
-  //console.log("Feedings table creation check completed.");
 
   // Insert sample pets
   const existingPets: Array<{ id: number; name: string }> =
     await db.getAllAsync("SELECT * FROM pets");
   if (existingPets.length === 0) {
-    //console.log("Inserting initial pets...");
     await db.execAsync(`
       INSERT INTO pets (name, birthDate, species, morph, weight, imageURL)
       VALUES 
@@ -86,7 +83,6 @@ async function initializeDatabase(db: SQLiteDatabase) {
   }
 
   // Ensure the groups table exists
-  //console.log("Ensuring groups table exists...");
   await db.execAsync(`
     CREATE TABLE IF NOT EXISTS groups (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -94,10 +90,8 @@ async function initializeDatabase(db: SQLiteDatabase) {
       notes TEXT
     );
   `);
-  //console.log("Groups table creation check completed.");
 
   // Ensure the group_pets table exists
-  //console.log("Ensuring group_pets table exists...");
   await db.execAsync(`
     CREATE TABLE IF NOT EXISTS group_pets (
       groupId INTEGER NOT NULL,
@@ -107,13 +101,11 @@ async function initializeDatabase(db: SQLiteDatabase) {
       FOREIGN KEY (petId) REFERENCES pets (id) ON DELETE CASCADE
     );
   `);
-  //console.log("Group-pets table creation check completed.");
 
   // Insert sample groups
   const existingGroups: Array<{ id: number; name: string }> =
     await db.getAllAsync("SELECT * FROM groups");
   if (existingGroups.length === 0) {
-    console.log("Inserting initial groups...");
     await db.execAsync(`
       INSERT INTO groups (name, notes)
       VALUES
@@ -123,7 +115,6 @@ async function initializeDatabase(db: SQLiteDatabase) {
   }
 
   // Add sample pet-to-group assignments using INSERT OR IGNORE
-  //console.log("Assigning pets to groups...");
   await db.execAsync(`
     INSERT OR IGNORE INTO group_pets (groupId, petId)
     VALUES 
@@ -135,22 +126,6 @@ async function initializeDatabase(db: SQLiteDatabase) {
       (2, 4),  -- RedTail in Beginner Pets
       (2, 5);  -- Bella in Beginner Pets
   `);
-  //console.log("Pets assigned to groups.");
-
-  // Query and log the groups along with their pets
-  const groupMemberships = await db.getAllAsync(`
-    SELECT g.name AS groupName, p.name AS petName
-    FROM groups g
-    INNER JOIN group_pets gp ON g.id = gp.groupId
-    INNER JOIN pets p ON p.id = gp.petId
-  `);
-  //console.log("Group memberships:", groupMemberships);
-
-  // Query and log all feedings
-  const allFeedings = await db.getAllAsync("SELECT * FROM feedings");
-  //console.log("All feedings in the database:", allFeedings);
-
-  //console.log("Database initialization completed.");
 }
 
 export default function RootLayout() {
@@ -172,14 +147,18 @@ export default function RootLayout() {
   }
 
   return (
-    <SQLiteProvider databaseName="petTracker9.db" onInit={initializeDatabase}>
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-        <StatusBar style="auto" />
-      </ThemeProvider>
-    </SQLiteProvider>
+    <Provider store={store}>
+      <SQLiteProvider databaseName="petTracker9.db" onInit={initializeDatabase}>
+        <ThemeProvider
+          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+        >
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+          <StatusBar style="auto" />
+        </ThemeProvider>
+      </SQLiteProvider>
+    </Provider>
   );
 }

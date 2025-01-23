@@ -1,39 +1,34 @@
-import { useState } from "react";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { Text, TouchableOpacity, ActivityIndicator, View } from "react-native";
 import { useRouter } from "expo-router";
-import {
-  Text,
-  TouchableOpacity,
-  FlatList,
-  ActivityIndicator,
-  View,
-} from "react-native";
 
-import SmallCard from "../cards/small/SmallCard";
+import { fetchFeedings, selectFeedings } from "@/store/feedingsSlice";
+import LogCard from "../cards/log/LogCard";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import useFetch from "@/hooks/useFetch";
 import { ThemedView } from "../ThemedView";
 import { ThemedText } from "../ThemedText";
-
-import { FONT, Colors, SIZES } from "@/constants/Theme";
+import { SIZES } from "@/constants/Theme";
 
 const Upcoming = () => {
+  const dispatch = useAppDispatch();
   const router = useRouter();
   const textColor = useThemeColor({}, "text");
-  const iconColor = useThemeColor({}, "icon");
-  const fieldColor = useThemeColor({}, "field");
-  const { data, isLoading, error } = useFetch(
-    `SELECT * 
-FROM feedings 
-WHERE complete = 0 
-AND (feedingDate <= DATE('now') OR feedingDate > DATE('now')) 
-ORDER BY 
-    CASE WHEN feedingDate <= DATE('now') THEN 1 ELSE 0 END, 
-    feedingDate;`
-  );
 
-  const [selectedPet, setSelectedPet] = useState();
+  useEffect(() => {
+    console.log("useEffect triggered");
+    const query = `SELECT * 
+      FROM feedings 
+      WHERE complete = 0 
+      AND (feedingDate <= DATE('now') OR feedingDate > DATE('now')) 
+      ORDER BY 
+        CASE WHEN feedingDate <= DATE('now') THEN 1 ELSE 0 END, 
+        feedingDate;`;
+    dispatch(fetchFeedings(query));
+  }, [dispatch]);
 
-  const handleCardPress = () => {};
+  const feedings = useSelector(selectFeedings);
+  console.log("Feedings from Redux after fetch:", feedings);
 
   return (
     <ThemedView>
@@ -45,28 +40,21 @@ ORDER BY
       </ThemedView>
 
       <ThemedView style={styles.cardsContainer}>
-        {isLoading ? (
+        {feedings.length === 0 ? (
           <ActivityIndicator size="large" color={textColor} />
-        ) : error ? (
-          <Text>Something went wrong</Text>
         ) : (
           <View style={styles.displayCards}>
-            {data.map((item) => {
-              // Formatting the date into mm/dd/yy
-
-              // Pass the formatted date and time into LogCard
-              return (
-                <LogCard
-                  key={item.id}
-                  feedingDate={item.feedingDate}
-                  feedingTime={item.feedingTime}
-                  preyType={item.preyType}
-                  initialComplete={item.complete}
-                  feedingId={item.id}
-                  petId={item.petId}
-                />
-              );
-            })}
+            {feedings.map((feeding) => (
+              <LogCard
+                key={feeding.id}
+                feedingDate={feeding.feedingDate}
+                feedingTime={feeding.feedingTime}
+                preyType={feeding.preyType}
+                initialComplete={feeding.complete}
+                feedingId={feeding.id}
+                petId={feeding.petId}
+              />
+            ))}
           </View>
         )}
       </ThemedView>
@@ -77,7 +65,7 @@ ORDER BY
 export default Upcoming;
 
 import { StyleSheet } from "react-native";
-import LogCard from "../cards/log/LogCard";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
 const styles = StyleSheet.create({
   container: {
     marginTop: SIZES.large,

@@ -56,10 +56,10 @@ const LogCard = ({
     hour: "numeric",
     minute: "2-digit",
   });
-  console.log("feedingDate:" + feedingDate);
-  console.log("feedingTime:" + feedingTime);
-  console.log("formattedDate:" + formattedDate);
-  console.log("formattedTime:" + formattedTime);
+  //console.log("feedingDate:" + feedingDate);
+  //console.log("feedingTime:" + feedingTime);
+  //console.log("formattedDate:" + formattedDate);
+  //console.log("formattedTime:" + formattedTime);
 
   return (
     <>
