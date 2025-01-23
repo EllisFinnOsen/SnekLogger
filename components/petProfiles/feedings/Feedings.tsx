@@ -13,7 +13,7 @@ const Feedings = ({ petId, title }) => {
     const fetchFeedings = async () => {
       try {
         const records = await database.getAllAsync(
-          `SELECT id, feedingDate, preyType FROM feedings WHERE petId=${petId}`
+          `SELECT id, feedingDate, preyType, complete FROM feedings WHERE petId=${petId}`
         );
         setFeedings(records);
       } catch (err) {
@@ -48,6 +48,9 @@ const Feedings = ({ petId, title }) => {
               feedingDate={formattedDate}
               feedingTime={formattedTime}
               preyType={feeding.preyType}
+              initialComplete={feeding.complete}
+              feedingId={feeding.id}
+              petId={petId}
             />
           );
         })}

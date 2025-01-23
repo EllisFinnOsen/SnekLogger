@@ -43,6 +43,7 @@ async function initializeDatabase(db: SQLiteDatabase) {
       preyType TEXT NOT NULL,
       preyWeight REAL,
       notes TEXT,
+      complete BOOLEAN DEFAULT FALSE,
       FOREIGN KEY (petId) REFERENCES pets (id) ON DELETE CASCADE
     );
   `);
@@ -70,13 +71,20 @@ async function initializeDatabase(db: SQLiteDatabase) {
     const pets = await db.getAllAsync("SELECT id FROM pets");
     for (const pet of pets) {
       await db.execAsync(`
-        INSERT INTO feedings (petId, feedingDate, preyType, preyWeight, notes)
+        INSERT INTO feedings (petId, feedingDate, preyType, preyWeight, notes, complete)
         VALUES
-          (${pet.id}, '2025-01-01T08:00:00', 'Mouse', 1.5, 'First feeding of the year'),
-          (${pet.id}, '2025-01-15T08:00:00', 'Rat', 2.0, 'Increased size for growth');
+          (${pet.id}, '2025-01-01T08:00:00', 'Mouse', 1.5, 'First feeding of the year', FALSE),
+          (${pet.id}, '2025-01-15T08:00:00', 'Rat', 2.0, 'Increased size for growth', FALSE);
       `);
     }
   }
+
+  // Add logs for debugging purposes
+  const allPets = await db.getAllAsync("SELECT * FROM pets");
+  //console.log("All pets in the database:", allPets);
+
+  const allFeedings = await db.getAllAsync("SELECT * FROM feedings");
+  //console.log("All feedings in the database:", allFeedings);
 }
 
 export default function RootLayout() {
