@@ -1,5 +1,5 @@
 import { Image, StyleSheet, Platform } from "react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Stack, useRouter } from "expo-router";
 
 import { HelloWave } from "@/components/HelloWave";
@@ -9,10 +9,46 @@ import { ThemedView } from "@/components/ThemedView";
 import Search from "@/components/search/Search";
 import Pets from "@/components/pets/Pets";
 import Upcoming from "@/components/upcoming/Upcoming";
+import { SQLiteProvider, useSQLiteContext } from "expo-sqlite";
+import DirectDbCheck from "@/components/DirectDbCheck";
+
+async function listTables(db) {
+  try {
+    const tables = await db.getAllAsync(
+      "SELECT name FROM sqlite_master WHERE type='table'"
+    );
+    console.log("Tables in database:", tables);
+  } catch (error) {
+    console.error("Error listing tables:", error);
+  }
+}
+
+async function checkSQLiteVersion(db) {
+  try {
+    const result = await db.getFirstAsync(
+      "SELECT sqlite_version() AS sqlite_version"
+    );
+    console.log("SQLite version:", result.sqlite_version);
+  } catch (error) {
+    console.error("Error checking SQLite version:", error);
+  }
+}
 
 export default function HomeScreen() {
+  const db = useSQLiteContext();
+  console.log("DB" + db);
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    async function verifyDatabase() {
+      if (!db) return;
+      await listTables(db);
+      await checkSQLiteVersion(db);
+    }
+
+    verifyDatabase();
+  }, [db]);
 
   return (
     <ThemedScrollView>
@@ -29,10 +65,8 @@ export default function HomeScreen() {
           }
         }}
       />
-      <ThemedView style={styles.stepContainer}>
-        <Pets />
-        <Upcoming />
-      </ThemedView>
+      <DirectDbCheck />
+      <ThemedView style={styles.stepContainer}></ThemedView>
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Something Else</ThemedText>
         <ThemedText>
