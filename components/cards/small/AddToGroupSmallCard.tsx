@@ -1,8 +1,8 @@
 import { Image, TouchableOpacity, StyleSheet, View } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { Colors, SIZES } from "@/constants/Theme";
-import { useThemeColor } from "@/hooks/useThemeColor";
+import { Colors, SIZES } from "@/src/constants/Theme";
+import { useThemeColor } from "@/src/hooks/useThemeColor";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 
 interface AddToGroupSmallCardProps {

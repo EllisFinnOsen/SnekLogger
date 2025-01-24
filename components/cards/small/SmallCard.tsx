@@ -1,9 +1,9 @@
 import { Image, TouchableOpacity } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
-import { checkImageURL } from "@/utils";
+import { checkImageURL } from "@/src/utils";
 import { ThemedView } from "@/components/ThemedView";
 import { useRouter } from "expo-router";
-import { Colors, SIZES } from "@/constants/Theme";
+import { Colors, SIZES } from "@/src/constants/Theme";
 
 interface SmallCardProps {
   pet: {

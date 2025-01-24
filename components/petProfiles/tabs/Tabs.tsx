@@ -7,8 +7,8 @@ import {
   StyleSheet,
 } from "react-native";
 import { ThemedView } from "@/components/ThemedView";
-import { SIZES, FONT } from "@/constants/Theme";
-import { useThemeColor } from "@/hooks/useThemeColor";
+import { SIZES, FONT } from "@/src/constants/Theme";
+import { useThemeColor } from "@/src/hooks/useThemeColor";
 
 // Dynamic style functions
 const buttonStyle = (

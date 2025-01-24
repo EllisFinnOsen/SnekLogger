@@ -9,7 +9,7 @@ import {
   RefreshControl,
   StyleSheet,
 } from "react-native";
-import useFetch from "@/hooks/useFetch";
+import useFetch from "@/src/hooks/useFetch";
 import { Stack } from "expo-router";
 import Feedings from "@/components/petProfiles/feedings/Feedings";
 import Log from "@/components/petProfiles/log/Log";

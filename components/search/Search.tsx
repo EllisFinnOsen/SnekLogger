@@ -3,7 +3,7 @@ import { Text, TextInput, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import styles from "./search.style";
 import { IconSymbol } from "@/components/ui/IconSymbol";
-import { useThemeColor } from "@/hooks/useThemeColor";
+import { useThemeColor } from "@/src/hooks/useThemeColor";
 import { ThemedView } from "../ThemedView";
 import { ThemedText } from "../ThemedText";
 

@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   TextInput,
 } from "react-native";
-import useFetch from "@/hooks/useFetch";
+import useFetch from "@/src/hooks/useFetch";
 import { Stack } from "expo-router";
 import ThemedScrollView from "@/components/ThemedScrollView";
 import { ThemedText } from "@/components/ThemedText";

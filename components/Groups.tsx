@@ -8,12 +8,12 @@ import {
 } from "react-native";
 
 import SmallCard from "./cards/small/SmallCard";
-import { useThemeColor } from "@/hooks/useThemeColor";
-import useFetch from "@/hooks/useFetch";
+import { useThemeColor } from "@/src/hooks/useThemeColor";
+import useFetch from "@/src/hooks/useFetch";
 import { ThemedView } from "./ThemedView";
 import { ThemedText } from "./ThemedText";
 
-import { FONT, Colors, SIZES } from "@/constants/Theme";
+import { FONT, Colors, SIZES } from "@/src/constants/Theme";
 
 const Groups = () => {
   const router = useRouter();

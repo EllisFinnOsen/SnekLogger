@@ -2,8 +2,8 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import React, { useState } from "react";
 import { StyleSheet, TouchableOpacity, View, Text } from "react-native";
-import { useThemeColor } from "@/hooks/useThemeColor";
-import { SIZES } from "@/constants/Theme";
+import { useThemeColor } from "@/src/hooks/useThemeColor";
+import { SIZES } from "@/src/constants/Theme";
 import Icon from "react-native-vector-icons/MaterialIcons"; // Example icon library
 import { useSQLiteContext } from "expo-sqlite";
 import { useRouter } from "expo-router";
@@ -56,10 +56,10 @@ const LogCard = ({
     hour: "numeric",
     minute: "2-digit",
   });
-  console.log("feedingDate:" + feedingDate);
-  console.log("feedingTime:" + feedingTime);
-  console.log("formattedDate:" + formattedDate);
-  console.log("formattedTime:" + formattedTime);
+  //console.log("feedingDate:" + feedingDate);
+  //console.log("feedingTime:" + feedingTime);
+  //console.log("formattedDate:" + formattedDate);
+  //console.log("formattedTime:" + formattedTime);
 
   return (
     <>

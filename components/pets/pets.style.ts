@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-import { FONT } from "@/constants/Theme";
+import { FONT } from "@/src/constants/Theme";
 
 const styles = StyleSheet.create({
   cardsContainer: {
