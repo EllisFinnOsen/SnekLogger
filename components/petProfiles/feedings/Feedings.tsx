@@ -1,63 +1,79 @@
 import LogCard from "@/components/cards/log/LogCard";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { StyleSheet } from "react-native";
 import { SQLiteDatabase, useSQLiteContext } from "expo-sqlite";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  FlatList,
+  ActivityIndicator,
+  Text,
+  TouchableOpacity,
+} from "react-native";
+import { fetchAllFeedings } from "@/store/feedingsSlice";
+import { RootState } from "@/store";
 
-const Feedings = ({ petId, title }) => {
-  const database = useSQLiteContext();
-  const [feedings, setFeedings] = useState([]);
+const Feedings = () => {
+  const dispatch = useDispatch();
+  const db = useSQLiteContext();
+  const {
+    list: feedings,
+    status,
+    error,
+  } = useSelector((state: RootState) => state.feedings);
 
   useEffect(() => {
-    const fetchFeedings = async () => {
-      try {
-        const records = await database.getAllAsync(
-          `SELECT id, feedingDate, preyType, complete
-           FROM feedings
-           WHERE petId=${petId}
-           ORDER BY feedingDate DESC`
-        );
-        setFeedings(records);
-      } catch (err) {
-        console.error("Error fetching feedings:", err);
-      }
-    };
+    dispatch(fetchAllFeedings(db) as any);
+  }, []);
 
-    fetchFeedings();
-  }, [database, petId]);
+  // Example sorting: show "incomplete" first, then by recent date
+  const sortedFeedings = useMemo(() => {
+    return [...feedings]
+      .filter((f) => !f.complete) // Incomplete feedings first
+      .concat(feedings.filter((f) => f.complete)) // Then completed
+      .sort(
+        (a, b) =>
+          new Date(b.feedingDate).getTime() - new Date(a.feedingDate).getTime()
+      );
+  }, [feedings]);
+
+  if (status === "loading") {
+    return <ActivityIndicator size="large" />;
+  }
+
+  if (status === "failed") {
+    return <Text>Something went wrong: {error}</Text>;
+  }
 
   return (
     <ThemedView>
-      <ThemedText type="title">{title}</ThemedText>
-      <ThemedView style={styles.container}>
-        {feedings.map((feeding) => {
-          const dateObj = new Date(feeding.feedingDate);
-          const formattedDate = new Intl.DateTimeFormat("en-US", {
-            month: "numeric",
-            day: "numeric",
-            year: "numeric",
-          }).format(dateObj);
-
-          const formattedTime = new Intl.DateTimeFormat("en-US", {
-            hour: "numeric",
-            minute: "numeric",
-            hour12: true,
-          }).format(dateObj);
-
-          return (
-            <LogCard
-              key={feeding.id}
-              feedingDate={formattedDate}
-              feedingTime={formattedTime}
-              preyType={feeding.preyType}
-              initialComplete={feeding.complete}
-              feedingId={feeding.id}
-              petId={petId}
-            />
-          );
-        })}
+      <ThemedView>
+        <ThemedText type="subtitle">Feedings</ThemedText>
+        <TouchableOpacity
+          onPress={() => {
+            /* Add navigation or action */
+          }}
+        >
+          <ThemedText type="link">Add Feeding</ThemedText>
+        </TouchableOpacity>
       </ThemedView>
+
+      <FlatList
+        data={sortedFeedings}
+        renderItem={({ item }) => (
+          <LogCard
+            feedingId={item.id}
+            petId={item.petId}
+            feedingDate={item.feedingDate}
+            feedingTime={item.feedingTime}
+            preyType={item.preyType}
+            initialComplete={item.complete}
+          />
+        )}
+        keyExtractor={(item) => item.id.toString()}
+        ListEmptyComponent={<Text>No feedings found.</Text>}
+      />
     </ThemedView>
   );
 };

@@ -1,22 +1,21 @@
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import React, { useState } from "react";
-import { StyleSheet, TouchableOpacity, View, Text } from "react-native";
+import React from "react";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { SIZES } from "@/constants/Theme";
 import Icon from "react-native-vector-icons/MaterialIcons"; // Example icon library
-import { useSQLiteContext } from "expo-sqlite";
 import { useRouter } from "expo-router";
+import { useSelector, useDispatch } from "react-redux";
+import { updateFeeding } from "@/store/feedingsSlice";
+import { AppDispatch } from "@/store";
+import { useSQLiteContext } from "expo-sqlite";
 
-const LogCard = ({
-  feedingDate,
-  feedingTime,
-  preyType,
-  initialComplete,
-  feedingId,
-  petId,
-}) => {
-  const [isChecked, setIsChecked] = useState(initialComplete);
+const LogCard = ({ feedingDate, feedingTime, preyType, feedingId, petId }) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const isChecked = useSelector(
+    (state) => state.feedings.list.find((f) => f.id === feedingId)?.complete
+  );
 
   // Theme colors
   const textColor = useThemeColor({}, "text");
@@ -25,20 +24,24 @@ const LogCard = ({
   const subtleTextColor = useThemeColor({}, "subtleText");
   const activeColor = useThemeColor({}, "active");
   const bgColor = useThemeColor({}, "background");
-  const database = useSQLiteContext();
   const router = useRouter();
+
   const handleToggleCheck = async () => {
     const newCheckedState = !isChecked;
-    setIsChecked(newCheckedState);
-
-    try {
-      await database.execAsync(
-        `UPDATE feedings SET complete = ${newCheckedState ? 1 : 0} WHERE id = ${feedingId}`
-      );
-    } catch (error) {
-      console.error("Error updating feeding record:", error);
-    }
+    const database = useSQLiteContext(); // This retrieves your db instance
+    dispatch(
+      updateFeeding({
+        db: database, // Include the db instance here
+        feedingId,
+        data: { complete: newCheckedState },
+      })
+    )
+      .unwrap()
+      .catch((error) => {
+        console.error("Failed to update feeding status:", error);
+      });
   };
+
   // Formatting the date into mm/dd/yy
   const [year, month, day] = feedingDate.split("-");
   const dateObj = new Date(year, month - 1, day);
@@ -56,10 +59,6 @@ const LogCard = ({
     hour: "numeric",
     minute: "2-digit",
   });
-  console.log("feedingDate:" + feedingDate);
-  console.log("feedingTime:" + feedingTime);
-  console.log("formattedDate:" + formattedDate);
-  console.log("formattedTime:" + formattedTime);
 
   return (
     <>
