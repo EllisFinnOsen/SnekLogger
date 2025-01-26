@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "expo-router";
 import {
   Text,
@@ -36,18 +36,19 @@ const Upcoming = () => {
   }, []);
 
   // Filter and sort feedings
-  const upcomingFeedings = feedings
-    .filter(feeding => !feeding.complete)
-    .sort((a, b) => {
-      const aDate = new Date(a.feedingDate);
-      const bDate = new Date(b.feedingDate);
-      const now = new Date();
-      
-      // Sort overdue first, then by date
-      if (aDate <= now && bDate > now) return -1;
-      if (bDate <= now && aDate > now) return 1;
-      return aDate.getTime() - bDate.getTime();
-    });
+  const upcomingFeedings = useMemo(() => {
+    return feedings
+      .filter(feeding => !feeding.complete)
+      .sort((a, b) => {
+        const aDate = new Date(a.feedingDate);
+        const bDate = new Date(b.feedingDate);
+        const now = new Date();
+        
+        if (aDate <= now && bDate > now) return -1;
+        if (bDate <= now && aDate > now) return 1;
+        return aDate.getTime() - bDate.getTime();
+      });
+  }, [feedings]); // Only recalculate when feedings change
 
   if (status === "loading") {
     return <ActivityIndicator size="large" color={textColor} />;

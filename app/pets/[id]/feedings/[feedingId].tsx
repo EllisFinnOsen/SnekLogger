@@ -40,23 +40,21 @@ const FeedingDetails = () => {
   const handleSave = async () => {
     if (editedData) {
       try {
-        // Convert formats back to database format
         const [month, day, year] = editedData.feedingDate.split("/");
         const formattedDate = `20${year}-${month}-${day}`;
         const [time, amPm] = editedData.feedingTime.split(" ");
-        const [hours, minutes] = time.split(":");
-        const formattedTime = `${
-          amPm.toLowerCase() === "pm" ? parseInt(hours, 10) + 12 : hours
-        }:${minutes}:00`;
+        let [hours, minutes] = time.split(":");
+        hours = amPm.toLowerCase() === "pm" ? 
+          (parseInt(hours, 10) % 12 + 12).toString() : 
+          (parseInt(hours, 10) % 12).toString().padStart(2, '0');
 
-        // Dispatch update action
         await dispatch(updateFeeding({
           db,
           feedingId: Number(id),
           data: {
             ...editedData,
             feedingDate: formattedDate,
-            feedingTime: formattedTime,
+            feedingTime: `${hours}:${minutes}:00`
           }
         })).unwrap();
 

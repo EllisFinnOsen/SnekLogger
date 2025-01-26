@@ -8,14 +8,36 @@ import Icon from "react-native-vector-icons/MaterialIcons"; // Example icon libr
 import { useRouter } from "expo-router";
 import { useSelector, useDispatch } from "react-redux";
 import { updateFeeding } from "@/store/feedingsSlice";
-import { AppDispatch } from "@/store";
+import { AppDispatch, RootState } from "@/store";
 import { useSQLiteContext } from "expo-sqlite";
 
-const LogCard = ({ feedingDate, feedingTime, preyType, feedingId, petId }) => {
-  const dispatch = useDispatch<AppDispatch>();
-  const isChecked = useSelector(
-    (state) => state.feedings.list.find((f) => f.id === feedingId)?.complete
+const LogCard = ({ feedingId, petId }) => {
+  const feeding = useSelector((state: RootState) => 
+    state.feedings.list.find(f => f.id === feedingId)
   );
+  const dispatch = useDispatch();
+  const db = useSQLiteContext();
+
+  if (!feeding) return null;
+
+  const handleToggleCheck = () => {
+    dispatch(updateFeeding({
+      db,
+      feedingId,
+      data: {
+        ...feeding,
+        complete: !feeding.complete
+      }
+    }));
+  };
+
+  // Use feeding data from Redux store instead of props
+  const {
+    feedingDate: date,
+    feedingTime: time,
+    preyType: prey,
+    complete: isChecked
+  } = feeding || {};
 
   // Theme colors
   const textColor = useThemeColor({}, "text");
@@ -26,24 +48,8 @@ const LogCard = ({ feedingDate, feedingTime, preyType, feedingId, petId }) => {
   const bgColor = useThemeColor({}, "background");
   const router = useRouter();
 
-  const handleToggleCheck = async () => {
-    const newCheckedState = !isChecked;
-    const database = useSQLiteContext(); // This retrieves your db instance
-    dispatch(
-      updateFeeding({
-        db: database, // Include the db instance here
-        feedingId,
-        data: { complete: newCheckedState },
-      })
-    )
-      .unwrap()
-      .catch((error) => {
-        console.error("Failed to update feeding status:", error);
-      });
-  };
-
   // Formatting the date into mm/dd/yy
-  const [year, month, day] = feedingDate.split("-");
+  const [year, month, day] = date.split("-");
   const dateObj = new Date(year, month - 1, day);
   const formattedDate = dateObj.toLocaleDateString("en-US", {
     month: "2-digit",
@@ -52,7 +58,7 @@ const LogCard = ({ feedingDate, feedingTime, preyType, feedingId, petId }) => {
   });
 
   // Formatting the time into h:mm am/pm
-  const [hours, minutes] = feedingTime.split(":");
+  const [hours, minutes] = time.split(":");
   const dateForTime = new Date();
   dateForTime.setHours(Number(hours), Number(minutes));
   const formattedTime = dateForTime.toLocaleTimeString([], {
@@ -106,7 +112,7 @@ const LogCard = ({ feedingDate, feedingTime, preyType, feedingId, petId }) => {
                 color: isChecked ? textColor : bgColor,
               }}
             >
-              {preyType}
+              {prey}
             </ThemedText>
 
             <ThemedText

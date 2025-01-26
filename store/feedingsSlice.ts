@@ -10,25 +10,26 @@ export const fetchAllFeedings = createAsyncThunk(
 
 export const updateFeeding = createAsyncThunk(
   "feedings/updateFeeding",
-  async (
-    { db, feedingId, data }: { db: any; feedingId: number; data: any },
-    { rejectWithValue }
-  ) => {
+  async ({ db, feedingId, data }: { db: any; feedingId: number; data: any }) => {
     try {
       const { feedingDate, feedingTime, preyType, complete, notes } = data;
+      
       await db.execAsync(`
-        UPDATE feedings
-        SET 
-          feedingDate = '${feedingDate}',
-          feedingTime = '${feedingTime}',
-          preyType = '${preyType}',
-          complete = ${complete ? 1 : 0},
-          notes = '${notes}'
-        WHERE id = ${feedingId};
-      `);
-      return { feedingId, ...data };
+        UPDATE feedings 
+        SET feedingDate = ?, 
+            feedingTime = ?, 
+            preyType = ?, 
+            complete = ?, 
+            notes = ?
+        WHERE id = ?
+      `, [feedingDate, feedingTime, preyType, complete ? 1 : 0, notes, feedingId]);
+
+      return {
+        id: feedingId,
+        ...data
+      };
     } catch (error) {
-      return rejectWithValue(error.message);
+      throw error;
     }
   }
 );
@@ -81,15 +82,15 @@ const feedingsSlice = createSlice({
       })
       // Handle updating the feeding in the state
       .addCase(updateFeeding.fulfilled, (state, action) => {
-        console.log("Updating state with:", action.payload);
-        const { feedingId, ...updatedData } = action.payload;
-        const feedingIndex = state.list.findIndex((f) => f.id === feedingId);
-        if (feedingIndex !== -1) {
-          state.list[feedingIndex] = {
-            ...state.list[feedingIndex],
-            ...updatedData,
+        const updatedFeeding = action.payload;
+        const index = state.list.findIndex(f => f.id === updatedFeeding.id);
+        if (index !== -1) {
+          state.list[index] = {
+            ...state.list[index],
+            ...updatedFeeding
           };
         }
+        state.status = "succeeded";
       })
       .addCase(updateFeeding.rejected, (state, action) => {
         state.status = "failed";
