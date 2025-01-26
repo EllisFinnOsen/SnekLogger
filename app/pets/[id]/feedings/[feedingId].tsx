@@ -8,96 +8,72 @@ import {
   TouchableOpacity,
   TextInput,
 } from "react-native";
-import useFetch from "@/hooks/useFetch";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/store";
+import { updateFeeding } from "@/store/feedingsSlice";
 import { Stack } from "expo-router";
 import ThemedScrollView from "@/components/ThemedScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { useSQLiteContext } from "expo-sqlite";
 
 const FeedingDetails = () => {
+  const dispatch = useDispatch();
   const db = useSQLiteContext();
   const [editMode, setEditMode] = useState(false);
-  const [editedData, setEditedData] = useState(null);
   const params = useGlobalSearchParams();
-  const { id } = params; // feedingId
-  const { data, isLoading, error, refetch } = useFetch(
-    `SELECT * FROM feedings WHERE id=${id}`
+  const { id } = params;
+
+  // Get feeding from Redux store instead of useFetch
+  const feeding = useSelector((state: RootState) => 
+    state.feedings.list.find(f => f.id === Number(id))
   );
+  const status = useSelector((state: RootState) => state.feedings.status);
 
-  useEffect(() => {
-    if (data && data.length > 0) {
-      const feeding = data[0];
-      const dateParts = feeding.feedingDate.split("-");
-      const formattedDate = `${dateParts[1]}/${dateParts[2]}/${dateParts[0].slice(2)}`;
-      const timeParts = feeding.feedingTime.split(":");
-      const hours = parseInt(timeParts[0], 10);
-      const formattedTime = `${hours > 12 ? hours - 12 : hours}:${timeParts[1]} ${hours >= 12 ? "pm" : "am"}`;
-
-      // Initialize editedData only if it hasn’t been set
-      if (!editedData) {
-        setEditedData({
-          feedingDate: formattedDate,
-          feedingTime: formattedTime,
-          preyType: feeding.preyType,
-          notes: feeding.notes,
-          complete: feeding.complete,
-        });
-      }
-    }
-  }, [data]);
+  const [editedData, setEditedData] = useState(feeding ? {
+    feedingDate: formatDate(feeding.feedingDate),
+    feedingTime: formatTime(feeding.feedingTime),
+    preyType: feeding.preyType,
+    notes: feeding.notes,
+    complete: feeding.complete,
+  } : null);
 
   const handleSave = async () => {
     if (editedData) {
       try {
-        // Convert the human-friendly edited date and time back into the database format
-        console.log("Edited Data:", editedData);
-        console.log("Feeding Date:", editedData?.feedingDate);
-        console.log("Feeding Time:", editedData?.feedingTime);
-
-        if (!editedData.feedingTime) {
-          console.error("Feeding time is not defined.");
-          return;
-        }
-
+        // Convert formats back to database format
         const [month, day, year] = editedData.feedingDate.split("/");
         const formattedDate = `20${year}-${month}-${day}`;
         const [time, amPm] = editedData.feedingTime.split(" ");
         const [hours, minutes] = time.split(":");
-        const formattedTime = `${amPm.toLowerCase() === "pm" ? parseInt(hours, 10) + 12 : hours}:${minutes}:00`;
+        const formattedTime = `${
+          amPm.toLowerCase() === "pm" ? parseInt(hours, 10) + 12 : hours
+        }:${minutes}:00`;
 
-        await db.execAsync(`
-          UPDATE feedings
-          SET 
-            feedingDate = '${formattedDate}',
-            feedingTime = '${formattedTime}',
-            preyType = '${editedData.preyType}',
-            complete = ${editedData.complete ? 1 : 0},
-            notes = '${editedData.notes}'
-          WHERE id = ${id};
-        `);
+        // Dispatch update action
+        await dispatch(updateFeeding({
+          db,
+          feedingId: Number(id),
+          data: {
+            ...editedData,
+            feedingDate: formattedDate,
+            feedingTime: formattedTime,
+          }
+        })).unwrap();
+
         setEditMode(false);
-        refetch(); // Refresh the data after saving
       } catch (error) {
-        console.error("Failed to update feeding record:", error);
+        console.error("Failed to update feeding:", error);
       }
     }
   };
 
-  if (isLoading) {
+  if (status === "loading") {
     return <ActivityIndicator size="large" />;
   }
 
-  if (error || !data || data.length === 0) {
+  if (!feeding) {
     return <Text>No feeding record found</Text>;
   }
-
-  const feeding = data[0];
-  // Display friendly formats for the user
-  const dateParts = feeding.feedingDate.split("-");
-  const formattedDate = `${dateParts[1]}/${dateParts[2]}/${dateParts[0].slice(2)}`;
-  const timeParts = feeding.feedingTime.split(":");
-  const hours = parseInt(timeParts[0], 10);
-  const formattedTime = `${hours > 12 ? hours - 12 : hours}:${timeParts[1]} ${hours >= 12 ? "pm" : "am"}`;
 
   const handleChange = (field, value) => {
     setEditedData((prev) => ({
@@ -110,7 +86,7 @@ const FeedingDetails = () => {
     <>
       <Stack.Screen
         options={{
-          title: `${formattedDate}`,
+          title: `${formatDate(feeding.feedingDate)}`,
         }}
       />
       <ThemedScrollView>
@@ -119,11 +95,11 @@ const FeedingDetails = () => {
           {editMode ? (
             <TextInput
               style={styles.input}
-              defaultValue={formattedDate}
+              defaultValue={formatDate(feeding.feedingDate)}
               onChangeText={(value) => handleChange("feedingDate", value)}
             />
           ) : (
-            <ThemedText type="default">{formattedDate}</ThemedText>
+            <ThemedText type="default">{formatDate(feeding.feedingDate)}</ThemedText>
           )}
         </View>
         <View style={styles.row}>
@@ -131,11 +107,11 @@ const FeedingDetails = () => {
           {editMode ? (
             <TextInput
               style={styles.input}
-              defaultValue={formattedTime}
+              defaultValue={formatTime(feeding.feedingTime)}
               onChangeText={(value) => handleChange("feedingTime", value)}
             />
           ) : (
-            <ThemedText type="default">{formattedTime}</ThemedText>
+            <ThemedText type="default">{formatTime(feeding.feedingTime)}</ThemedText>
           )}
         </View>
         <View style={styles.row}>
@@ -202,6 +178,20 @@ const FeedingDetails = () => {
       </ThemedScrollView>
     </>
   );
+};
+
+// Helper functions
+const formatDate = (dateStr: string) => {
+  const dateParts = dateStr.split("-");
+  return `${dateParts[1]}/${dateParts[2]}/${dateParts[0].slice(2)}`;
+};
+
+const formatTime = (timeStr: string) => {
+  const timeParts = timeStr.split(":");
+  const hours = parseInt(timeParts[0], 10);
+  return `${hours > 12 ? hours - 12 : hours}:${timeParts[1]} ${
+    hours >= 12 ? "pm" : "am"
+  }`;
 };
 
 const styles = StyleSheet.create({

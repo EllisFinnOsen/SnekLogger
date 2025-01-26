@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "expo-router";
 import {
   Text,
@@ -8,32 +8,54 @@ import {
   View,
 } from "react-native";
 
-import SmallCard from "../cards/small/SmallCard";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import useFetch from "@/hooks/useFetch";
 import { ThemedView } from "../ThemedView";
 import { ThemedText } from "../ThemedText";
-
-import { FONT, Colors, SIZES } from "@/constants/Theme";
+import { useDispatch, useSelector } from "react-redux";
+import { useSQLiteContext } from "expo-sqlite";
+import { RootState } from "@/store";
+import { fetchAllFeedings } from "@/store/feedingsSlice";
+import LogCard from "../cards/log/LogCard";
+import { SIZES } from "@/constants/Theme";
+import {StyleSheet} from "react-native";
 
 const Upcoming = () => {
   const router = useRouter();
   const textColor = useThemeColor({}, "text");
-  const iconColor = useThemeColor({}, "icon");
-  const fieldColor = useThemeColor({}, "field");
-  const { data, isLoading, error } = useFetch(
-    `SELECT * 
-FROM feedings 
-WHERE complete = 0 
-AND (feedingDate <= DATE('now') OR feedingDate > DATE('now')) 
-ORDER BY 
-    CASE WHEN feedingDate <= DATE('now') THEN 1 ELSE 0 END, 
-    feedingDate;`
-  );
+  const dispatch = useDispatch();
+  const db = useSQLiteContext();
 
-  const [selectedPet, setSelectedPet] = useState();
+  const {
+    list: feedings,
+    status,
+    error,
+  } = useSelector((state: RootState) => state.feedings);
 
-  const handleCardPress = () => {};
+  useEffect(() => {
+    dispatch(fetchAllFeedings(db) as any);
+  }, []);
+
+  // Filter and sort feedings
+  const upcomingFeedings = feedings
+    .filter(feeding => !feeding.complete)
+    .sort((a, b) => {
+      const aDate = new Date(a.feedingDate);
+      const bDate = new Date(b.feedingDate);
+      const now = new Date();
+      
+      // Sort overdue first, then by date
+      if (aDate <= now && bDate > now) return -1;
+      if (bDate <= now && aDate > now) return 1;
+      return aDate.getTime() - bDate.getTime();
+    });
+
+  if (status === "loading") {
+    return <ActivityIndicator size="large" color={textColor} />;
+  }
+
+  if (status === "failed") {
+    return <Text>Something went wrong: {error}</Text>;
+  }
 
   return (
     <ThemedView>
@@ -45,30 +67,19 @@ ORDER BY
       </ThemedView>
 
       <ThemedView style={styles.cardsContainer}>
-        {isLoading ? (
-          <ActivityIndicator size="large" color={textColor} />
-        ) : error ? (
-          <Text>Something went wrong</Text>
-        ) : (
-          <View style={styles.displayCards}>
-            {data.map((item) => {
-              // Formatting the date into mm/dd/yy
-
-              // Pass the formatted date and time into LogCard
-              return (
-                <LogCard
-                  key={item.id}
-                  feedingDate={item.feedingDate}
-                  feedingTime={item.feedingTime}
-                  preyType={item.preyType}
-                  initialComplete={item.complete}
-                  feedingId={item.id}
-                  petId={item.petId}
-                />
-              );
-            })}
-          </View>
-        )}
+        <View style={styles.displayCards}>
+          {upcomingFeedings.map((item) => (
+            <LogCard
+              key={item.id}
+              feedingDate={item.feedingDate}
+              feedingTime={item.feedingTime}
+              preyType={item.preyType}
+              initialComplete={item.complete}
+              feedingId={item.id}
+              petId={item.petId}
+            />
+          ))}
+        </View>
       </ThemedView>
     </ThemedView>
   );
@@ -76,12 +87,7 @@ ORDER BY
 
 export default Upcoming;
 
-import { StyleSheet } from "react-native";
-import LogCard from "../cards/log/LogCard";
 const styles = StyleSheet.create({
-  container: {
-    marginTop: SIZES.large,
-  },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
