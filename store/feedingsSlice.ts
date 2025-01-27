@@ -8,11 +8,12 @@ export const fetchAllFeedings = createAsyncThunk(
   }
 );
 
+// Update the updateFeeding thunk to handle petId
 export const updateFeeding = createAsyncThunk(
   "feedings/updateFeeding",
   async ({ db, feedingId, data }: { db: any; feedingId: number; data: any }) => {
     try {
-      const { feedingDate, feedingTime, preyType, complete, notes } = data;
+      const { feedingDate, feedingTime, preyType, complete, notes, petId } = data;
       
       await db.execAsync(`
         UPDATE feedings 
@@ -20,9 +21,10 @@ export const updateFeeding = createAsyncThunk(
             feedingTime = ?, 
             preyType = ?, 
             complete = ?, 
-            notes = ?
+            notes = ?,
+            petId = ?
         WHERE id = ?
-      `, [feedingDate, feedingTime, preyType, complete ? 1 : 0, notes, feedingId]);
+      `, [feedingDate, feedingTime, preyType, complete ? 1 : 0, notes, petId, feedingId]);
 
       return {
         id: feedingId,

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useGlobalSearchParams } from "expo-router";
+import { useGlobalSearchParams, useRouter } from "expo-router"; // Add router import
 import {
   View,
   ActivityIndicator,
@@ -7,7 +7,9 @@ import {
   TouchableOpacity,
   TextInput,
   Platform,
+  Image,
 } from "react-native";
+import DateTimePicker from '@react-native-community/datetimepicker';  // Update import
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { updateFeeding } from "@/store/feedingsSlice";
@@ -16,13 +18,17 @@ import ThemedScrollView from "@/components/ThemedScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { useSQLiteContext } from "expo-sqlite";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import DateTimePickerModal from '@react-native-community/datetimepicker';
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import { SIZES } from "@/constants/Theme";
-
+import { DetailCell } from "@/components/details/DetailCell";
+import { checkImageURL } from "@/utils";
+import { PetSelectorDropdown } from "@/components/PetSelectorDropdown";
+import {ToggleDetailCell} from "@/components/details/ToggleDetailCell";
+import {DateTimeDetailCell} from "@/components/details/DateTimeDetailCell";
 const FeedingDetails = () => {
   const params = useGlobalSearchParams();
   const { id, feedingId } = params;
+  const router = useRouter(); // Initialize router
   const dispatch = useDispatch();
   const db = useSQLiteContext();
 
@@ -31,7 +37,7 @@ const FeedingDetails = () => {
   const iconColor = useThemeColor({}, "icon");
   const fieldColor = useThemeColor({}, "field");
   const activeColor = useThemeColor({}, "active");
-  const errorColor = useThemeColor({}, "error");
+  const subtleText = useThemeColor({}, "subtleText");
 
   const feeding = useSelector((state: RootState) => 
     state.feedings.list.find(f => f.id === Number(feedingId))
@@ -42,13 +48,24 @@ const FeedingDetails = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false);  // Add this state
   const [editedFeeding, setEditedFeeding] = useState(feeding ? {
     feedingDate: feeding.feedingDate,
     feedingTime: feeding.feedingTime,
     preyType: feeding.preyType,
     notes: feeding.notes || '',
     complete: feeding.complete,
+    petId: feeding.petId, // Add petId to tracked state
   } : null);
+
+  const pets = useSelector((state: RootState) => state.pets.list);
+  const currentPet = useSelector((state: RootState) => 
+    state.pets.list.find(p => p.id === Number(id))
+  );
+
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [showPetSelector, setShowPetSelector] = useState(false);
 
   const handleSave = async () => {
     if (editedFeeding) {
@@ -56,10 +73,7 @@ const FeedingDetails = () => {
         await dispatch(updateFeeding({
           db,
           feedingId: Number(feedingId),
-          data: {
-            ...editedFeeding,
-            petId: Number(id)
-          }
+          data: editedFeeding // Send all edited data including petId
         })).unwrap();
         setIsEditing(false);
       } catch (error) {
@@ -93,6 +107,30 @@ const FeedingDetails = () => {
     }));
   };
 
+  const handleDatePress = () => {
+    if (Platform.OS === 'android') {
+      setShowDatePicker(true);
+    } else {
+      setDatePickerVisibility(true);
+    }
+  };
+
+  const handleTimePress = () => {
+    if (Platform.OS === 'android') {
+      setShowTimePicker(true);
+    } else {
+      setTimePickerVisibility(true);
+    }
+  };
+
+  const handlePetSelect = (newPetId: number) => {
+    setEditedFeeding(prev => ({
+      ...prev,
+      petId: newPetId
+    }));
+    setShowPetSelector(false);
+  };
+
   if (status === "loading") {
     return <ActivityIndicator size="large" color={textColor} />;
   }
@@ -115,7 +153,7 @@ const FeedingDetails = () => {
                 <TouchableOpacity onPress={() => setIsEditing(false)}>
                   <ThemedText
                     type="smDetail"
-                    style={[styles.link, { color: errorColor }]}
+                    style={[styles.link, { color: subtleText }]}
                   >
                     Cancel
                   </ThemedText>
@@ -142,98 +180,96 @@ const FeedingDetails = () => {
           </View>
         </View>
 
-        {/* Status Cell */}
-        <View style={[styles.cell, { borderBottomColor: fieldColor }]}>
-          <View style={styles.category}>
-            <IconSymbol size={18} name="smallcircle.fill.circle" color={iconColor} />
-            <ThemedText type="subtitle">Status: </ThemedText>
-          </View>
-          <TouchableOpacity 
-            onPress={() => isEditing && setEditedFeeding(prev => ({
-              ...prev,
-              complete: !prev.complete
-            }))}
-          >
-            <ThemedText type="default">
-              {editedFeeding.complete ? "Complete" : "Not Completed"}
-            </ThemedText>
-          </TouchableOpacity>
-        </View>
-
-        {/* Date Cell */}
-        <View style={[styles.cell, { borderBottomColor: fieldColor }]}>
-          <View style={styles.category}>
-            <IconSymbol size={18} name="calendar.circle.fill" color={iconColor} />
-            <ThemedText type="subtitle">Date:</ThemedText>
-          </View>
-          {isEditing ? (
-            <TouchableOpacity
-              style={styles.editableWrap}
-              onPress={() => setDatePickerVisibility(true)}
-            >
-              <ThemedText
-                style={[styles.editablefield, { backgroundColor: fieldColor }]}
-                type="default"
-              >
-                {editedFeeding.feedingDate}
+        <DetailCell
+          icon="smallcircle.fill.circle"
+          label="Pet"
+          isPetImage
+          customContent={
+            <View style={styles.petSelector}>
+              <Image
+                source={{
+                  uri: checkImageURL(pets.find(p => p.id === editedFeeding.petId)?.imageURL)
+                    ? pets.find(p => p.id === editedFeeding.petId)?.imageURL
+                    : "https://files.oaiusercontent.com/file-DjW5L9b81xAoE1CS5dgfGf?se=2025-01-22T19%3A04%3A19Z&sp=r&sv=2024-08-04&sr=b&rscc=max-age%3D604800%2C%20immutable%2C%20private&rscd=attachment%3B%20filename%3D4bc93413-3775-4d04-bb36-d00efe395407.webp&sig=4s4GNu/F9s40L9WCGzcndpvr4bnYlv6ftC7%2BPRitiO0%3D",
+                }}
+                style={styles.petImage}
+              />
+              <ThemedText type="default">
+                {pets.find(p => p.id === editedFeeding.petId)?.name}
               </ThemedText>
-              <IconSymbol size={18} name="edit" color={iconColor} />
-            </TouchableOpacity>
-          ) : (
-            <ThemedText type="default">{editedFeeding.feedingDate}</ThemedText>
-          )}
-        </View>
-
-        {/* Time Cell */}
-        <View style={[styles.cell, { borderBottomColor: fieldColor }]}>
-          <View style={styles.category}>
-            <IconSymbol size={18} name="clock" color={iconColor} />
-            <ThemedText type="subtitle">Time: </ThemedText>
-          </View>
-          {isEditing ? (
-            <TouchableOpacity
-              style={styles.editableWrap}
-              onPress={() => setTimePickerVisibility(true)}
-            >
-              <ThemedText
-                style={[styles.editablefield, { backgroundColor: fieldColor }]}
-                type="default"
-              >
-                {editedFeeding.feedingTime}
-              </ThemedText>
-              <IconSymbol size={18} name="edit" color={iconColor} />
-            </TouchableOpacity>
-          ) : (
-            <ThemedText type="default">{editedFeeding.feedingTime}</ThemedText>
-          )}
-        </View>
-
-        {/* Prey Cell */}
-        <View style={[styles.cell, { borderBottomColor: fieldColor }]}>
-          <View style={styles.category}>
-            <IconSymbol size={18} name="food" color={iconColor} />
-            <ThemedText type="subtitle">Prey: </ThemedText>
-          </View>
-          {isEditing ? (
-            <TextInput
-              style={[styles.editablefield, { backgroundColor: fieldColor }]}
-              value={editedFeeding.preyType}
-              onChangeText={(text) => setEditedFeeding(prev => ({
-                ...prev,
-                preyType: text
-              }))}
+            </View>
+          }
+          isEditing={isEditing}
+          isDropdown
+          onPress={() => setShowPetSelector(true)}
+          dropdownComponent={
+            <PetSelectorDropdown
+              pets={pets}
+              selectedPetId={editedFeeding.petId}
+              feedingId={Number(feedingId)}
+              feeding={feeding}
+              onSelect={handlePetSelect}
+              isVisible={showPetSelector}
+              onClose={() => setShowPetSelector(false)}
             />
-          ) : (
-            <ThemedText type="default">{editedFeeding.preyType}</ThemedText>
-          )}
-        </View>
+          }
+          fieldColor={fieldColor}
+          iconColor={iconColor}
+        />
+
+        <ToggleDetailCell
+          icon="smallcircle.fill.circle"
+          label="Status"
+          value={editedFeeding.complete ? "Complete" : "Not Completed"}
+          isEditing={isEditing}
+          onToggle={() => setEditedFeeding(prev => ({
+            ...prev,
+            complete: !prev.complete
+          }))}
+          fieldColor={fieldColor}
+          iconColor={iconColor}
+        />
+
+        <DateTimeDetailCell
+          icon="calendar.circle.fill"
+          label="Date"
+          value={editedFeeding.feedingDate}
+          isEditing={isEditing}
+          onPress={handleDatePress}
+          fieldColor={fieldColor}
+          iconColor={iconColor}
+        />
+
+        <DateTimeDetailCell
+          icon="clock"
+          label="Time"
+          value={editedFeeding.feedingTime}
+          isEditing={isEditing}
+          onPress={handleTimePress}
+          fieldColor={fieldColor}
+          iconColor={iconColor}
+        />
+
+<DetailCell
+  icon="food"
+  label="Prey"
+  value={editedFeeding.preyType}
+  isEditing={isEditing}
+  isDropdown
+  onValueChange={(value) => setEditedFeeding(prev => ({
+    ...prev,
+    preyType: value
+  }))}
+  fieldColor={fieldColor}
+  iconColor={iconColor}
+/>
 
         {/* Notes Section */}
         <View style={styles.notes}>
           <ThemedText type="title">Notes: </ThemedText>
           {isEditing ? (
             <TextInput
-              style={[styles.textarea, { backgroundColor: fieldColor }]}
+              style={[styles.textarea, { color: subtleText ,backgroundColor: fieldColor }]}
               value={editedFeeding.notes}
               onChangeText={(text) => setEditedFeeding(prev => ({
                 ...prev,
@@ -249,30 +285,42 @@ const FeedingDetails = () => {
 
       {Platform.OS === 'android' ? (
         <>
-          {isDatePickerVisible && (
-            <DateTimePickerModal
+          {showDatePicker && (
+            <DateTimePicker
               value={new Date(editedFeeding.feedingDate)}
               mode="date"
-              onChange={handleDateConfirm}
+              display="default"
+              onChange={(event, date) => {
+                setShowDatePicker(false);
+                if (date && event.type === 'set') {
+                  handleDateConfirm(event, date);
+                }
+              }}
             />
           )}
-          {isTimePickerVisible && (
-            <DateTimePickerModal
+          {showTimePicker && (
+            <DateTimePicker
               value={new Date(`2000-01-01T${editedFeeding.feedingTime}`)}
               mode="time"
-              onChange={handleTimeConfirm}
+              display="default"
+              onChange={(event, time) => {
+                setShowTimePicker(false);
+                if (time && event.type === 'set') {
+                  handleTimeConfirm(event, time);
+                }
+              }}
             />
           )}
         </>
       ) : (
         <>
-          <DateTimePickerModal
+          <DateTimePicker
             isVisible={isDatePickerVisible}
             mode="date"
             onConfirm={handleDateConfirm}
             onCancel={() => setDatePickerVisibility(false)}
           />
-          <DateTimePickerModal
+          <DateTimePicker
             isVisible={isTimePickerVisible}
             mode="time"
             onConfirm={handleTimeConfirm}
@@ -345,5 +393,15 @@ const styles = StyleSheet.create({
     marginTop: 22,
     alignItems: "baseline",
     gap: 8,
+  },
+  petSelector: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  petImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
   },
 });
