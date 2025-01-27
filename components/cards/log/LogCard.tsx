@@ -15,8 +15,12 @@ const LogCard = ({ feedingId, petId }) => {
   const feeding = useSelector((state: RootState) => 
     state.feedings.list.find(f => f.id === feedingId)
   );
+  const pet = useSelector((state: RootState) => 
+    state.pets.list.find(p => p.id === petId)
+  );
   const dispatch = useDispatch();
   const db = useSQLiteContext();
+  const router = useRouter();
 
   if (!feeding) return null;
 
@@ -29,6 +33,17 @@ const LogCard = ({ feedingId, petId }) => {
         complete: !feeding.complete
       }
     }));
+  };
+
+  const handleNavigateToEdit = () => {
+    console.log(`Navigating to feeding ${feedingId} for pet ${petId}`);
+    router.push({
+      pathname: `/pets/${petId}/feedings/${feedingId}`,
+      params: { 
+        id: petId.toString(),
+        feedingId: feedingId.toString() 
+      }
+    });
   };
 
   // Use feeding data from Redux store instead of props
@@ -46,7 +61,6 @@ const LogCard = ({ feedingId, petId }) => {
   const subtleTextColor = useThemeColor({}, "subtleText");
   const activeColor = useThemeColor({}, "active");
   const bgColor = useThemeColor({}, "background");
-  const router = useRouter();
 
   // Formatting the date into mm/dd/yy
   const [year, month, day] = date.split("-");
@@ -75,7 +89,7 @@ const LogCard = ({ feedingId, petId }) => {
         ]}
       >
         <TouchableOpacity
-          onPress={() => router.push(`/pets/${petId}/feedings/${feedingId}`)}
+          onPress={handleNavigateToEdit}
           style={[
             styles.container,
             { backgroundColor: isChecked ? fieldColor : textColor },
@@ -95,14 +109,24 @@ const LogCard = ({ feedingId, petId }) => {
                 color={isChecked ? activeColor : fieldColor}
               />
             </TouchableOpacity>
-            <ThemedText
-              type="subtitle"
-              style={{
-                color: isChecked ? textColor : bgColor,
-              }}
-            >
-              {formattedDate}
-            </ThemedText>
+            <View style={styles.dateColumn}>
+              <ThemedText
+                type="smDetail"
+                style={{
+                  color: isChecked ? textColor : bgColor,
+                }}
+              >
+                {pet?.name}
+              </ThemedText>
+              <ThemedText
+                type="subtitle"
+                style={{
+                  color: isChecked ? textColor : bgColor,
+                }}
+              >
+                {formattedDate}
+              </ThemedText>
+            </View>
           </View>
 
           <View style={styles.details}>
@@ -164,5 +188,9 @@ const styles = StyleSheet.create({
   toggle: {
     flexDirection: "row",
     gap: 8,
+  },
+  dateColumn: {
+    flexDirection: 'column',
+    gap: 2,
   },
 });

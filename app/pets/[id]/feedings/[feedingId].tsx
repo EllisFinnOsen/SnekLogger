@@ -1,12 +1,12 @@
+import { useState } from "react";
 import { useGlobalSearchParams } from "expo-router";
-import { useState, useEffect } from "react";
 import {
   View,
-  Text,
   ActivityIndicator,
   StyleSheet,
   TouchableOpacity,
   TextInput,
+  Platform,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store";
@@ -15,188 +15,330 @@ import { Stack } from "expo-router";
 import ThemedScrollView from "@/components/ThemedScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { useSQLiteContext } from "expo-sqlite";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import DateTimePickerModal from '@react-native-community/datetimepicker';
+import { IconSymbol } from "@/components/ui/IconSymbol";
+import { SIZES } from "@/constants/Theme";
 
 const FeedingDetails = () => {
+  const params = useGlobalSearchParams();
+  const { id, feedingId } = params;
   const dispatch = useDispatch();
   const db = useSQLiteContext();
-  const [editMode, setEditMode] = useState(false);
-  const params = useGlobalSearchParams();
-  const { id } = params;
 
-  // Get feeding from Redux store instead of useFetch
+  // Theme colors
+  const textColor = useThemeColor({}, "text");
+  const iconColor = useThemeColor({}, "icon");
+  const fieldColor = useThemeColor({}, "field");
+  const activeColor = useThemeColor({}, "active");
+  const errorColor = useThemeColor({}, "error");
+
   const feeding = useSelector((state: RootState) => 
-    state.feedings.list.find(f => f.id === Number(id))
+    state.feedings.list.find(f => f.id === Number(feedingId))
   );
   const status = useSelector((state: RootState) => state.feedings.status);
+  const error = useSelector((state: RootState) => state.feedings.error);
 
-  const [editedData, setEditedData] = useState(feeding ? {
-    feedingDate: formatDate(feeding.feedingDate),
-    feedingTime: formatTime(feeding.feedingTime),
+  const [isEditing, setIsEditing] = useState(false);
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
+  const [editedFeeding, setEditedFeeding] = useState(feeding ? {
+    feedingDate: feeding.feedingDate,
+    feedingTime: feeding.feedingTime,
     preyType: feeding.preyType,
-    notes: feeding.notes,
+    notes: feeding.notes || '',
     complete: feeding.complete,
   } : null);
 
   const handleSave = async () => {
-    if (editedData) {
+    if (editedFeeding) {
       try {
-        const [month, day, year] = editedData.feedingDate.split("/");
-        const formattedDate = `20${year}-${month}-${day}`;
-        const [time, amPm] = editedData.feedingTime.split(" ");
-        let [hours, minutes] = time.split(":");
-        hours = amPm.toLowerCase() === "pm" ? 
-          (parseInt(hours, 10) % 12 + 12).toString() : 
-          (parseInt(hours, 10) % 12).toString().padStart(2, '0');
-
         await dispatch(updateFeeding({
           db,
-          feedingId: Number(id),
+          feedingId: Number(feedingId),
           data: {
-            ...editedData,
-            feedingDate: formattedDate,
-            feedingTime: `${hours}:${minutes}:00`
+            ...editedFeeding,
+            petId: Number(id)
           }
         })).unwrap();
-
-        setEditMode(false);
+        setIsEditing(false);
       } catch (error) {
         console.error("Failed to update feeding:", error);
       }
     }
   };
 
-  if (status === "loading") {
-    return <ActivityIndicator size="large" />;
-  }
-
-  if (!feeding) {
-    return <Text>No feeding record found</Text>;
-  }
-
-  const handleChange = (field, value) => {
-    setEditedData((prev) => ({
+  const handleDateConfirm = (event, selectedDate) => {
+    const currentDate = selectedDate || new Date(editedFeeding.feedingDate);
+    setDatePickerVisibility(false);
+    
+    const formattedDate = currentDate.toISOString().split('T')[0];
+    setEditedFeeding(prev => ({
       ...prev,
-      [field]: value,
+      feedingDate: formattedDate
     }));
   };
 
+  const handleTimeConfirm = (event, selectedDate) => {
+    const currentDate = selectedDate || new Date();
+    setTimePickerVisibility(false);
+    
+    const hours = currentDate.getHours();
+    const minutes = currentDate.getMinutes();
+    const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`;
+    
+    setEditedFeeding(prev => ({
+      ...prev,
+      feedingTime: formattedTime
+    }));
+  };
+
+  if (status === "loading") {
+    return <ActivityIndicator size="large" color={textColor} />;
+  }
+
+  if (!feeding || !editedFeeding) {
+    return <ThemedText type="default">No feeding found</ThemedText>;
+  }
+
   return (
     <>
-      <Stack.Screen
-        options={{
-          title: `${formatDate(feeding.feedingDate)}`,
-        }}
-      />
+      <Stack.Screen options={{ title: `Feeding Details` }} />
       <ThemedScrollView>
-        <View style={styles.row}>
-          <ThemedText type="subtitle">Date: </ThemedText>
-          {editMode ? (
-            <TextInput
-              style={styles.input}
-              defaultValue={formatDate(feeding.feedingDate)}
-              onChangeText={(value) => handleChange("feedingDate", value)}
-            />
-          ) : (
-            <ThemedText type="default">{formatDate(feeding.feedingDate)}</ThemedText>
-          )}
+        <View style={styles.header}>
+          <ThemedText type="subtitle" style={styles.heading}>
+            Feeding Details
+          </ThemedText>
+          <View style={styles.links}>
+            {isEditing ? (
+              <>
+                <TouchableOpacity onPress={() => setIsEditing(false)}>
+                  <ThemedText
+                    type="smDetail"
+                    style={[styles.link, { color: errorColor }]}
+                  >
+                    Cancel
+                  </ThemedText>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={handleSave}>
+                  <ThemedText
+                    type="smDetail"
+                    style={[styles.link, { color: activeColor }]}
+                  >
+                    Save
+                  </ThemedText>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <TouchableOpacity onPress={() => setIsEditing(true)}>
+                <ThemedText
+                  type="smDetail"
+                  style={[styles.link, { color: textColor }]}
+                >
+                  Edit
+                </ThemedText>
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
-        <View style={styles.row}>
-          <ThemedText type="subtitle">Time: </ThemedText>
-          {editMode ? (
-            <TextInput
-              style={styles.input}
-              defaultValue={formatTime(feeding.feedingTime)}
-              onChangeText={(value) => handleChange("feedingTime", value)}
-            />
-          ) : (
-            <ThemedText type="default">{formatTime(feeding.feedingTime)}</ThemedText>
-          )}
-        </View>
-        <View style={styles.row}>
-          <ThemedText type="subtitle">Prey: </ThemedText>
-          {editMode ? (
-            <TextInput
-              style={styles.input}
-              defaultValue={feeding.preyType}
-              onChangeText={(value) => handleChange("preyType", value)}
-            />
-          ) : (
-            <ThemedText type="default">{feeding.preyType}</ThemedText>
-          )}
-        </View>
-        <View style={styles.row}>
-          <ThemedText type="subtitle">Complete: </ThemedText>
-          {editMode ? (
-            <TextInput
-              style={styles.input}
-              defaultValue={feeding.complete ? "Yes" : "No"}
-              onChangeText={(value) =>
-                handleChange("complete", value.toLowerCase() === "yes")
-              }
-            />
-          ) : (
+
+        {/* Status Cell */}
+        <View style={[styles.cell, { borderBottomColor: fieldColor }]}>
+          <View style={styles.category}>
+            <IconSymbol size={18} name="smallcircle.fill.circle" color={iconColor} />
+            <ThemedText type="subtitle">Status: </ThemedText>
+          </View>
+          <TouchableOpacity 
+            onPress={() => isEditing && setEditedFeeding(prev => ({
+              ...prev,
+              complete: !prev.complete
+            }))}
+          >
             <ThemedText type="default">
-              {feeding.complete ? "Yes" : "No"}
+              {editedFeeding.complete ? "Complete" : "Not Completed"}
             </ThemedText>
+          </TouchableOpacity>
+        </View>
+
+        {/* Date Cell */}
+        <View style={[styles.cell, { borderBottomColor: fieldColor }]}>
+          <View style={styles.category}>
+            <IconSymbol size={18} name="calendar.circle.fill" color={iconColor} />
+            <ThemedText type="subtitle">Date:</ThemedText>
+          </View>
+          {isEditing ? (
+            <TouchableOpacity
+              style={styles.editableWrap}
+              onPress={() => setDatePickerVisibility(true)}
+            >
+              <ThemedText
+                style={[styles.editablefield, { backgroundColor: fieldColor }]}
+                type="default"
+              >
+                {editedFeeding.feedingDate}
+              </ThemedText>
+              <IconSymbol size={18} name="edit" color={iconColor} />
+            </TouchableOpacity>
+          ) : (
+            <ThemedText type="default">{editedFeeding.feedingDate}</ThemedText>
           )}
         </View>
+
+        {/* Time Cell */}
+        <View style={[styles.cell, { borderBottomColor: fieldColor }]}>
+          <View style={styles.category}>
+            <IconSymbol size={18} name="clock" color={iconColor} />
+            <ThemedText type="subtitle">Time: </ThemedText>
+          </View>
+          {isEditing ? (
+            <TouchableOpacity
+              style={styles.editableWrap}
+              onPress={() => setTimePickerVisibility(true)}
+            >
+              <ThemedText
+                style={[styles.editablefield, { backgroundColor: fieldColor }]}
+                type="default"
+              >
+                {editedFeeding.feedingTime}
+              </ThemedText>
+              <IconSymbol size={18} name="edit" color={iconColor} />
+            </TouchableOpacity>
+          ) : (
+            <ThemedText type="default">{editedFeeding.feedingTime}</ThemedText>
+          )}
+        </View>
+
+        {/* Prey Cell */}
+        <View style={[styles.cell, { borderBottomColor: fieldColor }]}>
+          <View style={styles.category}>
+            <IconSymbol size={18} name="food" color={iconColor} />
+            <ThemedText type="subtitle">Prey: </ThemedText>
+          </View>
+          {isEditing ? (
+            <TextInput
+              style={[styles.editablefield, { backgroundColor: fieldColor }]}
+              value={editedFeeding.preyType}
+              onChangeText={(text) => setEditedFeeding(prev => ({
+                ...prev,
+                preyType: text
+              }))}
+            />
+          ) : (
+            <ThemedText type="default">{editedFeeding.preyType}</ThemedText>
+          )}
+        </View>
+
+        {/* Notes Section */}
         <View style={styles.notes}>
           <ThemedText type="title">Notes: </ThemedText>
-          {editMode ? (
+          {isEditing ? (
             <TextInput
-              style={[styles.input, styles.textarea]}
-              defaultValue={feeding.notes || ""}
+              style={[styles.textarea, { backgroundColor: fieldColor }]}
+              value={editedFeeding.notes}
+              onChangeText={(text) => setEditedFeeding(prev => ({
+                ...prev,
+                notes: text
+              }))}
               multiline
-              onChangeText={(value) => handleChange("notes", value)}
             />
           ) : (
-            <ThemedText type="default">{feeding.notes}</ThemedText>
+            <ThemedText type="default">{editedFeeding.notes}</ThemedText>
           )}
         </View>
-        {editMode ? (
-          <View style={styles.editButtons}>
-            <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-              <ThemedText type="link">Save</ThemedText>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.cancelButton}
-              onPress={() => setEditMode(false)}
-            >
-              <ThemedText type="link">Cancel</ThemedText>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <TouchableOpacity
-            style={styles.editButton}
-            onPress={() => setEditMode(true)}
-          >
-            <ThemedText type="link">Edit</ThemedText>
-          </TouchableOpacity>
-        )}
       </ThemedScrollView>
+
+      {Platform.OS === 'android' ? (
+        <>
+          {isDatePickerVisible && (
+            <DateTimePickerModal
+              value={new Date(editedFeeding.feedingDate)}
+              mode="date"
+              onChange={handleDateConfirm}
+            />
+          )}
+          {isTimePickerVisible && (
+            <DateTimePickerModal
+              value={new Date(`2000-01-01T${editedFeeding.feedingTime}`)}
+              mode="time"
+              onChange={handleTimeConfirm}
+            />
+          )}
+        </>
+      ) : (
+        <>
+          <DateTimePickerModal
+            isVisible={isDatePickerVisible}
+            mode="date"
+            onConfirm={handleDateConfirm}
+            onCancel={() => setDatePickerVisibility(false)}
+          />
+          <DateTimePickerModal
+            isVisible={isTimePickerVisible}
+            mode="time"
+            onConfirm={handleTimeConfirm}
+            onCancel={() => setTimePickerVisibility(false)}
+          />
+        </>
+      )}
     </>
   );
 };
 
-// Helper functions
-const formatDate = (dateStr: string) => {
-  const dateParts = dateStr.split("-");
-  return `${dateParts[1]}/${dateParts[2]}/${dateParts[0].slice(2)}`;
-};
-
-const formatTime = (timeStr: string) => {
-  const timeParts = timeStr.split(":");
-  const hours = parseInt(timeParts[0], 10);
-  return `${hours > 12 ? hours - 12 : hours}:${timeParts[1]} ${
-    hours >= 12 ? "pm" : "am"
-  }`;
-};
+export default FeedingDetails;
 
 const styles = StyleSheet.create({
-  row: {
+  header: {
     flexDirection: "row",
-    alignItems: "baseline",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingBottom: 16,
+  },
+  heading: {
+    fontSize: 24,
+  },
+  links: {
+    flexDirection: "row",
     gap: 8,
+  },
+  link: {
+    fontSize: 16,
+    marginLeft: 8,
+  },
+  cell: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingBottom: 14,
+    padding: 8,
+    gap: 8,
+    borderBottomEndRadius: 6,
+    borderBottomWidth: 1,
+  },
+  category: {
+    flexDirection: "row",
+    gap: 8,
+    justifyContent: "flex-start",
+    alignItems: "center",
+  },
+  editablefield: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: SIZES.xSmall,
+  },
+  editableWrap: {
+    flexDirection: "row",
+    gap: 8,
+    alignItems: "center",
+  },
+  textarea: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    height: 100,
+    textAlignVertical: "top",
+    width: '100%',
   },
   notes: {
     flexDirection: "column",
@@ -204,32 +346,4 @@ const styles = StyleSheet.create({
     alignItems: "baseline",
     gap: 8,
   },
-  input: {
-    fontSize: 16,
-    borderBottomWidth: 1,
-    borderColor: "#ccc",
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-  },
-  textarea: {
-    height: 80,
-    textAlignVertical: "top",
-  },
-  editButton: {
-    marginTop: 20,
-    alignSelf: "flex-start",
-  },
-  editButtons: {
-    flexDirection: "row",
-    gap: 12,
-    marginTop: 20,
-  },
-  saveButton: {
-    alignSelf: "flex-start",
-  },
-  cancelButton: {
-    alignSelf: "flex-start",
-  },
 });
-
-export default FeedingDetails;
