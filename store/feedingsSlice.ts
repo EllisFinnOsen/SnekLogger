@@ -11,10 +11,26 @@ export const fetchAllFeedings = createAsyncThunk(
 // Update the updateFeeding thunk to handle petId
 export const updateFeeding = createAsyncThunk(
   "feedings/updateFeeding",
-  async ({ db, feedingId, data }: { db: any; feedingId: number; data: any }) => {
+  async ({ db, feedingId, data }: { 
+    db: any; 
+    feedingId: number; 
+    data: any 
+  }) => {
     try {
-      const { feedingDate, feedingTime, preyType, complete, notes, petId } = data;
-      
+      console.log('updateFeeding: Starting update with:', { feedingId, data });
+
+      // First verify the data exists
+      const [existingFeeding] = await db.getAllAsync(
+        "SELECT * FROM feedings WHERE id = ?",
+        [feedingId]
+      );
+      console.log('updateFeeding: Existing feeding:', existingFeeding);
+
+      if (!existingFeeding) {
+        throw new Error(`No feeding found with id ${feedingId}`);
+      }
+
+      // Execute the update
       await db.execAsync(`
         UPDATE feedings 
         SET feedingDate = ?, 
@@ -24,13 +40,37 @@ export const updateFeeding = createAsyncThunk(
             notes = ?,
             petId = ?
         WHERE id = ?
-      `, [feedingDate, feedingTime, preyType, complete ? 1 : 0, notes, petId, feedingId]);
+      `, [
+        data.feedingDate, 
+        data.feedingTime, 
+        data.preyType, 
+        data.complete ? 1 : 0, 
+        data.notes, 
+        data.petId, 
+        feedingId
+      ]);
 
-      return {
-        id: feedingId,
-        ...data
+      // Verify the update by fetching the updated record
+      const [updatedFeeding] = await db.getAllAsync(
+        "SELECT * FROM feedings WHERE id = ?",
+        [feedingId]
+      );
+      
+      console.log('updateFeeding: Updated feeding:', updatedFeeding);
+
+      if (!updatedFeeding) {
+        throw new Error('Failed to fetch updated feeding');
+      }
+
+      // Convert the numeric complete value back to boolean
+      const formattedFeeding = {
+        ...updatedFeeding,
+        complete: Boolean(updatedFeeding.complete)
       };
+
+      return formattedFeeding;
     } catch (error) {
+      console.error('updateFeeding failed:', error);
       throw error;
     }
   }
@@ -84,13 +124,11 @@ const feedingsSlice = createSlice({
       })
       // Handle updating the feeding in the state
       .addCase(updateFeeding.fulfilled, (state, action) => {
-        const updatedFeeding = action.payload;
-        const index = state.list.findIndex(f => f.id === updatedFeeding.id);
+        console.log('Redux: Updating feeding state with:', action.payload);
+        const index = state.list.findIndex(f => f.id === action.payload.id);
         if (index !== -1) {
-          state.list[index] = {
-            ...state.list[index],
-            ...updatedFeeding
-          };
+          state.list[index] = action.payload;
+          console.log('Redux: State updated successfully');
         }
         state.status = "succeeded";
       })

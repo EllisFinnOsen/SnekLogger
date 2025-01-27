@@ -15,8 +15,6 @@ type PetSelectorDropdownProps = {
     imageURL: string;
   }>;
   selectedPetId: number;
-  feedingId: number;
-  feeding: any;
   onSelect: (petId: number) => void;
   isVisible: boolean;
   onClose: () => void;
@@ -31,6 +29,12 @@ export const PetSelectorDropdown = ({
 }: PetSelectorDropdownProps) => {
   const bgColor = useThemeColor({}, "background");
   const fieldColor = useThemeColor({}, "field");
+
+  const handlePetSelect = (petId: number) => {
+    console.log('PetSelector: Selected pet:', petId);
+    onSelect(petId); // This updates editedFeeding state in parent
+    onClose();
+  };
 
   return (
     <Modal
@@ -49,10 +53,7 @@ export const PetSelectorDropdown = ({
                   styles.option,
                   { backgroundColor: pet.id === selectedPetId ? fieldColor : 'transparent' }
                 ]}
-                onPress={() => {
-                  onSelect(pet.id);
-                  onClose();
-                }}
+                onPress={() => handlePetSelect(pet.id)}
               >
                 <Image
                   source={{

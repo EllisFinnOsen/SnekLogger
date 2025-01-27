@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useGlobalSearchParams, useRouter } from "expo-router"; // Add router import
 import {
   View,
@@ -12,7 +12,8 @@ import {
 import DateTimePicker from '@react-native-community/datetimepicker';  // Update import
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store";
-import { updateFeeding } from "@/store/feedingsSlice";
+import { updateFeeding, fetchAllFeedings } from "@/store/feedingsSlice";
+import { fetchPets } from "@/store/petsSlice";
 import { Stack } from "expo-router";
 import ThemedScrollView from "@/components/ThemedScrollView";
 import { ThemedText } from "@/components/ThemedText";
@@ -70,14 +71,22 @@ const FeedingDetails = () => {
   const handleSave = async () => {
     if (editedFeeding) {
       try {
-        await dispatch(updateFeeding({
+        console.log('FeedingDetails: Starting save with:', editedFeeding);
+        
+        const result = await dispatch(updateFeeding({
           db,
           feedingId: Number(feedingId),
-          data: editedFeeding // Send all edited data including petId
+          data: editedFeeding
         })).unwrap();
+        
+        console.log('FeedingDetails: Save completed, result:', result);
         setIsEditing(false);
+  
+        // Force refresh feedings list
+        dispatch(fetchAllFeedings(db) as any);
+        
       } catch (error) {
-        console.error("Failed to update feeding:", error);
+        console.error("FeedingDetails: Save failed:", error);
       }
     }
   };
@@ -130,6 +139,14 @@ const FeedingDetails = () => {
     }));
     setShowPetSelector(false);
   };
+
+  useEffect(() => {
+    const loadData = async () => {
+      await dispatch(fetchPets(db) as any);
+      await dispatch(fetchAllFeedings(db) as any); // Add this line
+    };
+    loadData();
+  }, []);
 
   if (status === "loading") {
     return <ActivityIndicator size="large" color={textColor} />;

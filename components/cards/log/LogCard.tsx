@@ -12,12 +12,17 @@ import { AppDispatch, RootState } from "@/store";
 import { useSQLiteContext } from "expo-sqlite";
 
 const LogCard = ({ feedingId, petId }) => {
-  const feeding = useSelector((state: RootState) => 
-    state.feedings.list.find(f => f.id === feedingId)
-  );
-  const pet = useSelector((state: RootState) => 
-    state.pets.list.find(p => p.id === petId)
-  );
+  const feeding = useSelector((state: RootState) => {
+    const found = state.feedings.list.find(f => f.id === feedingId);
+    console.log('LogCard: Fetched feeding from Redux:', { feedingId, found });
+    return found;
+  });
+  
+  const pet = useSelector((state: RootState) => {
+    const found = state.pets.list.find(p => p.id === petId);
+    console.log('LogCard: Fetched pet from Redux:', { petId, found });
+    return found;
+  });
   const dispatch = useDispatch();
   const db = useSQLiteContext();
   const router = useRouter();
