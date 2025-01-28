@@ -4,6 +4,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import { fetchPets, fetchFeedingsByPet } from '../redux/actions';
 import { initializeDatabase, insertMockData } from '../database';
 
+// 1. Import from your utils/dateUtils.js
+import { getUpcomingFeedings, toISODateTime, formatDateString, formatTimeString } from '../utils/dateUtils';
+
 export default function HomeScreen({ navigation }) {
   const dispatch = useDispatch();
   const pets = useSelector((state) => state.pets.pets || []);
@@ -29,43 +32,34 @@ export default function HomeScreen({ navigation }) {
     }
   }, [dispatch, pets]);
 
-  const formatFeedings = () => {
-    const upcomingFeedings = feedings.filter((feeding) => {
-      // Convert to ISO format (e.g., "2025-02-01T12:00:00")
-      const isoDateTime = new Date(`${feeding.date}T${convertTo24HourFormat(feeding.time)}`);
-      
-      if (isNaN(isoDateTime.getTime())) {
-        console.warn('Invalid feeding date:', feeding.date, feeding.time);
-        return false; // Skip invalid dates
-      }
-      return isoDateTime >= new Date();
-    });
-  
-    const sortedFeedings = upcomingFeedings.sort((a, b) => {
-      const dateA = new Date(`${a.date}T${convertTo24HourFormat(a.time)}`);
-      const dateB = new Date(`${b.date}T${convertTo24HourFormat(b.time)}`);
-      return dateA - dateB;
-    });
-  
-    console.log('Formatted Feedings:', sortedFeedings); // Debug log
-    return sortedFeedings;
-  };
-  
-  // Helper function to convert "12:00 PM" to "12:00:00"
-  const convertTo24HourFormat = (time) => {
-    const [timePart, modifier] = time.split(' ');
-    let [hours, minutes] = timePart.split(':');
-    
-    if (modifier === 'PM' && hours !== '12') {
-      hours = parseInt(hours, 10) + 12;
-    } else if (modifier === 'AM' && hours === '12') {
-      hours = '00';
-    }
-    
-    return `${hours}:${minutes}:00`;
-  };
-  
+  // 2. Use the new utility function to filter and sort the feedings
+  const upcomingFeedings = getUpcomingFeedings(feedings);
+  const renderFeedingItem = ({ item }) => {
+    const dateObj = toISODateTime(item.date, item.time);
 
+
+
+
+
+
+
+
+    
+    return (
+      <TouchableOpacity
+        style={styles.feedingCard}
+        onPress={() => navigation.navigate('EditFeeding', { feedingId: item.id })}
+      >
+        {dateObj ? (
+          <Text>
+            {formatDateString(dateObj, 'DD/MM')} - {formatTimeString(dateObj)}
+          </Text>
+        ) : (
+          <Text>{item.date} - {item.time}</Text>
+        )}
+      </TouchableOpacity>
+    );
+  };
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Pets</Text>
@@ -85,19 +79,12 @@ export default function HomeScreen({ navigation }) {
       )}
 
       <Text style={styles.title}>Feedings</Text>
-      {feedings.length > 0 ? (
+      {upcomingFeedings.length > 0 ? (
         <FlatList
-                data={feedings}
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item }) => (
-                  <TouchableOpacity
-                    style={styles.feedingCard}
-                    onPress={() => navigation.navigate('EditFeeding', { feedingId: item.id })}
-                  >
-                    <Text style={styles.feedingText}>{`${item.date} - ${item.time}`}</Text>
-                  </TouchableOpacity>
-                )}
-              />
+          data={upcomingFeedings}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderFeedingItem}
+        />
       ) : (
         <Text>No upcoming feedings available</Text>
       )}
