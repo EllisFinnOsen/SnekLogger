@@ -5,10 +5,13 @@ import CollectionScreen from "../screens/collection/CollectionScreen";
 import FreezerScreen from "../screens/freezer/FreezerScreen";
 import ProfileScreen from "../screens/profile/ProfileScreen";
 import { Ionicons } from "@expo/vector-icons"; // Or any other icon library
+import { useColorScheme } from "../hooks/useColorScheme.web";
+import { COLORS } from "../constants/Theme";
 
 const Tab = createBottomTabNavigator();
 
 export default function TabNavigator() {
+    const colorScheme = useColorScheme();
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -34,10 +37,10 @@ export default function TabNavigator() {
         inactiveTintColor: "gray",
       }}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Collection" component={CollectionScreen} />
-      <Tab.Screen name="Freezer" component={FreezerScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
+      <Tab.Screen name="Collection" component={CollectionScreen} options={{ headerShown: false }}/>
+      <Tab.Screen name="Freezer" component={FreezerScreen} options={{ headerShown: false }} />
+      <Tab.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
     </Tab.Navigator>
   );
 }

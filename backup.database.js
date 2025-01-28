@@ -1,4 +1,4 @@
-import * as SQLite from 'expo-sqlite';
+import * as SQLite from "expo-sqlite";
 
 // In-memory reference to the DB once opened
 let db;
@@ -6,7 +6,7 @@ let db;
 export const openDatabase = async () => {
   if (!db) {
     // Open or create the database file
-    db = await SQLite.openDatabaseAsync('mockData_1.db');
+    db = await SQLite.openDatabaseAsync("mockData_1.db");
   }
   return db;
 };
@@ -60,9 +60,9 @@ DROP TABLE IF EXISTS pets;
       );
     `);
 
-    console.log('Database initialized');
+    console.log("Database initialized");
   } catch (error) {
-    console.error('Error initializing database:', error);
+    console.error("Error initializing database:", error);
   }
 };
 
@@ -117,9 +117,9 @@ export const insertMockData = async () => {
         (6, '2025-05-11', '09:30:00', 'Veggies', 0.4, 'Added leafy greens', 1);
     `);
 
-    console.log('Mock data inserted');
+    console.log("Mock data inserted");
   } catch (error) {
-    console.error('Error inserting mock data:', error);
+    console.error("Error inserting mock data:", error);
   }
 };
 
@@ -129,11 +129,11 @@ export const insertMockData = async () => {
 export const fetchPetsFromDb = async () => {
   try {
     const db = await openDatabase();
-    const result = await db.getAllAsync('SELECT * FROM pets');
-    console.log('Fetched pets from DB:', result);
+    const result = await db.getAllAsync("SELECT * FROM pets");
+    console.log("Fetched pets from DB:", result);
     return result;
   } catch (error) {
-    console.error('Error fetching pets:', error);
+    console.error("Error fetching pets:", error);
     throw error;
   }
 };
@@ -143,13 +143,13 @@ export const fetchFeedingsByPetFromDb = async (petId) => {
   try {
     const db = await openDatabase();
     const result = await db.getAllAsync(
-      'SELECT * FROM feedings WHERE petId = ?',
+      "SELECT * FROM feedings WHERE petId = ?",
       [petId]
     );
-    console.log('Fetched feedings from DB:', result);
+    console.log("Fetched feedings from DB:", result);
     return result;
   } catch (error) {
-    console.error('Error fetching feedings:', error);
+    console.error("Error fetching feedings:", error);
     throw error;
   }
 };
@@ -159,12 +159,12 @@ export const fetchFeedingByIdFromDb = async (feedingId) => {
   try {
     const db = await openDatabase();
     const result = await db.getFirstAsync(
-      'SELECT * FROM feedings WHERE id = ?',
+      "SELECT * FROM feedings WHERE id = ?",
       [feedingId]
     );
     return result || null;
   } catch (error) {
-    console.error('Error fetching feeding by ID:', error);
+    console.error("Error fetching feeding by ID:", error);
     throw error;
   }
 };
@@ -179,13 +179,13 @@ export const updateFeedingInDb = async (
   try {
     const db = await openDatabase();
     const result = await db.runAsync(
-      'UPDATE feedings SET petId = ?, feedingDate = ?, feedingTime = ? WHERE id = ?',
+      "UPDATE feedings SET petId = ?, feedingDate = ?, feedingTime = ? WHERE id = ?",
       [petId, feedingDate, feedingTime, feedingId]
     );
-    console.log('Feeding updated in DB:', result);
+    console.log("Feeding updated in DB:", result);
     return result;
   } catch (error) {
-    console.error('Error updating feeding in DB:', error);
+    console.error("Error updating feeding in DB:", error);
     throw error;
   }
 };

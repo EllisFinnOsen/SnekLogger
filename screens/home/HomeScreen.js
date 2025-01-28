@@ -1,25 +1,26 @@
-import React, { useEffect } from 'react';
-import { View, Text, FlatList, Button, StyleSheet, TouchableOpacity } from 'react-native';
-import { useSelector, useDispatch } from 'react-redux';
-import { fetchPets, fetchFeedingsByPet } from '../../redux/actions';
-import { initializeDatabase, insertMockData } from '../../database';
-
-// 1. Import from your utils/dateUtils.js
-import { getUpcomingFeedings, toISODateTime, formatDateString, formatTimeString } from '../../utils/dateUtils';
+import React, { useEffect } from "react";
+import { StyleSheet } from "react-native";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchPets, fetchFeedingsByPet } from "../../redux/actions";
+import { initializeDatabase } from "../../database";
+import { ThemedView } from "../../components/global/ThemedView";
+import { ThemedText } from "../../components/global/ThemedText";
+import ThemedScrollView from "../../components/global/ThemedScrollView";
+import HorizontalPetsList from "../../components/global/pets/HorizontalPetsList";
+import ViewAllFeedingsList from "../../components/global/feedings/ViewAllFeedingsList";
+import { HelloWave } from "../../components/global/HelloWave";
 
 export default function HomeScreen({ navigation }) {
   const dispatch = useDispatch();
   const pets = useSelector((state) => state.pets.pets || []);
-  const feedings = useSelector((state) => state.feedings || []);
 
   useEffect(() => {
     const setupDatabase = async () => {
       try {
         await initializeDatabase();
-        // await insertMockData();  // - toggled off since we have data
         dispatch(fetchPets());
       } catch (error) {
-        console.error('Error setting up database:', error);
+        console.error("Error setting up database:", error);
       }
     };
 
@@ -32,80 +33,36 @@ export default function HomeScreen({ navigation }) {
     }
   }, [dispatch, pets]);
 
-  // 2. Use the new utility function to filter and sort the feedings
-  const upcomingFeedings = getUpcomingFeedings(feedings);
-  const renderFeedingItem = ({ item }) => {
-    const dateObj = toISODateTime(item.feedingDate, item.feedingTime);
-
-    return (
-      <TouchableOpacity
-        style={styles.feedingCard}
-        onPress={() => navigation.navigate('EditFeeding', { feedingId: item.id })}
-      >
-        {dateObj ? (
-          <Text>
-            {formatDateString(dateObj, 'MM/DD')} - {formatTimeString(dateObj)}
-          </Text>
-        ) : (
-          <Text>{item.date} - {item.time}</Text>
-        )}
-      </TouchableOpacity>
-    );
-  };
-
-  
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Pets</Text>
-      {pets.length > 0 ? (
-        <FlatList
-          data={pets}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <Button
-              title={item.name}
-              onPress={() => navigation.navigate('PetProfile', { petId: item.id })}
-            />
-          )}
-        />
-      ) : (
-        <Text>No pets available</Text>
-      )}
-
-      <Text style={styles.title}>Feedings</Text>
-      {upcomingFeedings.length > 0 ? (
-        <FlatList
-          data={upcomingFeedings}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={renderFeedingItem}
-        />
-      ) : (
-        <Text>No upcoming feedings available</Text>
-      )}
-    </View>
+    <ThemedScrollView>
+      <ThemedView style={styles.container}>
+        <ThemedView style={styles.titleContainer}>
+          <ThemedText type="title">Hello, Ellis</ThemedText>
+          <HelloWave />
+        </ThemedView>
+        <HorizontalPetsList />
+        <ThemedText type="title">Upcoming Feedings</ThemedText>
+        <ViewAllFeedingsList />
+      </ThemedView>
+    </ThemedScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  titleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
   container: {
+    paddingTop: 48,
     flex: 1,
     padding: 16,
-    backgroundColor: '#fff',
+    gap: 32,
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 16,
-  },
-  feedingCard: {
-    padding: 16,
-    marginBottom: 8,
-    borderRadius: 8,
-    backgroundColor: '#f9f9f9',
-    borderWidth: 1,
-    borderColor: '#ddd',
-  },
-  feedingText: {
-    fontSize: 16,
   },
 });

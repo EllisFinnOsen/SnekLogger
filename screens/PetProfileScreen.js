@@ -1,9 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { useFocusEffect } from '@react-navigation/native';
-import { fetchFeedingsByPet } from '../redux/actions';
-import { fetchPetsFromDb } from '../database';
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  StyleSheet,
+} from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+import { useFocusEffect } from "@react-navigation/native";
+import { fetchFeedingsByPet } from "../redux/actions";
+import { fetchPetsFromDb } from "../database";
+import ViewPetProfileFeedings from "../components/global/feedings/ViewPetProfileFeedings";
 
 export default function PetProfileScreen({ route, navigation }) {
   const { petId } = route.params;
@@ -18,7 +25,7 @@ export default function PetProfileScreen({ route, navigation }) {
       const foundPet = pets.find((p) => p.id === petId);
       setPet(foundPet);
     } catch (error) {
-      console.error('Error loading pet details:', error);
+      console.error("Error loading pet details:", error);
     }
   };
 
@@ -36,25 +43,13 @@ export default function PetProfileScreen({ route, navigation }) {
         <>
           <Text style={styles.title}>{pet.name}’s Profile</Text>
           <Text style={styles.detail}>ID: {pet.id}</Text>
+          <ViewPetProfileFeedings petId={petId} />
         </>
       ) : (
         <Text>Loading pet details...</Text>
       )}
-      
-      <Text style={styles.title}>Feedings</Text>
-<FlatList
-  data={feedings.filter((feeding) => feeding.petId === petId)} // Filter feedings by petId
-  keyExtractor={(item, index) => `${item.id}-${index}`} // Ensure unique keys
-  renderItem={({ item }) => (
-    <TouchableOpacity
-      style={styles.feedingCard}
-      onPress={() => navigation.navigate('EditFeeding', { feedingId: item.id })}
-    >
-      <Text style={styles.feedingText}>{`${item.feedingDate} - ${item.feedingTime}`}</Text>
-    </TouchableOpacity>
-  )}
-/>
 
+      <Text style={styles.title}>Feedings</Text>
     </View>
   );
 }

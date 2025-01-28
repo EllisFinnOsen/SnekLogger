@@ -1,4 +1,4 @@
-import * as SQLite from 'expo-sqlite';
+import * as SQLite from "expo-sqlite";
 
 // In-memory reference to the DB once opened
 let db;
@@ -6,7 +6,7 @@ let db;
 export const openDatabase = async () => {
   if (!db) {
     // Open or create the database file
-    db = await SQLite.openDatabaseAsync('mockData_1.db');
+    db = await SQLite.openDatabaseAsync("mockData_1.db");
   }
   return db;
 };
@@ -55,13 +55,11 @@ export const initializeDatabase = async () => {
       );
     `);
 
-    console.log('Database initialized');
+    console.log("Database initialized");
   } catch (error) {
-    console.error('Error initializing database:', error);
+    console.error("Error initializing database:", error);
   }
 };
-
-
 
 // -------------------- Fetching and Updating --------------------
 
@@ -69,11 +67,11 @@ export const initializeDatabase = async () => {
 export const fetchPetsFromDb = async () => {
   try {
     const db = await openDatabase();
-    const result = await db.getAllAsync('SELECT * FROM pets');
-    console.log('Fetched pets from DB:', result);
+    const result = await db.getAllAsync("SELECT * FROM pets");
+    console.log("Fetched pets from DB:", result);
     return result;
   } catch (error) {
-    console.error('Error fetching pets:', error);
+    console.error("Error fetching pets:", error);
     throw error;
   }
 };
@@ -83,13 +81,13 @@ export const fetchFeedingsByPetFromDb = async (petId) => {
   try {
     const db = await openDatabase();
     const result = await db.getAllAsync(
-      'SELECT * FROM feedings WHERE petId = ?',
+      "SELECT * FROM feedings WHERE petId = ?",
       [petId]
     );
-    console.log('Fetched feedings from DB:', result);
+    console.log("Fetched feedings from DB:", result);
     return result;
   } catch (error) {
-    console.error('Error fetching feedings:', error);
+    console.error("Error fetching feedings:", error);
     throw error;
   }
 };
@@ -99,12 +97,12 @@ export const fetchFeedingByIdFromDb = async (feedingId) => {
   try {
     const db = await openDatabase();
     const result = await db.getFirstAsync(
-      'SELECT * FROM feedings WHERE id = ?',
+      "SELECT * FROM feedings WHERE id = ?",
       [feedingId]
     );
     return result || null;
   } catch (error) {
-    console.error('Error fetching feeding by ID:', error);
+    console.error("Error fetching feeding by ID:", error);
     throw error;
   }
 };
@@ -114,18 +112,19 @@ export const updateFeedingInDb = async (
   feedingId,
   petId,
   feedingDate,
-  feedingTime
+  feedingTime,
+  complete
 ) => {
   try {
     const db = await openDatabase();
     const result = await db.runAsync(
-      'UPDATE feedings SET petId = ?, feedingDate = ?, feedingTime = ? WHERE id = ?',
-      [petId, feedingDate, feedingTime, feedingId]
+      "UPDATE feedings SET petId = ?, feedingDate = ?, feedingTime = ?, complete = ? WHERE id = ?",
+      [petId, feedingDate, feedingTime, complete, feedingId]
     );
-    console.log('Feeding updated in DB:', result);
+    console.log("Feeding updated in DB:", result);
     return result;
   } catch (error) {
-    console.error('Error updating feeding in DB:', error);
+    console.error("Error updating feeding in DB:", error);
     throw error;
   }
 };

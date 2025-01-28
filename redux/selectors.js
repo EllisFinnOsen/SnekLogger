@@ -1,4 +1,4 @@
-import { createSelector } from 'reselect';
+import { createSelector } from "reselect";
 
 // Input selector: gets the entire feedings array
 const feedingsSelector = (state) => state.feedings;
@@ -10,7 +10,7 @@ export const selectFeedingsByPet = createSelector(
 );
 
 export const selectUpcomingFeedings = createSelector(
-    [feedingsSelector],
-    (feedings) => feedings.filter((feeding) => new Date(feeding.feedingDate) > new Date())
-  );
-  
+  [feedingsSelector],
+  (feedings) =>
+    feedings.filter((feeding) => new Date(feeding.feedingDate) > new Date())
+);
