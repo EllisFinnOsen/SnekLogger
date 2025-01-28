@@ -18,8 +18,8 @@ export default function EditFeedingScreen({ route, navigation }) {
   const pets = useSelector((state) => state.pets.pets || []);
   const [feeding, setFeeding] = useState(null);
   const [selectedPetId, setSelectedPetId] = useState(null);
-  const [date, setDate] = useState('');
-  const [time, setTime] = useState('');
+  const [feedingDate, setFeedingDate] = useState('');
+  const [feedingTime, setFeedingTime] = useState('');
   const [isEditing, setIsEditing] = useState(false); // State to toggle between view and edit mode
 
   // Load the feeding details
@@ -31,8 +31,8 @@ export default function EditFeedingScreen({ route, navigation }) {
       if (currentFeeding) {
         setFeeding(currentFeeding);
         setSelectedPetId(currentFeeding.petId);
-        setDate(currentFeeding.date);
-        setTime(currentFeeding.time);
+        setFeedingDate(currentFeeding.feedingDate);
+        setFeedingTime(currentFeeding.feedingTime);
       } else {
         console.error('Feeding not found for ID:', feedingId);
       }
@@ -50,9 +50,9 @@ export default function EditFeedingScreen({ route, navigation }) {
 
   const handleSave = async () => {
     try {
-      await updateFeedingInDb(feedingId, selectedPetId, date, time);
-      dispatch(updateFeeding({ id: feedingId, petId: selectedPetId, date, time }));
-      setFeeding({ id: feedingId, petId: selectedPetId, date, time }); // Update the feeding state with new values
+      await updateFeedingInDb(feedingId, selectedPetId, feedingDate, feedingTime);
+      dispatch(updateFeeding({ id: feedingId, petId: selectedPetId, feedingDate, feedingTime }));
+      setFeeding({ id: feedingId, petId: selectedPetId, feedingDate, feedingTime }); // Update the feeding state with new values
       setIsEditing(false); // After saving, switch to view mode
     } catch (error) {
       console.error('Error updating feeding:', error);
@@ -62,23 +62,23 @@ export default function EditFeedingScreen({ route, navigation }) {
   const handleCancel = () => {
     // Reset to the original feeding values (no changes)
     setSelectedPetId(feeding.petId);
-    setDate(feeding.date);
-    setTime(feeding.time);
+    setFeedingDate(feeding.feedingDate);
+    setFeedingTime(feeding.feedingTime);
     setIsEditing(false); // Switch back to view mode
   };
 
   if (!feeding) return <Text>Loading feeding details...</Text>;
 
     // 5) Convert to Date object for display formatting
-    const feedingDateObj = toISODateTime(feeding.date, feeding.time);
+    const feedingDateObj = toISODateTime(feeding.feedingDate, feeding.feedingTime);
 // Attempt to format them if valid
 const formattedDate = feedingDateObj
-? formatDateString(feedingDateObj, 'LONG') // or 'DD/MM', 'DD/MM/YY', etc.
-: feeding.date; // fallback
+? formatDateString(feedingDateObj, 'LONG') // or 'MM/DD', 'MM/DD/YY', etc.
+: feeding.feedingDate; // fallback
 
 const formattedTime = feedingDateObj
 ? formatTimeString(feedingDateObj)
-: feeding.time; // fallback
+: feeding.feedingTime; // fallback
 
   return (
     <View style={styles.container}>
@@ -97,14 +97,14 @@ const formattedTime = feedingDateObj
           <TextInput
             style={styles.input}
             placeholder="Date"
-            value={date}
-            onChangeText={(text) => setDate(text)}
+            value={feedingDate}
+            onChangeText={(text) => setFeedingDate(text)}
           />
           <TextInput
             style={styles.input}
             placeholder="Time"
-            value={time}
-            onChangeText={(text) => setTime(text)}
+            value={feedingTime}
+            onChangeText={(text) => setFeedingTime(text)}
           />
           <Button title="Save" onPress={handleSave} />
           <Button title="Cancel" onPress={handleCancel} color="gray" />

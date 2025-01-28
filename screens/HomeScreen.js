@@ -16,7 +16,7 @@ export default function HomeScreen({ navigation }) {
     const setupDatabase = async () => {
       try {
         await initializeDatabase();
-        await insertMockData();
+        // await insertMockData();  // - toggled off since we have data
         dispatch(fetchPets());
       } catch (error) {
         console.error('Error setting up database:', error);
@@ -35,7 +35,7 @@ export default function HomeScreen({ navigation }) {
   // 2. Use the new utility function to filter and sort the feedings
   const upcomingFeedings = getUpcomingFeedings(feedings);
   const renderFeedingItem = ({ item }) => {
-    const dateObj = toISODateTime(item.date, item.time);
+    const dateObj = toISODateTime(item.feedingDate, item.feedingTime);
 
 
 
@@ -52,7 +52,7 @@ export default function HomeScreen({ navigation }) {
       >
         {dateObj ? (
           <Text>
-            {formatDateString(dateObj, 'DD/MM')} - {formatTimeString(dateObj)}
+            {formatDateString(dateObj, 'MM/DD')} - {formatTimeString(dateObj)}
           </Text>
         ) : (
           <Text>{item.date} - {item.time}</Text>

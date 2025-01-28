@@ -1,5 +1,6 @@
-import { FETCH_PETS, FETCH_FEEDINGS } from './actionTypes';
-import { fetchPetsFromDb, fetchFeedingsByPetFromDb } from '../database';
+import { FETCH_PETS, FETCH_FEEDINGS, FETCH_GROUPS, FETCH_GROUP_PETS } from './actionTypes';
+import { fetchPetsFromDb, fetchFeedingsByPetFromDb, fetchGroupsFromDb, fetchGroupPetsFromDb } from '../database';
+
 
 export const fetchPets = () => async (dispatch) => {
     try {
@@ -16,6 +17,25 @@ export const fetchFeedingsByPet = (petId) => async (dispatch) => {
       dispatch({ type: FETCH_FEEDINGS, payload: feedings });
     } catch (error) {
       console.error('Error fetching feedings:', error);
+    }
+  };
+
+
+  export const fetchGroups = () => async (dispatch) => {
+    try {
+      const groups = await fetchGroupsFromDb();
+      dispatch({ type: FETCH_GROUPS, payload: groups });
+    } catch (error) {
+      console.error('Error fetching groups:', error);
+    }
+  };
+  
+  export const fetchGroupPets = () => async (dispatch) => {
+    try {
+      const groupPets = await fetchGroupPetsFromDb();
+      dispatch({ type: FETCH_GROUP_PETS, payload: groupPets });
+    } catch (error) {
+      console.error('Error fetching group pets:', error);
     }
   };
   

@@ -22,15 +22,13 @@ export function convertTo24HourFormat(time) {
    * combine into a single Date object in local time.
    * Returns null if invalid.
    */
-  export function toISODateTime(dateStr, timeStr) {
-    const isoString = `${dateStr}T${convertTo24HourFormat(timeStr)}`;
+  export function toISODateTime(feedingDate, feedingTime) {
+    // feedingTime is "HH:mm:ss"
+    const isoString = `${feedingDate}T${feedingTime}`;
     const dateObj = new Date(isoString);
-  
-    if (isNaN(dateObj.getTime())) {
-      return null;
-    }
-    return dateObj;
+    return isNaN(dateObj) ? null : dateObj;
   }
+  
   
   /**
    * Return only the upcoming feedings (including today)
@@ -40,13 +38,13 @@ export function convertTo24HourFormat(time) {
     const now = new Date();
   
     const upcoming = feedings.filter((feeding) => {
-      const dateObj = toISODateTime(feeding.date, feeding.time);
+      const dateObj = toISODateTime(feeding.feedingDate, feeding.feedingTime);
       return dateObj && dateObj >= now;
     });
   
     upcoming.sort((a, b) => {
-      const dateA = toISODateTime(a.date, a.time);
-      const dateB = toISODateTime(b.date, b.time);
+      const dateA = toISODateTime(a.feedingDate, a.feedingTime);
+      const dateB = toISODateTime(b.feedingDate, b.feedingTime);
       return dateA - dateB;
     });
   
@@ -61,15 +59,15 @@ export function convertTo24HourFormat(time) {
    * Return a date as a string in different styles.
    *
    * @param {Date} date - A JavaScript Date object
-   * @param {string} formatType - "DD/MM", "DD/MM/YY", "LONG", etc.
+   * @param {string} formatType - "MM/DD", "MM/DD/YY", "LONG", etc.
    * @returns {string}
    *
    * Examples:
-   *   formatDateString(new Date("2025-02-01"), "DD/MM")    -> "01/02"
-   *   formatDateString(new Date("2025-02-01"), "DD/MM/YY") -> "01/02/25"
+   *   formatDateString(new Date("2025-02-01"), "MM/DD")    -> "02/01"
+   *   formatDateString(new Date("2025-02-01"), "MM/DD/YY") -> "02/01/25"
    *   formatDateString(new Date("2025-02-01"), "LONG")     -> "February 1st"
    */
-  export function formatDateString(date, formatType = 'DD/MM/YYYY') {
+  export function formatDateString(date, formatType = 'MM/DD/YYYY') {
     if (!(date instanceof Date) || isNaN(date)) return '';
   
     // Get day, month, year
@@ -105,18 +103,18 @@ export function convertTo24HourFormat(time) {
     }
   
     switch (formatType) {
-      case 'DD/MM':
-        return `${dayStr}/${monthStr}`;
-      case 'DD/MM/YY':
+      case 'MM/DD':
+        return `${monthStr}/${dayStr}`;
+      case 'MM/DD/YY':
         // get last 2 digits of year
         const shortYear = year.toString().slice(-2);
-        return `${dayStr}/${monthStr}/${shortYear}`;
+        return `${monthStr}/${dayStr}/${shortYear}`;
       case 'LONG':
         // e.g. "February 1st"
         return `${monthNames[monthIndex]} ${day}${getOrdinalSuffix(day)}`;
-      case 'DD/MM/YYYY':
+      case 'MM/DD/YYYY':
       default:
-        return `${dayStr}/${monthStr}/${year}`;
+        return `${monthStr}/${dayStr}/${year}`;
     }
   }
   
@@ -153,4 +151,3 @@ export function convertTo24HourFormat(time) {
   
     return `${hoursStr}:${minutesStr}`;
   }
-  

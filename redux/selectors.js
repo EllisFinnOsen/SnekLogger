@@ -11,6 +11,6 @@ export const selectFeedingsByPet = createSelector(
 
 export const selectUpcomingFeedings = createSelector(
     [feedingsSelector],
-    (feedings) => feedings.filter((feeding) => new Date(feeding.date) > new Date())
+    (feedings) => feedings.filter((feeding) => new Date(feeding.feedingDate) > new Date())
   );
   

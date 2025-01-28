@@ -50,7 +50,7 @@ export default function PetProfileScreen({ route, navigation }) {
       style={styles.feedingCard}
       onPress={() => navigation.navigate('EditFeeding', { feedingId: item.id })}
     >
-      <Text style={styles.feedingText}>{`${item.date} - ${item.time}`}</Text>
+      <Text style={styles.feedingText}>{`${item.feedingDate} - ${item.feedingTime}`}</Text>
     </TouchableOpacity>
   )}
 />
