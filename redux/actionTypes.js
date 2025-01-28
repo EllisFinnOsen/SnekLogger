@@ -1,0 +1,4 @@
+export const FETCH_PETS = 'FETCH_PETS';
+export const FETCH_FEEDINGS = 'FETCH_FEEDINGS';
+export const UPDATE_FEEDING = 'UPDATE_FEEDING';
+export const UPDATE_FEEDING_PET = 'UPDATE_FEEDING_PET';
