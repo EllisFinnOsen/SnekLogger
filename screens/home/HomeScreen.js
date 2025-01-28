@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import { View, Text, FlatList, Button, StyleSheet, TouchableOpacity } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchPets, fetchFeedingsByPet } from '../redux/actions';
-import { initializeDatabase, insertMockData } from '../database';
+import { fetchPets, fetchFeedingsByPet } from '../../redux/actions';
+import { initializeDatabase, insertMockData } from '../../database';
 
 // 1. Import from your utils/dateUtils.js
-import { getUpcomingFeedings, toISODateTime, formatDateString, formatTimeString } from '../utils/dateUtils';
+import { getUpcomingFeedings, toISODateTime, formatDateString, formatTimeString } from '../../utils/dateUtils';
 
 export default function HomeScreen({ navigation }) {
   const dispatch = useDispatch();
@@ -37,14 +37,6 @@ export default function HomeScreen({ navigation }) {
   const renderFeedingItem = ({ item }) => {
     const dateObj = toISODateTime(item.feedingDate, item.feedingTime);
 
-
-
-
-
-
-
-
-    
     return (
       <TouchableOpacity
         style={styles.feedingCard}
@@ -60,6 +52,8 @@ export default function HomeScreen({ navigation }) {
       </TouchableOpacity>
     );
   };
+
+  
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Pets</Text>
