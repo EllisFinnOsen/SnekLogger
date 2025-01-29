@@ -1,4 +1,4 @@
-import { renderHook } from "@testing-library/react-hooks";
+import { renderHook } from "react-hooks-testing-library";
 import { useColorScheme as _useColorScheme } from "react-native";
 import useColorScheme from "@/hooks/useColorScheme";
 

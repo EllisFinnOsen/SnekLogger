@@ -23,6 +23,7 @@
     "expo-dev-client": "~5.0.10",
     "expo-sqlite": "~15.1.0",
     "expo-status-bar": "~2.0.1",
+    "expo-system-ui": "~4.0.7",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-native": "0.76.6",
@@ -34,8 +35,7 @@
     "react-redux": "^9.2.0",
     "redux": "^5.0.1",
     "redux-thunk": "^3.1.0",
-    "reselect": "^5.1.1",
-    "expo-system-ui": "~4.0.7"
+    "reselect": "^5.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
@@ -47,7 +47,6 @@
     "@config-plugins/detox": "^9.0.0",
     "@react-native/babel-preset": "^0.77.0",
     "@testing-library/jest-native": "^5.4.3",
-    "@testing-library/react-hooks": "^8.0.1",
     "@testing-library/react-native": "^13.0.1",
     "babel-plugin-module-resolver": "^5.0.2",
     "detox": "^20.32.0",
