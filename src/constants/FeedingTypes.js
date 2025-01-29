@@ -1,9 +1,8 @@
 export const PREY_TYPES = [
-    'Mouse',
-    'Rat',
-    'Chick',
-    'Cricket',
-    'Mealworm',
-    'Other'
-  ] as const;
-  
+  "Mouse",
+  "Rat",
+  "Chick",
+  "Cricket",
+  "Mealworm",
+  "Other",
+];
