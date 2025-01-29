@@ -47,11 +47,17 @@ jobs:
       - name: Install Detox CLI
         run: npm install -g detox-cli
 
+      - name: Prebuild iOS Project (for Expo)
+        run: |
+          if [ ! -d "ios" ]; then
+            echo "Running expo prebuild to generate ios/ directory..."
+            expo prebuild
+          fi
+
       - name: Install CocoaPods dependencies
         run: |
           cd ios
           pod install
-          cd ..
 
       - name: Build iOS App for Detox
         run: |
