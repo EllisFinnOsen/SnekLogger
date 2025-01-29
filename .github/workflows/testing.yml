@@ -40,7 +40,7 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 30
-          arch: arm64-b8a
+          arch: arm64-v8a
           profile: pixel_6
           script: |
             npm run build:android
