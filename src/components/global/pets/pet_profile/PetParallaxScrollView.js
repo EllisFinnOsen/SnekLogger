@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, ImageBackground } from "react-native";
+import { StyleSheet, ImageBackground, View } from "react-native";
 import Animated, {
   interpolate,
   useAnimatedRef,
@@ -8,6 +8,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { ThemedView } from "@/components/global/ThemedView";
+import { ThemedText } from "@/components/global/ThemedText";
 import { useBottomTabOverflow } from "@/components/global/TabBarBackground";
 import { checkImageURL } from "@/utils/checkImage";
 import useColorScheme from "@/hooks/useColorScheme";
@@ -18,6 +19,9 @@ export default function PetParallaxScrollView({
   children,
   headerImageSrc,
   headerBackgroundColor,
+  petName,
+  petBirthdate,
+  petMorph,
 }) {
   const colorScheme = useColorScheme() ?? "light";
   const scrollRef = useAnimatedRef();
@@ -49,14 +53,28 @@ export default function PetParallaxScrollView({
             <ImageBackground
               source={{ uri: headerImageSrc }}
               style={styles.headerImage}
-            />
+            >
+              <View style={styles.overlay}>
+                <ThemedText style={styles.petName}>{petName}</ThemedText>
+                <ThemedText style={styles.petDetail}>{petBirthdate}</ThemedText>
+                <ThemedText style={styles.petDetail}>{petMorph}</ThemedText>
+              </View>
+            </ImageBackground>
           ) : (
             <ThemedView
               style={[
                 styles.headerImage,
                 { backgroundColor: headerBackgroundColor[colorScheme] },
               ]}
-            />
+            >
+              <View style={styles.overlay}>
+                <ThemedText type="title" style={styles.petName}>
+                  {petName}
+                </ThemedText>
+                <ThemedText style={styles.petDetail}>{petBirthdate}</ThemedText>
+                <ThemedText style={styles.petDetail}>{petMorph}</ThemedText>
+              </View>
+            </ThemedView>
           )}
         </Animated.View>
         {children}
@@ -77,5 +95,24 @@ const styles = StyleSheet.create({
   headerImage: {
     height: "100%",
     width: "100%",
+    justifyContent: "flex-end",
+  },
+  overlay: {
+    position: "absolute",
+    bottom: 10,
+    left: 10,
+    right: 10,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    padding: 10,
+    borderRadius: 5,
+  },
+  petName: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#fff",
+  },
+  petDetail: {
+    fontSize: 16,
+    color: "#fff",
   },
 });

@@ -28,16 +28,19 @@
     "react-redux": "^9.2.0",
     "redux": "^5.0.1",
     "redux-thunk": "^3.1.0",
-    "reselect": "^5.1.1",
-    "undefined": "react-native-community/datetimepicker"
+    "reselect": "^5.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@babel/plugin-transform-class-properties": "^7.25.9",
     "@babel/plugin-transform-private-methods": "^7.25.9",
     "@babel/plugin-transform-private-property-in-object": "^7.25.9",
+    "@babel/preset-env": "^7.26.7",
+    "@babel/preset-react": "^7.26.3",
     "@react-native/babel-preset": "^0.77.0",
     "babel-plugin-module-resolver": "^5.0.2",
+    "eslint": "^9.19.0",
+    "javascript": "^1.0.0",
     "metro-react-native-babel-preset": "^0.77.0",
     "prettier": "^3.4.2"
   },

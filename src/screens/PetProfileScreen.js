@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, ScrollView, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useFocusEffect } from "@react-navigation/native";
-import { ThemedView } from "@/components/global/ThemedView";
-import { fetchPetsFromDb } from "@/database";
-import { PetParallaxScrollView } from "@/components/global/pets/pet_profile/PetParallaxScrollView";
-import { TabButton } from "@/components/global/TabButton";
-import { ViewPetProfileFeedings } from "@/components/global/feedings/ViewPetProfileFeedings";
-import { useThemeColor } from "@/hooks/useThemeColor";
 import { fetchFeedingsByPet } from "@/redux/actions";
+import { fetchPetsFromDb } from "@/database";
+import ViewPetProfileFeedings from "@/components/global/feedings/ViewPetProfileFeedings";
+import PetParallaxScrollView from "@/components/global/pets/pet_profile/PetParallaxScrollView";
 
 export default function PetProfileScreen({ route, navigation }) {
   const { petId } = route.params;
@@ -36,85 +39,80 @@ export default function PetProfileScreen({ route, navigation }) {
     }, [dispatch, petId])
   );
 
-  const renderContent = () => {
-    switch (selectedTab) {
-      case "Feedings":
-        return <ViewPetProfileFeedings petId={petId} />;
-      case "Log":
-        return <Text>Log Content</Text>;
-      case "Charts":
-        return <Text>Charts Content</Text>;
-      case "Profile":
-        return (
-          <>
-            <Text style={styles.title}>{pet.name}’s Profile</Text>
-            <Text style={styles.detail}>ID: {pet.id}</Text>
-          </>
-        );
-      default:
-        return null;
-    }
-  };
-
-  const textColor = useThemeColor({}, "text");
-  const iconColor = useThemeColor({}, "icon");
-  const fieldColor = useThemeColor({}, "field");
-  const subtleTextColor = useThemeColor({}, "subtleText");
-  const activeColor = useThemeColor({}, "active");
-  const bgColor = useThemeColor({}, "background");
+  if (!pet) return <Text>Loading pet details...</Text>;
 
   return (
     <PetParallaxScrollView
       headerImageSrc={pet?.imageURL}
       headerBackgroundColor={{ light: "#fff", dark: "#000" }}
+      petName={pet?.name}
+      petBirthdate={pet?.birthDate}
+      petMorph={pet?.morph}
     >
-      <ThemedView style={styles.container}>
-        {pet ? (
-          <>
-            <ScrollView horizontal style={styles.tabContainer}>
-              {["Feedings", "Log", "Charts", "Profile"].map((tab) => (
-                <TabButton
-                  key={tab}
-                  name={tab}
-                  activeTab={selectedTab}
-                  onHandleSearchType={() => setSelectedTab(tab)}
-                  activeColor={activeColor}
-                  subtleTextColor={subtleTextColor}
-                  iconColor={iconColor}
-                  textColor={textColor}
-                  bgColor={bgColor}
-                />
-              ))}
-            </ScrollView>
-            <View style={styles.contentContainer}>{renderContent()}</View>
-          </>
+      <View style={styles.container}>
+        <View style={styles.tabContainer}>
+          <TabButton
+            title="Feedings"
+            isSelected={selectedTab === "Feedings"}
+            onPress={() => setSelectedTab("Feedings")}
+          />
+          <TabButton
+            title="Details"
+            isSelected={selectedTab === "Details"}
+            onPress={() => setSelectedTab("Details")}
+          />
+        </View>
+
+        {selectedTab === "Feedings" ? (
+          <ViewPetProfileFeedings petId={petId} />
         ) : (
-          <Text>Loading pet details...</Text>
+          <ScrollView>
+            <Text>Details about {pet.name}</Text>
+            {/* Add more details about the pet here */}
+          </ScrollView>
         )}
-      </ThemedView>
+      </View>
     </PetParallaxScrollView>
   );
 }
+
+const TabButton = ({ title, isSelected, onPress }) => (
+  <TouchableOpacity
+    style={[styles.tabButton, isSelected && styles.selectedTabButton]}
+    onPress={onPress}
+  >
+    <Text style={styles.tabButtonText}>{title}</Text>
+  </TouchableOpacity>
+);
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
   },
-  tabContainer: {
-    flexDirection: "row",
-    marginBottom: 16,
-  },
-  contentContainer: {
-    flex: 1,
-  },
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 16,
+    marginBottom: 8,
   },
   detail: {
-    fontSize: 18,
+    fontSize: 16,
     marginBottom: 16,
+  },
+  tabContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginVertical: 10,
+  },
+  tabButton: {
+    padding: 10,
+    borderRadius: 5,
+    backgroundColor: "#ccc",
+  },
+  selectedTabButton: {
+    backgroundColor: "#0a7ea4",
+  },
+  tabButtonText: {
+    color: "#fff",
   },
 });

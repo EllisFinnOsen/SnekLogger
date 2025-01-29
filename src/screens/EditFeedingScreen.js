@@ -7,18 +7,23 @@ import {
   StyleSheet,
   TouchableOpacity,
   Switch,
+  Image,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useFocusEffect } from "@react-navigation/native";
 import { updateFeeding, fetchPets } from "../redux/actions";
 import { fetchFeedingByIdFromDb, updateFeedingInDb } from "../database";
-import { Picker } from "@react-native-picker/picker";
-// 1) Import the utility functions
 import {
   toISODateTime,
   formatDateString,
   formatTimeString,
 } from "../utils/dateUtils";
+import { ThemedView } from "@/components/global/ThemedView";
+import { ThemedText } from "@/components/global/ThemedText";
+import { Ionicons } from "@expo/vector-icons";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import CustomDropdown from "@/components/global/CustomDropdown";
+import { SIZES } from "@/constants/Theme";
 
 export default function EditFeedingScreen({ route, navigation }) {
   const { feedingId } = route.params;
@@ -30,6 +35,12 @@ export default function EditFeedingScreen({ route, navigation }) {
   const [feedingTime, setFeedingTime] = useState("");
   const [isEditing, setIsEditing] = useState(false); // State to toggle between view and edit mode
   const [isComplete, setIsComplete] = useState(false); // State to manage the complete field
+  const textColor = useThemeColor({}, "text");
+  const iconColor = useThemeColor({}, "icon");
+  const fieldColor = useThemeColor({}, "field");
+  const subtleTextColor = useThemeColor({}, "subtleText");
+  const activeColor = useThemeColor({}, "active");
+  const bgColor = useThemeColor({}, "background");
 
   // Load the feeding details
   const loadFeeding = async () => {
@@ -98,82 +109,159 @@ export default function EditFeedingScreen({ route, navigation }) {
     setIsEditing(false); // Switch back to view mode
   };
 
+  const handleToggleCheck = async () => {
+    try {
+      const newCompleteValue = !isComplete;
+      await updateFeedingInDb(
+        feedingId,
+        selectedPetId,
+        feedingDate,
+        feedingTime,
+        newCompleteValue ? 1 : 0
+      );
+      dispatch(
+        updateFeeding({
+          id: feedingId,
+          petId: selectedPetId,
+          feedingDate,
+          feedingTime,
+          complete: newCompleteValue ? 1 : 0,
+        })
+      );
+      setIsComplete(newCompleteValue);
+    } catch (error) {
+      console.error("Error updating feeding complete status:", error);
+    }
+  };
+
   if (!feeding) return <Text>Loading feeding details...</Text>;
 
-  // 5) Convert to Date object for display formatting
   const feedingDateObj = toISODateTime(
     feeding.feedingDate,
     feeding.feedingTime
   );
-  // Attempt to format them if valid
   const formattedDate = feedingDateObj
-    ? formatDateString(feedingDateObj, "LONG") // or 'MM/DD', 'MM/DD/YY', etc.
-    : feeding.feedingDate; // fallback
-
+    ? formatDateString(feedingDateObj, "LONG")
+    : feeding.feedingDate;
   const formattedTime = feedingDateObj
     ? formatTimeString(feedingDateObj)
-    : feeding.feedingTime; // fallback
+    : feeding.feedingTime;
 
   return (
-    <View style={styles.container}>
+    <ThemedView>
       <Text>Edit Feeding</Text>
 
-      {isEditing ? (
-        <>
-          <Picker
-            selectedValue={selectedPetId}
-            onValueChange={(itemValue) => setSelectedPetId(itemValue)}
-          >
-            {pets.map((pet) => (
-              <Picker.Item key={pet.id} label={pet.name} value={pet.id} />
-            ))}
-          </Picker>
-          <TextInput
-            style={styles.input}
-            placeholder="Date"
-            value={feedingDate}
-            onChangeText={(text) => setFeedingDate(text)}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Time"
-            value={feedingTime}
-            onChangeText={(text) => setFeedingTime(text)}
-          />
-          <View style={styles.switchContainer}>
-            <Text>Complete:</Text>
-            <Switch
-              value={isComplete}
-              onValueChange={setIsComplete}
-              disabled={!isEditing}
+      <ThemedView style={styles.container}>
+        <View style={styles.detailWrap}>
+          <View style={styles.iconWrap}>
+            <Image
+              source={{
+                uri: pets.find((pet) => pet.id === feeding.petId)?.imageURL,
+              }}
+              style={styles.petImage}
             />
           </View>
-          <Button title="Save" onPress={handleSave} />
-          <Button title="Cancel" onPress={handleCancel} color="gray" />
-        </>
-      ) : (
-        <>
-          <Text>ID: {feeding.id}</Text>
-          <Text>Pet: {pets.find((pet) => pet.id === feeding.petId)?.name}</Text>
-          <Text>Date: {formattedDate}</Text>
-          <Text>Time: {formattedTime}</Text>
-          <Text>Complete? {feeding.complete === 1 ? "Yes" : "No"}</Text>
+          {isEditing ? (
+            <CustomDropdown
+              items={pets.map((pet) => ({
+                label: pet.name,
+                value: pet.id,
+                imageURL: pet.imageURL,
+              }))}
+              selectedValue={selectedPetId}
+              onValueChange={setSelectedPetId}
+            />
+          ) : (
+            <ThemedText>
+              {pets.find((pet) => pet.id === feeding.petId)?.name}
+            </ThemedText>
+          )}
+        </View>
+        <View style={styles.detailWrap}>
+          <View style={styles.iconWrap}>
+            <Ionicons
+              style={styles.icon}
+              name={isComplete ? "ellipse" : "ellipse"}
+              size={24}
+              color={isComplete ? activeColor : fieldColor}
+            />
+            <ThemedText type="subtitle">Complete?</ThemedText>
+          </View>
+          <TouchableOpacity
+            onPress={(e) => {
+              e.stopPropagation();
+              handleToggleCheck();
+            }}
+            style={styles.toggle}
+          >
+            <Ionicons
+              name={isComplete ? "checkbox" : "square-outline"}
+              size={24}
+              color={isComplete ? activeColor : textColor}
+            />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.detailWrap}>
+          <View style={styles.iconWrap}>
+            <Ionicons
+              style={styles.icon}
+              name={"calendar"}
+              size={24}
+              color={iconColor}
+            />
+            <ThemedText type="subtitle">Date:</ThemedText>
+          </View>
+          {isEditing ? (
+            <TextInput
+              style={styles.input}
+              placeholder="Date"
+              value={feedingDate}
+              onChangeText={(text) => setFeedingDate(text)}
+            />
+          ) : (
+            <ThemedText>{formattedDate}</ThemedText>
+          )}
+        </View>
+        <View style={styles.detailWrap}>
+          <View style={styles.iconWrap}>
+            <Ionicons
+              style={styles.icon}
+              name={"time"}
+              size={24}
+              color={iconColor}
+            />
+            <ThemedText type="subtitle">Time:</ThemedText>
+          </View>
+          {isEditing ? (
+            <TextInput
+              style={styles.input}
+              placeholder="Time"
+              value={feedingTime}
+              onChangeText={(text) => setFeedingTime(text)}
+            />
+          ) : (
+            <ThemedText>{formattedTime}</ThemedText>
+          )}
+        </View>
 
-          {/* Edit link */}
+        {isEditing ? (
+          <>
+            <Button title="Save" onPress={handleSave} />
+            <Button title="Cancel" onPress={handleCancel} color="gray" />
+          </>
+        ) : (
           <TouchableOpacity onPress={() => setIsEditing(true)}>
             <Text style={styles.editLink}>Edit</Text>
           </TouchableOpacity>
-        </>
-      )}
-    </View>
+        )}
+      </ThemedView>
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: "#fff",
+    padding: 32,
   },
   input: {
     borderWidth: 1,
@@ -191,5 +279,25 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginVertical: 8,
+  },
+  detailWrap: {
+    flexDirection: "row",
+    width: "100%",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginVertical: 16,
+  },
+  iconWrap: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  icon: {
+    marginRight: 16,
+  },
+  petImage: {
+    width: 60,
+    height: 60,
+    borderRadius: SIZES.small,
+    marginRight: 16,
   },
 });
