@@ -54,9 +54,9 @@ jobs:
           mkdir -p /usr/local/lib/android/sdk/cmdline-tools
           mv cmdline-tools /usr/local/lib/android/sdk/cmdline-tools/latest
           export ANDROID_HOME=/usr/local/lib/android/sdk
-          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH
+          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools:$PATH
           echo "export ANDROID_HOME=/usr/local/lib/android/sdk" >> $HOME/.bashrc
-          echo "export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH" >> $HOME/.bashrc
+          echo "export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools:$PATH" >> $HOME/.bashrc
           source $HOME/.bashrc
 
           # Accept licenses and install required SDK packages
@@ -65,7 +65,7 @@ jobs:
 
       - name: Create & Start Android Emulator
         run: |
-          echo "no" | avdmanager create avd -n Pixel_3a_API_30_x86 -k "system-images;android-30;default;x86_64" --force
+          echo "no" | $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager create avd -n Pixel_3a_API_30_x86 -k "system-images;android-30;default;x86_64" --force
           nohup $ANDROID_HOME/emulator/emulator -avd Pixel_3a_API_30_x86 -no-audio -no-window -no-boot-anim &
           adb wait-for-device
           adb shell input keyevent 82 &
