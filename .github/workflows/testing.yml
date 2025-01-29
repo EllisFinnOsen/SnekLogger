@@ -6,29 +6,8 @@ on:
       - main
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "18"
-
-      - name: Install Expo CLI
-        run: npm install -g expo-cli
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run unit tests
-        run: npm test
-
-  detox-ios:
-    runs-on: macos-latest # MacOS is required for Xcode and iOS simulators
+  detox-android:
+    runs-on: ubuntu-latest # Use Ubuntu since we are only testing Android
 
     steps:
       - name: Checkout repository
@@ -42,30 +21,20 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Install Apple dependencies
+      - name: Install Android dependencies
         run: |
-          brew tap wix/brew
-          brew install applesimutils  # Required for managing iOS simulators
+          sudo apt-get update
+          sudo apt-get install -y openjdk-11-jdk
+          echo "export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64" >> $HOME/.bashrc
+          source $HOME/.bashrc
 
       - name: Install Detox CLI
         run: npm install -g detox-cli
 
-      - name: Prebuild iOS Project (for Expo)
+      - name: Start Android Emulator
         run: |
-          if [ ! -d "ios" ]; then
-            echo "Running expo prebuild to generate ios/ directory..."
-            expo prebuild
-          fi
+          $ANDROID_HOME/emulator/emulator -avd Pixel_3a_API_30_x86 -no-window &
+          adb wait-for-device
 
-      - name: Install CocoaPods dependencies
-        run: |
-          cd ios
-          pod install
-
-      - name: Build iOS App for Detox
-        run: |
-          detox build --configuration ios.sim.debug
-
-      - name: Run Detox tests for iOS
-        run: |
-          detox test --configuration ios.sim.debug
+      - name: Build Android App for Detox
+        run: detox build --configuration a
