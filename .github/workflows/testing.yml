@@ -45,17 +45,22 @@ jobs:
           arch: arm64-v8a
           profile: pixel_6
           target: google_apis_playstore
-          channel: stable
-          emulator-options: -no-window -gpu auto -no-audio -no-snapshot
+          channel: stable # Changed from 0 to 'stable'
+          emulator-options: -no-window -gpu swiftshader_indirect -no-audio -no-snapshot
           force-avd-creation: true
           script: |
             adb start-server
             npm run build:android
             npx detox build -c android.emu.debug
 
-            # Wait for emulator to fully boot
-            until adb shell getprop sys.boot_completed | grep "1"; do
-              sleep 5
-            done
+            # Wait for emulator boot with timeout
+            echo "Waiting for emulator..."
+            timeout 180 bash -c 'until adb shell getprop sys.boot_completed | grep "1"; do sleep 5; done'
+
+            echo "Listing connected devices:"
+            adb devices -l
 
             npx detox test -c android.emu.debug --headless --loglevel trace
+
+            # Cleanup emulator
+            adb -s emulator-5554 emu kill || echo "Emulator already stopped"
