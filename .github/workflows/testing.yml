@@ -8,73 +8,61 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: "18"
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run unit tests
-        run: npm test
+      - run: npm install
+      - run: npm test
 
   detox-android:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: "18"
 
-      - name: Install dependencies
-        run: npm install
+      - run: npm install
 
-      - name: Install Android SDK & Emulator
+      - name: Install Android SDK
         run: |
           sudo apt-get update
           sudo apt-get install -y openjdk-11-jdk
-          echo "export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64" >> $HOME/.bashrc
-          source $HOME/.bashrc
+          echo "JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64" >> $GITHUB_ENV
 
-          # Install Android SDK and platform tools
+          # Install Android SDK
           sudo mkdir -p /usr/local/lib/android/sdk
           sudo chown $USER:$USER /usr/local/lib/android/sdk
           curl -fsSL https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -o cmdline-tools.zip
           unzip cmdline-tools.zip
-          mkdir -p /usr/local/lib/android/sdk/cmdline-tools
           mv cmdline-tools /usr/local/lib/android/sdk/cmdline-tools/latest
-          export ANDROID_HOME=/usr/local/lib/android/sdk
-          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools:$PATH
-          echo "export ANDROID_HOME=/usr/local/lib/android/sdk" >> $HOME/.bashrc
-          echo "export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools:$PATH" >> $HOME/.bashrc
-          source $HOME/.bashrc
 
-          # Accept licenses and install required SDK packages
+          echo "ANDROID_HOME=/usr/local/lib/android/sdk" >> $GITHUB_ENV
+          echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> $GITHUB_PATH
+          echo "$ANDROID_HOME/emulator" >> $GITHUB_PATH
+          echo "$ANDROID_HOME/platform-tools" >> $GITHUB_PATH
+
           yes | sdkmanager --licenses
-          sdkmanager "platform-tools" "platforms;android-30" "build-tools;30.0.3" "emulator" "system-images;android-30;default;x86_64"
+          sdkmanager "platform-tools" "platforms;android-30" "build-tools;30.0.3" "emulator" "system-images;android-30;google_apis;x86_64"
 
-      - name: Create & Start Android Emulator
+      - name: Create and start emulator
         run: |
-          echo "no" | $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager create avd -n Pixel_3a_API_30_x86 -k "system-images;android-30;default;x86_64" --force
-          nohup $ANDROID_HOME/emulator/emulator -avd Pixel_3a_API_30_x86 -no-audio -no-window -no-boot-anim &
+          export ANDROID_AVD_HOME="$HOME/.android/avd"
+          mkdir -p $ANDROID_AVD_HOME
+
+          echo "no" | avdmanager create avd \
+            -n Pixel_3a_API_30_x86 \
+            -k "system-images;android-30;google_apis;x86_64" \
+            --force
+
+          nohup emulator -avd Pixel_3a_API_30_x86 -no-audio -no-window -no-boot-anim -gpu swiftshader_indirect &
+
           adb wait-for-device
-          adb shell input keyevent 82 &
+          adb -e shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done; input keyevent 82'
 
-      - name: Install Detox CLI
-        run: npm install -g detox-cli
-
-      - name: Build Android App for Detox
-        run: detox build --configuration android.metro.debug
-
-      - name: Run Detox Tests for Android
-        run: detox test --configuration android.metro.debug
+      - run: npm install -g detox-cli
+      - run: detox build --configuration android.metro.debug
+      - run: detox test --configuration android.metro.debug
