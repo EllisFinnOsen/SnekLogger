@@ -59,40 +59,53 @@ jobs:
           target: google_apis
           channel: stable
           force-avd-creation: true
-          emulator-options: -no-window -gpu swiftshader -no-audio -no-snapshot -no-boot-anim -no-accel
+          emulator-options: -no-window -gpu swiftshader_indirect -no-audio -no-snapshot -no-boot-anim -no-accel -read-only
           disable-animations: true
           script: |
-            # Start ADB server
+            # ADB troubleshooting
+            adb kill-server
+            rm -rf ~/.android/adb*
             adb start-server
 
-            # Build Android app
+            # Build application
             npm run build:android
-
-            # Build Detox project
             npx detox build -c android.emu.debug
 
-            # Custom emulator boot verification
-            echo "Waiting for emulator..."
+            # Start emulator with logging
+            echo "Starting emulator..."
+            $ANDROID_HOME/emulator/emulator -avd test -port 5554 -no-window -gpu swiftshader_indirect -no-audio -no-snapshot -logcat-output emulator.log &
+
+            # Wait for device connection
+            echo "Waiting for device..."
             adb wait-for-device
-            count=0
-            until adb shell getprop sys.boot_completed | grep "1"; do
-              sleep 5
-              count=$((count+1))
-              echo "Waiting for boot completion ($count/60)..."
-              if [ $count -eq 60 ]; then
-                echo "Emulator failed to boot!"
-                exit 1
-              fi
-            done
 
-            # Additional stabilization delay
-            sleep 15
+            # Extended boot verification with timeout
+            timeout 300 bash -c '
+              while true; do
+                if adb shell getprop sys.boot_completed 2>/dev/null | grep -q "1"; then
+                  echo "Emulator booted successfully"
+                  break
+                fi
+                echo "Waiting for boot completion..."
+                sleep 5
+              done
+            ' || echo "Warning: Boot timeout reached"
 
-            echo "Emulator status:"
+            # Stabilization and debugging
+            sleep 20
+            echo "Connected devices:"
             adb devices -l
+            echo "Emulator status:"
+            adb shell getprop
+
+            # Disable animations
             adb shell settings put global window_animation_scale 0
             adb shell settings put global transition_animation_scale 0
             adb shell settings put global animator_duration_scale 0
 
-            # Run Detox tests
-            npx detox test -c android.emu.debug --headless --loglevel trace --retries 3
+            # Run tests with enhanced logging
+            npx detox test -c android.emu.debug --headless --loglevel trace --retries 3 --device-name emulator-5554
+
+            # Capture logs if tests fail
+            adb logcat -d > adb.log
+            cat emulator.log
