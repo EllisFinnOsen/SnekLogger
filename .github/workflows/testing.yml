@@ -38,8 +38,14 @@ jobs:
 
       - name: Configure Android SDK
         run: |
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "platform-tools" "emulator;31.3.14"
+          # Use canary channel for emulator packages
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --channel=3 --install "platform-tools" "emulator;32.1.0"
+           
+          # Accept licenses non-interactively
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+            
+          # Verify installed packages
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --list
 
       - name: Install dependencies
         run: npm ci
