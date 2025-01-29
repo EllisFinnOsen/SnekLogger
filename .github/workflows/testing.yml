@@ -45,7 +45,7 @@ jobs:
           arch: arm64-v8a
           profile: pixel_6
           target: google_apis_playstore
-          channel: 0
+          channel: stable
           emulator-options: -no-window -gpu auto -no-audio -no-snapshot
           force-avd-creation: true
           script: |
