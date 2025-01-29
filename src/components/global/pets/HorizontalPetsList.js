@@ -7,10 +7,10 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useSelector } from "react-redux";
-import PrimaryPetCard from "./PrimaryPetCard"; // Import the new component
-import { SIZES } from "../../../constants/Theme";
-import { ThemedView } from "../ThemedView";
-import { ThemedText } from "../ThemedText";
+import PrimaryPetCard from "@/components/global/pets/PrimaryPetCard";
+import { SIZES } from "@/constants/Theme";
+import { ThemedView } from "@/components/global/ThemedView";
+import { ThemedText } from "@/components/global/ThemedText";
 import { useNavigation } from "@react-navigation/native";
 
 export default function HorizontalPetsList() {

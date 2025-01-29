@@ -1,12 +1,12 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import HomeScreen from "../screens/home/HomeScreen";
-import CollectionScreen from "../screens/collection/CollectionScreen";
-import FreezerScreen from "../screens/freezer/FreezerScreen";
-import ProfileScreen from "../screens/profile/ProfileScreen";
+import HomeScreen from "@/screens/home/HomeScreen";
+import CollectionScreen from "@/screens/collection/CollectionScreen";
+import FreezerScreen from "@/screens/freezer/FreezerScreen";
+import ProfileScreen from "@/screens/profile/ProfileScreen";
 import { Ionicons } from "@expo/vector-icons"; // Or any other icon library
-import { useThemeColor } from "../hooks/useThemeColor";
-import { COLORS } from "../constants/Theme";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import { COLORS } from "@/constants/Theme";
 
 const Tab = createBottomTabNavigator();
 

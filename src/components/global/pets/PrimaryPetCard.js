@@ -7,10 +7,10 @@ import {
   Image,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { checkImageURL } from "../../../utils/checkImage";
-import { SIZES } from "../../../constants/Theme";
-import { ThemedView } from "../ThemedView";
-import { ThemedText } from "../ThemedText";
+import { checkImageURL } from "@/utils/checkImage";
+import { SIZES } from "@/constants/Theme";
+import { ThemedView } from "@/components/global/ThemedView";
+import { ThemedText } from "@/components/global/ThemedText";
 
 export default function PrimaryPetCard({ pet }) {
   const navigation = useNavigation();

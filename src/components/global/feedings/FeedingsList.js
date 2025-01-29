@@ -1,8 +1,8 @@
 import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-import { ThemedView } from "../ThemedView";
-import { ThemedText } from "../ThemedText";
-import FeedingLogCard from "./FeedingLogCard";
+import { ThemedView } from "@/components/global/ThemedView";
+import { ThemedText } from "@/components/global/ThemedText";
+import FeedingLogCard from "@/components/global/feedings/FeedingLogCard";
 
 export default function FeedingsList({
   feedings = [],
@@ -32,8 +32,8 @@ export default function FeedingsList({
       {/* Render cards */}
       <ThemedView style={styles.displayCardsContainer}>
         {feedings.map((item) => (
-          <View style={styles.cardContainer}>
-            <FeedingLogCard key={item.id} item={item} />
+          <View key={item.id} style={styles.cardContainer}>
+            <FeedingLogCard item={item} />
           </View>
         ))}
       </ThemedView>

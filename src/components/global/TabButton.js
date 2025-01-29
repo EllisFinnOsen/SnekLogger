@@ -1,7 +1,7 @@
 import React from "react";
 import { TouchableOpacity, Text } from "react-native";
-import { useThemeColor } from "../../hooks/useThemeColor";
-import { SIZES, FONT } from "../../constants/Theme";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import { SIZES, FONT } from "@/constants/Theme";
 
 // Dynamic style functions
 const buttonStyle = (

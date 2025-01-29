@@ -10,7 +10,7 @@ import {
   fetchFeedingsByPetFromDb,
   fetchGroupsFromDb,
   fetchGroupPetsFromDb,
-} from "../database";
+} from "@/database";
 
 export const fetchPets = () => async (dispatch) => {
   try {

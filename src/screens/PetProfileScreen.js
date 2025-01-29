@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import { View, Text, ScrollView, StyleSheet } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useFocusEffect } from "@react-navigation/native";
-import { fetchFeedingsByPet } from "@/actions";
 import { ThemedView } from "@/components/global/ThemedView";
 import { fetchPetsFromDb } from "@/database";
-import { PetParallaxScrollView } from ".@/components/global/pets/pet_profile/PetParallaxScrollView";
+import { PetParallaxScrollView } from "@/components/global/pets/pet_profile/PetParallaxScrollView";
 import { TabButton } from "@/components/global/TabButton";
 import { ViewPetProfileFeedings } from "@/components/global/feedings/ViewPetProfileFeedings";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { fetchFeedingsByPet } from "@/redux/actions";
 
 export default function PetProfileScreen({ route, navigation }) {
   const { petId } = route.params;

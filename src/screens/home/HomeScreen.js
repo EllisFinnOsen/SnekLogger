@@ -1,15 +1,15 @@
 import React, { useEffect } from "react";
 import { StyleSheet } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchPets, fetchFeedingsByPet } from "../../redux/actions";
-import { initializeDatabase } from "../../../database";
-import { ThemedView } from "../../components/global/ThemedView";
-import { ThemedText } from "../../components/global/ThemedText";
-import ThemedScrollView from "../../components/global/ThemedScrollView";
-import HorizontalPetsList from "../../components/global/pets/HorizontalPetsList";
-import ViewAllFeedingsList from "../../components/global/feedings/ViewAllFeedingsList";
-import { HelloWave } from "../../components/global/HelloWave";
-import { SIZES } from "../../constants/Theme";
+import { fetchPets, fetchFeedingsByPet } from "@/redux/actions";
+import { initializeDatabase } from "@/database";
+import { ThemedView } from "@/components/global/ThemedView";
+import { ThemedText } from "@/components/global/ThemedText";
+import ThemedScrollView from "@/components/global/ThemedScrollView";
+import HorizontalPetsList from "@/components/global/pets/HorizontalPetsList";
+import ViewAllFeedingsList from "@/components/global/feedings/ViewAllFeedingsList";
+import { HelloWave } from "@/components/global/HelloWave";
+import { SIZES } from "@/constants/Theme";
 
 export default function HomeScreen({ navigation }) {
   const dispatch = useDispatch();

@@ -2,17 +2,17 @@ import React, { useState, useEffect } from "react";
 import { TouchableOpacity, StyleSheet, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
-import { ThemedText } from "../ThemedText";
+import { ThemedText } from "@/components/global/ThemedText";
 import {
   toISODateTime,
   formatDateString,
   formatTimeString,
-} from "../../../utils/dateUtils";
-import { SIZES } from "../../../constants/Theme";
-import { useThemeColor } from "../../../hooks/useThemeColor";
-import { ThemedView } from "../ThemedView";
-import { updateFeedingInDb } from "../../../../database";
-import { updateFeeding } from "../../../redux/actions";
+} from "@/utils/dateUtils";
+import { SIZES } from "@/constants/Theme";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import { ThemedView } from "@/components/global/ThemedView";
+import { updateFeedingInDb } from "@/database";
+import { updateFeeding } from "@/redux/actions";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function FeedingLogCard({ item }) {

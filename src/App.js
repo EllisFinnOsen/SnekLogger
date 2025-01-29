@@ -6,9 +6,9 @@ import {
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { Provider } from "react-redux";
-import store from "./redux/store";
-import StackNavigator from "./navigation/StackNavigator";
-import useColorScheme from "./hooks/useColorScheme";
+import store from "@/redux/store";
+import StackNavigator from "@/navigation/StackNavigator";
+import useColorScheme from "@/hooks/useColorScheme";
 
 export default function App() {
   const colorScheme = useColorScheme();

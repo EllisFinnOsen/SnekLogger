@@ -1,8 +1,8 @@
 import React from "react";
 import { useSelector } from "react-redux";
 
-import { selectFeedingsByPet } from "../../../redux/selectors";
-import FeedingsList from "./feedings/FeedingsList";
+import { selectFeedingsByPet } from "@/redux/selectors";
+import FeedingsList from "@/components/global/feedings/FeedingsList";
 
 export default function ViewPetProfileFeedings({ petId }) {
   const feedings = useSelector((state) => selectFeedingsByPet(state, petId));

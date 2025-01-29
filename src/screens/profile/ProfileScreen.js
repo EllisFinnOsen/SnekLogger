@@ -8,9 +8,9 @@ import {
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useFocusEffect } from "@react-navigation/native";
-import { fetchFeedingsByPet } from "../../redux/actions";
-import { fetchPetsFromDb } from "../../database";
-import ViewPetProfileFeedings from "../../components/global/feedings/ViewPetProfileFeedings";
+import { fetchFeedingsByPet } from "@/redux/actions";
+import { fetchPetsFromDb } from "@/database";
+import ViewPetProfileFeedings from "@/components/global/feedings/ViewPetProfileFeedings";
 
 export default function PetProfileScreen({ route, navigation }) {
   const { petId } = route.params;
