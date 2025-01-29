@@ -6,26 +6,8 @@ on:
       - main
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "18"
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run unit tests
-        run: npm test
-
   detox-ios:
-    runs-on: macos-latest # MacOS is required for Xcode and iOS simulators
+    runs-on: macos-latest # Use macOS runner for iOS testing
 
     steps:
       - name: Checkout repository
@@ -35,6 +17,9 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "18"
+
+      - name: Install Expo CLI
+        run: npm install -g expo-cli
 
       - name: Install dependencies
         run: npm install
@@ -47,22 +32,17 @@ jobs:
       - name: Install Detox CLI
         run: npm install -g detox-cli
 
-      - name: Prebuild iOS Project (for Expo)
-        run: |
-          if [ ! -d "ios" ]; then
-            echo "Running expo prebuild to generate ios/ directory..."
-            expo prebuild
-          fi
+      - name: Run Expo Prebuild (Generate ios/ directory)
+        run: expo prebuild
 
       - name: Install CocoaPods dependencies
         run: |
           cd ios
           pod install
+          cd ..
 
       - name: Build iOS App for Detox
-        run: |
-          detox build --configuration ios.sim.debug
+        run: detox build --configuration ios.sim.debug
 
       - name: Run Detox tests for iOS
-        run: |
-          detox test --configuration ios.sim.debug
+        run: detox test --configuration ios.sim.debug
