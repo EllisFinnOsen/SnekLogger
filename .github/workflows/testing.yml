@@ -6,8 +6,8 @@ on:
       - main
 
 jobs:
-  detox-android:
-    runs-on: ubuntu-latest # Use Ubuntu since we are only testing Android
+  test:
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
@@ -21,20 +21,60 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Install Android dependencies
+      - name: Run unit tests
+        run: npm test
+
+  detox-android:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install Android SDK & Emulator
         run: |
           sudo apt-get update
           sudo apt-get install -y openjdk-11-jdk
           echo "export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64" >> $HOME/.bashrc
           source $HOME/.bashrc
 
+          # Install Android SDK and platform tools
+          sudo mkdir -p /usr/local/lib/android/sdk
+          sudo chown $USER:$USER /usr/local/lib/android/sdk
+          curl -fsSL https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -o cmdline-tools.zip
+          unzip cmdline-tools.zip
+          mkdir -p /usr/local/lib/android/sdk/cmdline-tools
+          mv cmdline-tools /usr/local/lib/android/sdk/cmdline-tools/latest
+          export ANDROID_HOME=/usr/local/lib/android/sdk
+          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH
+          echo "export ANDROID_HOME=/usr/local/lib/android/sdk" >> $HOME/.bashrc
+          echo "export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH" >> $HOME/.bashrc
+          source $HOME/.bashrc
+
+          # Accept licenses and install required SDK packages
+          yes | sdkmanager --licenses
+          sdkmanager "platform-tools" "platforms;android-30" "build-tools;30.0.3" "emulator" "system-images;android-30;default;x86_64"
+
+      - name: Create & Start Android Emulator
+        run: |
+          echo "no" | avdmanager create avd -n Pixel_3a_API_30_x86 -k "system-images;android-30;default;x86_64" --force
+          nohup $ANDROID_HOME/emulator/emulator -avd Pixel_3a_API_30_x86 -no-audio -no-window -no-boot-anim &
+          adb wait-for-device
+          adb shell input keyevent 82 &
+
       - name: Install Detox CLI
         run: npm install -g detox-cli
 
-      - name: Start Android Emulator
-        run: |
-          $ANDROID_HOME/emulator/emulator -avd Pixel_3a_API_30_x86 -no-window &
-          adb wait-for-device
-
       - name: Build Android App for Detox
-        run: detox build --configuration a
+        run: detox build --configuration android.metro.debug
+
+      - name: Run Detox Tests for Android
+        run: detox test --configuration android.metro.debug
