@@ -14,6 +14,7 @@ import { ThemedText } from "./ThemedText";
 import { ThemedView } from "./ThemedView";
 import { checkImageURL } from "@/utils/checkImage";
 import { SIZES } from "@/constants/Theme";
+
 export default function CustomDropdown({
   items,
   selectedValue,
@@ -32,6 +33,7 @@ export default function CustomDropdown({
   return (
     <View>
       <TouchableOpacity
+        testID="dropdown-button"
         style={[styles.dropdown, { backgroundColor: fieldColor }]}
         onPress={() => setModalVisible(true)}
       >
@@ -42,6 +44,7 @@ export default function CustomDropdown({
       </TouchableOpacity>
 
       <Modal
+        testID="dropdown-modal"
         visible={modalVisible}
         transparent={true}
         animationType="slide"
