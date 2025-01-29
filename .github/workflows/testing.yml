@@ -17,7 +17,7 @@ jobs:
       - run: npm test
 
   detox-android:
-    runs-on: macos-latest
+    runs-on: ubunto-latest
     timeout-minutes: 45
     env:
       ANDROID_EMULATOR_USE_SYSTEM_LIBS: 1
