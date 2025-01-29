@@ -17,95 +17,37 @@ jobs:
       - run: npm test
 
   detox-android:
-    runs-on: ubunto-latest
-    timeout-minutes: 45
-    env:
-      ANDROID_EMULATOR_USE_SYSTEM_LIBS: 1
-      ADB_INSTALL_TIMEOUT: 30
+    runs-on: ubuntu-latest
+    services:
+      docker:
+        options: --privileged
     steps:
       - uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: 18
-
-      - name: Set up JDK 17
+          node-version: "18"
+      - name: Set up JDK 11
         uses: actions/setup-java@v3
         with:
-          java-version: "17"
-          distribution: "temurin"
-
-      - name: Configure Android SDK
-        run: |
-          # Install platform tools and emulator
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "platform-tools" "emulator"
-
-          # Install Android platform
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-33"
-
-          # Accept licenses
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Android Emulator Setup
-        uses: reactivecircus/android-emulator-runner@v2
+          distribution: "adopt"
+          java-version: "11"
+      - name: Install Android SDK
+        uses: android-actions/setup-android@v2
         with:
-          api-level: 33
-          arch: arm64-v8a
-          profile: pixel_5
-          target: google_apis
-          channel: stable
-          force-avd-creation: true
-          emulator-options: -no-window -gpu swiftshader_indirect -no-audio -no-snapshot -no-boot-anim -no-accel -read-only
-          disable-animations: true
-          script: |
-            # ADB troubleshooting
-            adb kill-server
-            rm -rf ~/.android/adb*
-            adb start-server
-
-            # Build application
-            npm run build:android
-            npx detox build -c android.emu.debug
-
-            # Start emulator with logging
-            echo "Starting emulator..."
-            $ANDROID_HOME/emulator/emulator -avd test -port 5554 -no-window -gpu swiftshader_indirect -no-audio -no-snapshot -logcat-output emulator.log &
-
-            # Wait for device connection
-            echo "Waiting for device..."
-            adb wait-for-device
-
-            # Extended boot verification with timeout
-            timeout 300 bash -c '
-              while true; do
-                if adb shell getprop sys.boot_completed 2>/dev/null | grep -q "1"; then
-                  echo "Emulator booted successfully"
-                  break
-                fi
-                echo "Waiting for boot completion..."
-                sleep 5
-              done
-            ' || echo "Warning: Boot timeout reached"
-
-            # Stabilization and debugging
-            sleep 20
-            echo "Connected devices:"
-            adb devices -l
-            echo "Emulator status:"
-            adb shell getprop
-
-            # Disable animations
-            adb shell settings put global window_animation_scale 0
-            adb shell settings put global transition_animation_scale 0
-            adb shell settings put global animator_duration_scale 0
-
-            # Run tests with enhanced logging
-            npx detox test -c android.emu.debug --headless --loglevel trace --retries 3 --device-name emulator-5554
-
-            # Capture logs if tests fail
-            adb logcat -d > adb.log
-            cat emulator.log
+          api-level: 30
+          build-tools: 30.0.3
+          ndk: 21.4.7075529
+      - name: Install dependencies
+        run: npm install
+      - name: Build Android app
+        run: npm run build:android
+      - name: Start emulator
+        run: |
+          sudo apt-get install -y libgl1-mesa-dev
+          wget https://dl.google.com/android/repository/emulator-linux-6858069.zip
+          unzip emulator-linux-6858069.zip -d $ANDROID_HOME
+          $ANDROID_HOME/emulator/emulator -avd Pixel_3a_API_30_x86 -no-window -no-audio -no-boot-anim &
+          adb wait-for-device
+          adb shell input keyevent 82 &
+      - name: Run Detox tests
+        run: npm run test:e2e
