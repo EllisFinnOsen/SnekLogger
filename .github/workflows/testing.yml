@@ -40,8 +40,8 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 30
-          arch: x86_64
-          profile: pixel_3a
+          arch: arm64-b8a
+          profile: pixel_6
           script: |
             npm run build:android
             npx detox build -c android.emu.debug
