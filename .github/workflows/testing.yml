@@ -20,6 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       docker:
+        image: docker:19.03.12
         options: --privileged
     steps:
       - uses: actions/checkout@v3
@@ -41,13 +42,22 @@ jobs:
         run: npm install
       - name: Build Android app
         run: npm run build:android
-      - name: Start emulator
+      - name: Prepare AVD
+        run: |
+          echo "y" | sdkmanager --install "system-images;android-30;default;x86"
+          echo "no" | avdmanager create avd -n test_emulator -k "system-images;android-30;default;x86" --force
+      - name: Start Emulator
         run: |
           sudo apt-get install -y libgl1-mesa-dev
-          wget https://dl.google.com/android/repository/emulator-linux-6858069.zip
-          unzip emulator-linux-6858069.zip -d $ANDROID_HOME
-          $ANDROID_HOME/emulator/emulator -avd Pixel_3a_API_30_x86 -no-window -no-audio -no-boot-anim &
+          $ANDROID_HOME/emulator/emulator -avd test_emulator -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect -accel on &
           adb wait-for-device
           adb shell input keyevent 82 &
+      - name: Install `.aab` on Emulator
+        run: |
+          bundletool build-apks --bundle=votrack.aab --output=votrack.apks --mode=universal --ks=debug.keystore --ks-pass=pass:android --ks-key-alias=androiddebugkey --key-pass=pass:android
+          unzip votrack.apks -d votrack_apks
+          adb install votrack_apks/universal.apk
+      - name: Detox Build
+        run: npm run build:e2e
       - name: Run Detox tests
         run: npm run test:e2e
