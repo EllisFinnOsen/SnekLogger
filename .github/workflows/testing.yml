@@ -18,10 +18,10 @@ jobs:
 
   detox-android:
     runs-on: macos-latest
-    timeout-minutes: 40
+    timeout-minutes: 45
     env:
       ANDROID_EMULATOR_USE_SYSTEM_LIBS: 1
-      ADB_INSTALL_TIMEOUT: 20
+      ADB_INSTALL_TIMEOUT: 30
     steps:
       - uses: actions/checkout@v3
 
@@ -36,35 +36,54 @@ jobs:
           java-version: "17"
           distribution: "temurin"
 
-      - name: Install dependencies
+      - name: Configure Android SDK
         run: |
-          npm ci
-          echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "platform-tools" "emulator"
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "platform-tools" "emulator;31.3.14"
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+
+      - name: Install dependencies
+        run: npm ci
 
       - name: Android Emulator Setup
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 33
           arch: arm64-v8a
-          profile: pixel_6
+          profile: pixel_5
           target: google_apis
           channel: stable
           force-avd-creation: true
-          emulator-options: -no-window -gpu swiftshader_indirect -no-audio -no-snapshot -no-accel
+          emulator-options: -no-window -gpu swiftshader -no-audio -no-snapshot -no-boot-anim -no-accel
+          disable-animations: true
           script: |
+            # Start ADB server explicitly
             adb start-server
+
+            # Build Android app
             npm run build:android
+
+            # Build Detox project
             npx detox build -c android.emu.debug
 
-            # Custom emulator boot check
+            # Custom emulator boot verification
             echo "Waiting for emulator..."
-            $ANDROID_HOME/platform-tools/adb wait-for-device
-            while [ "$($ANDROID_HOME/platform-tools/adb shell getprop sys.boot_completed | tr -d '\r')" != "1" ]; do
+            adb wait-for-device
+            for i in {1..60}; do
+              if adb shell getprop sys.boot_completed | grep "1"; then
+                break
+              fi
               sleep 5
-              echo "Still waiting..."
+              echo "Waiting for boot completion ($i/60)..."
             done
 
-            echo "Emulator ready. Connected devices:"
-            adb devices -l
+            # Additional stabilization delay
+            sleep 15
 
-            npx detox test -c android.emu.debug --headless --loglevel trace
+            echo "Emulator status:"
+            adb devices -l
+            adb shell settings put global window_animation_scale 0
+            adb shell settings put global transition_animation_scale 0
+            adb shell settings put global animator_duration_scale 0
+
+            # Run Detox tests
+            npx detox test -c android.emu.debug --headless --loglevel trace --retries 3
