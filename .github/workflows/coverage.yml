@@ -1,7 +1,8 @@
 name: "Coverage"
 on:
-  pull_request:
+  pull_request_target:
     branches:
+      - master
       - main
 jobs:
   coverage:

@@ -9,9 +9,9 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "build:android": "cd android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug",
-    "build:e2e:android": "detox build -c android.emu.debug",
-    "test:e2e:android": "expo prebuild && (cd android && gradlew.bat assembleDebug assembleAndroidTest) && detox test -c android.emu.debug",
+    "build:e2e": "detox build -c android.emu.debug",
+    "test:e2e": "detox test -c android.emu.debug --cleanup",
+    "ci:e2e": "expo prebuild && npm run build:e2e && npm run test:e2e",
     "ios": "expo run:ios"
   },
   "detox": {
@@ -28,7 +28,7 @@
       "android.emu.debug": {
         "type": "android.emulator",
         "device": {
-          "avdName": "Pixel_3a_API_30_AOSP"
+          "avdName": "Pixel_9_API_35"
         }
       }
     }
@@ -42,6 +42,7 @@
     "@reduxjs/toolkit": "^2.5.1",
     "@testing-library/react": "^16.2.0",
     "cross-spawn": "^7.0.6",
+    "detox-cli": "^20.0.0",
     "expo": "~52.0.28",
     "expo-dev-client": "~5.0.10",
     "expo-sqlite": "~15.1.0",

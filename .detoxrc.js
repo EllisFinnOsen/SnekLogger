@@ -1,32 +1,32 @@
 module.exports = {
-  runner: {
-    jest: {
-      config: "e2e/config.json",
-    },
-  },
-
+  testRunner: "jest",
+  runnerConfig: "e2e/config.json",
   apps: {
-    "android.expo": {
+    "android.debug": {
       type: "android.apk",
-      binaryPath: "android/app/build/outputs/apk/debug/app-debug.apk",
       build:
-        "npx expo prebuild && cd android && gradlew.bat assembleDebug assembleAndroidTest",
+        "cd android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug",
+      binaryPath: "android/app/build/outputs/apk/debug/app-debug.apk",
+      testBinaryPath:
+        "android/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk",
     },
   },
-
   devices: {
-    "android.emulator": {
+    emulator: {
       type: "android.emulator",
       device: {
-        avdName: "Pixel_4_API_30",
+        avdName: "Pixel_9_API_35",
       },
     },
   },
-
   configurations: {
     "android.emu.debug": {
-      device: "android.emulator",
-      app: "android.expo",
+      device: "emulator",
+      app: "android.debug",
+      behavior: {
+        launchApp: "auto",
+        cleanup: true,
+      },
     },
   },
 };
