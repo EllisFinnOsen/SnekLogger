@@ -4,6 +4,10 @@
   "testRunner": "jest-circus/runner",
   "reporters": ["detox/runners/jest/reporter"],
   "verbose": true,
-  "rootDir": "../../",
-  "testMatch": ["<rootDir>/e2e/**/*.test.js"]
+  "maxWorkers": 1,
+  "globals": {
+    "detox": {
+      "setupTestFramework": true
+    }
+  }
 }

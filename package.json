@@ -10,7 +10,7 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "build:e2e": "detox build -c android.emu.debug",
-    "test:e2e": "detox test -c android.emu.debug --cleanup --loglevel verbose"
+    "test:e2e": "detox test -c android.emu.debug --cleanup --loglevel verbose --max-workers 1",
     "ci:e2e": "expo prebuild && npm run build:e2e && npm run test:e2e",
     "clean": "rm -rf node_modules/ && rm -rf package-lock.json && rm -rf yarn.lock && cd android && ./gradlew clean && cd ..",
     "ios": "expo run:ios"
@@ -73,6 +73,7 @@
     "@babel/preset-env": "^7.26.7",
     "@babel/preset-react": "^7.26.3",
     "@config-plugins/detox": "^9.0.0",
+    "@jest/core": "^29.7.0",
     "@react-native/babel-preset": "^0.77.0",
     "@testing-library/jest-native": "^5.4.3",
     "@testing-library/react-native": "^13.0.1",

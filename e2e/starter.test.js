@@ -1,11 +1,13 @@
 describe("Example Detox Test", () => {
+  beforeAll(async () => {
+    await device.launchApp({ newInstance: true });
+  });
+
   it("should show welcome screen", async () => {
-    // Wait for app to be visible
     await waitFor(element(by.id("welcome-screen")))
       .toBeVisible()
       .withTimeout(10000);
 
-    // Add your specific test assertions
     await expect(element(by.text("Welcome"))).toBeVisible();
   });
 });
