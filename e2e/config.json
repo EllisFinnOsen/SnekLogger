@@ -1,0 +1,13 @@
+{
+  "testEnvironment": "node",
+  "setupFilesAfterEnv": ["./e2e/init.js", "detox/runners/jest/adapter.js"],
+  "testRunner": "jest-circus/runner",
+  "reporters": ["detox/runners/jest/reporter"],
+  "verbose": true,
+  "maxWorkers": 1,
+  "globals": {
+    "detox": {
+      "setupTestFramework": true
+    }
+  }
+}
