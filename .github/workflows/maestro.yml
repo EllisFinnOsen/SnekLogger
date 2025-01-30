@@ -1,12 +1,12 @@
-name: Maestro Tests
+name: Maestro Android Tests
 
 on:
   pull_request:
-    branches: [main] # Replace with your target branch
+    branches: [main] # Replace with your target branch (e.g., "main" or "master")
 
 jobs:
   test:
-    runs-on: macos-latest # Required for Android/iOS emulators
+    runs-on: macos-latest # Required for Android emulators
 
     steps:
       - name: Checkout code
@@ -15,28 +15,31 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 23.6.1 # Match your project's Node.js version
 
       - name: Install Expo CLI
         run: npm install -g expo-cli
 
+      - name: Log in to Expo
+        run: expo login --token ${{ secrets.EXPO_TOKEN }} # Uses your GitHub Secret
+
       - name: Install Maestro
         run: curl -Ls "https://get.maestro.mobile.dev" | bash
 
-      - name: Start Android Emulator
+      - name: Start Android Emulator and Run Tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 33 # Android API level (adjust as needed)
+          api-level: 33 # Android 13 (adjust if needed)
           script: |
             # Install Expo Go on the emulator
-            curl -L -o expo-go.apk [INSERT_EXPO_GO_APK_URL_HERE]
+            curl -L -o expo-go.apk https://d1ahtucjixef4r.cloudfront.net/Exponent-2.32.17.apk
             adb install expo-go.apk
 
-            # Start Expo dev server in the background
+            # Start Expo tunnel in the background
             nohup expo start --tunnel > expo.log 2>&1 &
 
-            # Wait for server to start
-            sleep 20
+            # Wait for tunnel to initialize (adjust sleep time if tests fail)
+            sleep 25
 
             # Run Maestro tests
             maestro test maestro/
