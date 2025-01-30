@@ -6,10 +6,10 @@ describe("Example Detox Test", () => {
   });
 
   it("should show welcome screen", async () => {
-    await waitFor(element(by.id("welcome-screen")))
+    await waitFor(element(by.id("welcomeText")))
       .toBeVisible()
       .withTimeout(10000);
 
-    await expect(element(by.text("Welcome"))).toBeVisible();
+    await expect(element(by.text("Hello, Ellis"))).toBeVisible();
   });
 });

@@ -25,6 +25,17 @@
         "build": "cd android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug"
       }
     },
+    "jest": {
+      "preset": "jest-expo",
+      "setupFilesAfterEnv": [
+        "./e2e/init.js"
+      ],
+      "testRunner": "jest-circus/runner",
+      "reporters": [
+        "detox/runners/jest/reporter"
+      ],
+      "verbose": true
+    },
     "devices": {
       "android.emu.debug": {
         "type": "android.emulator",

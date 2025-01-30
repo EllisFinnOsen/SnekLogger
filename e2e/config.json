@@ -1,6 +1,6 @@
 {
   "testEnvironment": "node",
-  "setupFilesAfterEnv": ["./init.js"],
+  "setupFilesAfterEnv": ["./e2e/init.js", "detox/runners/jest/adapter.js"],
   "testRunner": "jest-circus/runner",
   "reporters": ["detox/runners/jest/reporter"],
   "verbose": true,
