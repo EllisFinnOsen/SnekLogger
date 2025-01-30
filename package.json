@@ -76,6 +76,7 @@
     "@react-native/babel-preset": "^0.77.0",
     "@testing-library/jest-native": "^5.4.3",
     "@testing-library/react-native": "^13.0.1",
+    "@types/detox": "^17.14.3",
     "babel-plugin-module-resolver": "^5.0.2",
     "detox": "^20.32.0",
     "eslint": "^9.19.0",

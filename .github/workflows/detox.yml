@@ -7,33 +7,60 @@ on:
 jobs:
   detox-android:
     runs-on: macos-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Node.js
+      - name: Set up Node.js 18
         uses: actions/setup-node@v3
         with:
           node-version: 18
           cache: "npm"
 
+      - name: Install Java 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: "zulu"
+          java-version: "17"
+
+      - name: Cache Gradle
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            android/.gradle
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+
       - name: Install dependencies
-        run: npm install
+        run: |
+          npm ci
+          npx expo prebuild --no-install  # Generate native files without full install
 
       - name: Start Android Emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 30
+          api-level: 35
           arch: x86_64
           profile: google_apis
           avd-name: Pixel_9_API_35
           disable-animations: true
-          script: echo "Emulator ready"
+          script: |
+            adb wait-for-device
+            adb shell settings put global window_animation_scale 0
+            adb shell settings put global transition_animation_scale 0
+            adb shell settings put global animator_duration_scale 0
+            adb shell input keyevent 82  # Wake up screen
 
-      - name: Run E2E Tests
-        run: npm run ci:e2e
+      - name: Build and Test
+        run: |
+          npm run build:e2e
+          npm run test:e2e
         env:
           JAVA_HOME: /usr/libexec/java_home
           ANDROID_SDK_ROOT: ${{ env.ANDROID_SDK_ROOT }}
+          NO_COLOR: 1
+          EXPO_USE_METRO_WORKSPACE_ROOT: 1
+          DETOX_FORCE_CONFIG: android.emu.debug
