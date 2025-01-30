@@ -2,11 +2,11 @@ name: Maestro Android Tests
 
 on:
   pull_request:
-    branches: [main] # Replace with your target branch (e.g., "main" or "master")
+    branches: [main]
 
 jobs:
   test:
-    runs-on: macos-latest # Required for Android emulators
+    runs-on: macos-latest
 
     steps:
       - name: Checkout code
@@ -15,13 +15,13 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 23.6.1 # Match your project's Node.js version
+          node-version: 20 # Node 18/20 work with EAS CLI
 
-      - name: Install Expo CLI
-        run: npm install -g expo-cli
+      - name: Install EAS CLI
+        run: npm install -g eas-cli # Use EAS CLI instead of legacy expo-cli
 
       - name: Log in to Expo
-        run: expo login --token ${{ secrets.EXPO_TOKEN }} # Uses your GitHub Secret
+        run: eas login --token ${{ secrets.EXPO_TOKEN }} # EAS uses `eas login`
 
       - name: Install Maestro
         run: curl -Ls "https://get.maestro.mobile.dev" | bash
@@ -29,17 +29,20 @@ jobs:
       - name: Start Android Emulator and Run Tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 33 # Android 13 (adjust if needed)
+          api-level: 33
           script: |
-            # Install Expo Go on the emulator
-            curl -L -o expo-go.apk https://d1ahtucjixef4r.cloudfront.net/Exponent-2.32.17.apk
+            # Install Expo Go (replace URL with your SDK version!)
+            curl -L -o expo-go.apk https://dpq5q02fu5f55.cloudfront.net/Exponent-2.28.3.apk
             adb install expo-go.apk
 
-            # Start Expo tunnel in the background
-            nohup expo start --tunnel > expo.log 2>&1 &
+            # Install project dependencies (critical for `expo start`)
+            npm install
 
-            # Wait for tunnel to initialize (adjust sleep time if tests fail)
-            sleep 25
+            # Start Expo tunnel with modern CLI
+            npx expo start --tunnel > expo.log 2>&1 &
+
+            # Wait longer for tunnel initialization
+            sleep 30
 
             # Run Maestro tests
             maestro test maestro/
