@@ -1,0 +1,4 @@
+appId: com.ellisosen.TestReduxApp
+---
+- launchApp
+- assertVisible: "Hello, Ellis"

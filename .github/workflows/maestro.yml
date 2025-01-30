@@ -1,0 +1,34 @@
+name: Run Maestro Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  maestro-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Install Maestro
+        run: |
+          curl -Ls "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> $GITHUB_PATH
+
+      - name: Start Emulator (for Android tests)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils
+          sudo adduser `whoami` libvirt
+          sudo adduser `whoami` kvm
+          echo "Starting AVD..."
+          nohup emulator -avd test -no-audio -no-window &
+          adb wait-for-device
+          adb devices
+
+      - name: Run Maestro Tests
+        run: |
+          maestro test maestro/home.yml
+          maestro test maestro/expand_test.yml
