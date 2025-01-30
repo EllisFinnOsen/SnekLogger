@@ -12,6 +12,7 @@
     "build:e2e": "detox build -c android.emu.debug",
     "test:e2e": "detox test -c android.emu.debug --cleanup",
     "ci:e2e": "expo prebuild && npm run build:e2e && npm run test:e2e",
+    "clean": "rm -rf node_modules/ && rm -rf package-lock.json && rm -rf yarn.lock && cd android && ./gradlew clean && cd ..",
     "ios": "expo run:ios"
   },
   "detox": {
@@ -41,6 +42,9 @@
     "@react-navigation/stack": "^7.1.1",
     "@reduxjs/toolkit": "^2.5.1",
     "@testing-library/react": "^16.2.0",
+    "ansi-regex": "5.0.1",
+    "ansi-styles": "4.3.0",
+    "chalk": "4.1.2",
     "cross-spawn": "^7.0.6",
     "detox-cli": "^20.0.0",
     "expo": "~52.0.28",

@@ -81,16 +81,15 @@ def enableProguardInReleaseBuilds = (findProperty('android.enableProguardInRelea
 def jscFlavor = 'org.webkit:android-jsc:+'
 
 android {
-    ndkVersion rootProject.ext.ndkVersion
-
-    buildToolsVersion rootProject.ext.buildToolsVersion
+    compileSdk 34
+    buildToolsVersion "34.0.0"
     compileSdk rootProject.ext.compileSdkVersion
 
     namespace 'com.ellisosen.TestReduxApp'
     defaultConfig {
         applicationId 'com.ellisosen.TestReduxApp'
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
+        minSdkVersion 23
+        targetSdkVersion 34
         versionCode 1
         versionName "1.0.0"
     }
@@ -105,6 +104,9 @@ android {
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
+            matchingFallbacks = ['debug']
+            enableUnitTestCoverage = true
+            testCoverageEnabled = true
         }
         release {
             // Caution! In production, you need to generate your own keystore file.

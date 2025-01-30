@@ -3,6 +3,7 @@ import { StyleSheet } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchPets, fetchFeedingsByPet } from "@/redux/actions";
 import { initializeDatabase } from "@/database";
+import { insertMockData } from "@/database";
 import { ThemedView } from "@/components/global/ThemedView";
 import { ThemedText } from "@/components/global/ThemedText";
 import ThemedScrollView from "@/components/global/ThemedScrollView";
@@ -19,9 +20,10 @@ export default function HomeScreen({ navigation }) {
     const setupDatabase = async () => {
       try {
         await initializeDatabase();
+        await insertMockData();
         dispatch(fetchPets());
       } catch (error) {
-        //feeding//console.error("Error setting up database:", error);
+        console.error("Error setting up database:", error);
       }
     };
 

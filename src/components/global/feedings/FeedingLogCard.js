@@ -46,7 +46,7 @@ export default function FeedingLogCard({ item }) {
       dispatch(updateFeeding({ ...item, complete: newCompleteValue }));
       setIsChecked(!isChecked);
     } catch (error) {
-      //feeding//console.error("Error updating feeding:", error);
+      console.error("Error updating feeding:", error);
     }
   };
 

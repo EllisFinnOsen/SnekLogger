@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/39</span>
+                <span class='fraction'>0/50</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/39</span>
+                <span class='fraction'>0/50</span>
             </div>
         
             
@@ -316,9 +316,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -373,9 +373,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -386,26 +386,10 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -419,8 +403,24 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -438,10 +438,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -507,9 +507,9 @@ DROP TABLE IF EXISTS pets;
       );
     `);
 &nbsp;
-    //feeding//console.log("Database initialized");
+<span class="cstat-no" title="statement not covered" >    console.log("Database initialized");</span>
   } catch (error) {
-    //feeding//console.error("Error initializing database:", error);
+<span class="cstat-no" title="statement not covered" >    console.error("Error initializing database:", error);</span>
   }
 };
 &nbsp;
@@ -564,9 +564,9 @@ export const insertMockData = <span class="cstat-no" title="statement not covere
         (6, '2025-05-11', '09:30:00', 'Veggies', 0.4, 'Added leafy greens', 1);
     `);
 &nbsp;
-    //feeding//console.log("Mock data inserted");
+<span class="cstat-no" title="statement not covered" >    console.log("Mock data inserted");</span>
   } catch (error) {
-    //feeding//console.error("Error inserting mock data:", error);
+<span class="cstat-no" title="statement not covered" >    console.error("Error inserting mock data:", error);</span>
   }
 };
 &nbsp;
@@ -577,10 +577,10 @@ export const fetchPetsFromDb = <span class="cstat-no" title="statement not cover
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const db = <span class="cstat-no" title="statement not covered" >await openDatabase();</span>
     const result = <span class="cstat-no" title="statement not covered" >await db.getAllAsync("SELECT * FROM pets");</span>
-    //feeding//console.log("Fetched pets from DB:", result);
+<span class="cstat-no" title="statement not covered" >    console.log("Fetched pets from DB:", result);</span>
 <span class="cstat-no" title="statement not covered" >    return result;</span>
   } catch (error) {
-    //feeding//console.error("Error fetching pets:", error);
+<span class="cstat-no" title="statement not covered" >    console.error("Error fetching pets:", error);</span>
 <span class="cstat-no" title="statement not covered" >    throw error;</span>
   }
 };
@@ -593,10 +593,10 @@ export const fetchFeedingsByPetFromDb = <span class="cstat-no" title="statement 
       "SELECT * FROM feedings WHERE petId = ?",
       [petId]
     );
-    //feeding//console.log("Fetched feedings from DB:", result);
+<span class="cstat-no" title="statement not covered" >    console.log("Fetched feedings from DB:", result);</span>
 <span class="cstat-no" title="statement not covered" >    return result;</span>
   } catch (error) {
-    //feeding//console.error("Error fetching feedings:", error);
+<span class="cstat-no" title="statement not covered" >    console.error("Error fetching feedings:", error);</span>
 <span class="cstat-no" title="statement not covered" >    throw error;</span>
   }
 };
@@ -611,7 +611,7 @@ export const fetchFeedingByIdFromDb = <span class="cstat-no" title="statement no
     );
 <span class="cstat-no" title="statement not covered" >    return result || null;</span>
   } catch (error) {
-    //feeding//console.error("Error fetching feeding by ID:", error);
+<span class="cstat-no" title="statement not covered" >    console.error("Error fetching feeding by ID:", error);</span>
 <span class="cstat-no" title="statement not covered" >    throw error;</span>
   }
 };
@@ -629,10 +629,10 @@ export const updateFeedingInDb = <span class="cstat-no" title="statement not cov
       "UPDATE feedings SET petId = ?, feedingDate = ?, feedingTime = ? WHERE id = ?",
       [petId, feedingDate, feedingTime, feedingId]
     );
-    //feeding//console.log("Feeding updated in DB:", result);
+<span class="cstat-no" title="statement not covered" >    console.log("Feeding updated in DB:", result);</span>
 <span class="cstat-no" title="statement not covered" >    return result;</span>
   } catch (error) {
-    //feeding//console.error("Error updating feeding in DB:", error);
+<span class="cstat-no" title="statement not covered" >    console.error("Error updating feeding in DB:", error);</span>
 <span class="cstat-no" title="statement not covered" >    throw error;</span>
   }
 };
@@ -643,7 +643,7 @@ export const updateFeedingInDb = <span class="cstat-no" title="statement not cov
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-01-29T20:24:44.178Z
+                at 2025-01-30T01:53:44.920Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
