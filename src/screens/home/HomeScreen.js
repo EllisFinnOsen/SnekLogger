@@ -38,7 +38,9 @@ export default function HomeScreen({ navigation }) {
     <ThemedScrollView>
       <ThemedView>
         <ThemedView style={styles.titleContainer}>
-          <ThemedText type="title">Hello, Ellis</ThemedText>
+          <ThemedText testID="welcomeText" type="title">
+            Hello, Ellis
+          </ThemedText>
           <HelloWave />
         </ThemedView>
         <HorizontalPetsList />

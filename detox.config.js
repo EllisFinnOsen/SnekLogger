@@ -5,7 +5,8 @@ module.exports = {
     "android.emu.debug": {
       device: "emulator",
       app: "android",
-      build: "npm run build:android",
+      build:
+        "npx expo prebuild && gradlew.bat -p android assembleDebug assembleAndroidTest",
     },
   },
 };

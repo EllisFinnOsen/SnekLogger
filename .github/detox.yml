@@ -1,0 +1,52 @@
+name: Android Detox E2E Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  detox-android:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        api-level: [30]
+        target: [google_apis]
+        arch: [x86_64]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install Expo CLI
+        run: npm install -g expo-cli
+
+      - name: Install Detox CLI
+        run: npm install -g detox-cli
+
+      - name: Start Android Emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          arch: ${{ matrix.arch }}
+          profile: ${{ matrix.target }}
+          avd-name: Pixel_4_API_30
+          disable-animations: true
+          script: echo "Emulator ready"
+
+      - name: Build and Test
+        run: |
+          npx expo prebuild
+          detox build --configuration android.emu.debug
+          detox test --configuration android.emu.debug
+        env:
+          JAVA_HOME: /usr/libexec/java_home

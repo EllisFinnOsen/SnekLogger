@@ -1,33 +1,32 @@
-/** @type {Detox.DetoxConfig} */
 module.exports = {
-  testRunner: {
-    args: {
-      $0: "jest",
-      config: "e2e/jest.config.js",
-    },
+  runner: {
     jest: {
-      setupTimeout: 120000,
+      config: "e2e/config.json",
     },
   },
+
   apps: {
-    "android.debug": {
+    "android.expo": {
       type: "android.apk",
       binaryPath: "android/app/build/outputs/apk/debug/app-debug.apk",
-      build: "cd android && ./gradlew assembleDebug",
+      build:
+        "npx expo prebuild && cd android && gradlew.bat assembleDebug assembleAndroidTest",
     },
   },
+
   devices: {
-    emulator: {
+    "android.emulator": {
       type: "android.emulator",
       device: {
-        avdName: "Pixel_3a_API_30_x86",
+        avdName: "Pixel_4_API_30",
       },
     },
   },
+
   configurations: {
-    "android.metro.debug": {
-      device: "emulator",
-      app: "android.debug",
+    "android.emu.debug": {
+      device: "android.emulator",
+      app: "android.expo",
     },
   },
 };

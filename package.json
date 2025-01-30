@@ -10,8 +10,28 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "build:android": "cd android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug",
-    "test:e2e": "detox test -c android.emu.debug",
-    "build:e2e": "detox build -c android.emu.debug"
+    "build:e2e:android": "detox build -c android.emu.debug",
+    "test:e2e:android": "expo prebuild && (cd android && gradlew.bat assembleDebug assembleAndroidTest) && detox test -c android.emu.debug",
+    "ios": "expo run:ios"
+  },
+  "detox": {
+    "test-runner": "jest",
+    "runner-config": "e2e/config.json",
+    "apps": {
+      "android.emu.debug": {
+        "type": "android.apk",
+        "binaryPath": "android/app/build/outputs/apk/debug/app-debug.apk",
+        "build": "cd android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug"
+      }
+    },
+    "devices": {
+      "android.emu.debug": {
+        "type": "android.emulator",
+        "device": {
+          "avdName": "Pixel_3a_API_30_AOSP"
+        }
+      }
+    }
   },
   "dependencies": {
     "@react-native-community/datetimepicker": "^8.2.0",
