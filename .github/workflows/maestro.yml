@@ -17,13 +17,23 @@ jobs:
           curl -Ls "https://get.maestro.mobile.dev" | bash
           echo "$HOME/.maestro/bin" >> $GITHUB_PATH
 
-      - name: Start Emulator (for Android tests)
+      - name: Install Android SDK and ADB
         run: |
           sudo apt-get update
+          sudo apt-get install -y android-sdk adb
+          echo "Android SDK Installed"
+
+      - name: Set up Android Emulator
+        run: |
           sudo apt-get install -y qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils
           sudo adduser `whoami` libvirt
           sudo adduser `whoami` kvm
           echo "Starting AVD..."
+          export ANDROID_HOME=$HOME/android-sdk
+          export PATH=$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$PATH
+          echo "Android Emulator Path: $ANDROID_HOME/emulator"
+          echo "Available AVDs:"
+          avdmanager list avd || echo "No AVDs found"
           nohup emulator -avd test -no-audio -no-window &
           adb wait-for-device
           adb devices
