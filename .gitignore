@@ -36,3 +36,7 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+# CI artifacts
+.artifacts/
+android/app/build/
