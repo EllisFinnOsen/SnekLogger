@@ -26,26 +26,38 @@ jobs:
           unzip -q android-sdk.zip -d $HOME/android-sdk/cmdline-tools
           mv $HOME/android-sdk/cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/latest
           rm android-sdk.zip
-          echo "export ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
-          echo "export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools:$PATH" >> $GITHUB_ENV
+          echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
+          echo "PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools:$PATH" >> $GITHUB_ENV
+
+      - name: Verify SDK Installation
+        run: |
+          source $GITHUB_ENV
+          ls -la $ANDROID_HOME/cmdline-tools/latest/bin
+          ls -la $ANDROID_HOME/platform-tools
+          which sdkmanager || echo "sdkmanager not found"
+          which avdmanager || echo "avdmanager not found"
 
       - name: Install Android System Image
         run: |
+          source $GITHUB_ENV
           yes | sdkmanager --install "system-images;android-30;default;x86_64"
           echo "System Image Installed"
 
       - name: Create AVD (If Needed)
         run: |
+          source $GITHUB_ENV
           sdkmanager --install "platform-tools" "platforms;android-30" "emulator"
           echo "no" | avdmanager create avd -n test -k "system-images;android-30;default;x86_64" --device "pixel_3a"
 
       - name: Start Android Emulator
         run: |
+          source $GITHUB_ENV
           nohup emulator -avd test -no-audio -no-window -gpu swiftshader_indirect &
           adb wait-for-device
           adb devices
 
       - name: Run Maestro Tests
         run: |
+          source $GITHUB_ENV
           maestro test maestro/home.yml
           maestro test maestro/expand_test.yml
