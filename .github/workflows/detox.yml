@@ -8,6 +8,8 @@ jobs:
   detox-android:
     runs-on: macos-latest
     timeout-minutes: 45
+    env:
+      ANDROID_EMULATOR_USE_SYSTEM_LIBS: 1  # Critical for Apple Silicon
 
     steps:
       - name: Checkout repository
@@ -25,34 +27,37 @@ jobs:
           distribution: "zulu"
           java-version: "17"
 
-      - name: Cache Gradle
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-            android/.gradle
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-
-      - name: Install dependencies
+      - name: Install Android SDK
         run: |
-          npm ci
-          npx expo prebuild --no-install  # Generate native files without full install
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-35" "build-tools;34.0.0"
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "system-images;android-35;google_apis;arm64-v8a"
 
       - name: Start Android Emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 35
-          arch: x86_64
-          profile: google_apis
-          avd-name: Pixel_9_API_35
-          disable-animations: true
+          arch: arm64-v8a  # Changed to ARM for Apple Silicon
+          profile: pixel_9
+          target: google_apis
+          force-avd-creation: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-audio -no-snapshot
           script: |
+            adb start-server
+            echo "Waiting for device..."
             adb wait-for-device
+            
+            # Wait for full boot completion
+            until adb shell getprop sys.boot_completed | grep "1"; do
+              sleep 5
+              echo "Still waiting for boot..."
+            done
+            
+            # Disable animations
             adb shell settings put global window_animation_scale 0
             adb shell settings put global transition_animation_scale 0
             adb shell settings put global animator_duration_scale 0
-            adb shell input keyevent 82  # Wake up screen
+            adb shell input keyevent 82
 
       - name: Build and Test
         run: |
@@ -61,6 +66,3 @@ jobs:
         env:
           JAVA_HOME: /usr/libexec/java_home
           ANDROID_SDK_ROOT: ${{ env.ANDROID_SDK_ROOT }}
-          NO_COLOR: 1
-          EXPO_USE_METRO_WORKSPACE_ROOT: 1
-          DETOX_FORCE_CONFIG: android.emu.debug

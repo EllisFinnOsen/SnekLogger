@@ -39,4 +39,6 @@ yarn-error.*
 
 # CI artifacts
 .artifacts/
-android/app/build/
+
+"/android" 
+"/ios" 

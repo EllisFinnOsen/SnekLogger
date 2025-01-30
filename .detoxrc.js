@@ -13,7 +13,7 @@ module.exports = {
     emulator: {
       type: "android.emulator",
       device: {
-        avdName: "Pixel_4_API_30", // Match your CI emulator name
+        avdName: "Pixel_9_API_35",
       },
     },
   },
@@ -21,9 +21,11 @@ module.exports = {
     "android.emu.debug": {
       device: "emulator",
       app: "android.debug",
-      runner: {
-        testRunner: "jest",
-        config: "e2e/config.json",
+      testRunner: {
+        $0: "jest",
+        args: {
+          config: "e2e/jest.config.js",
+        },
       },
       behavior: {
         launchApp: "auto",
