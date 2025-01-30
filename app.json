@@ -35,6 +35,12 @@
         "projectId": "652b1a71-6884-4c40-a75d-ab7df77989ea"
       }
     },
-    "owner": "ellisosen"
+    "owner": "ellisosen",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/652b1a71-6884-4c40-a75d-ab7df77989ea"
+    }
   }
 }
