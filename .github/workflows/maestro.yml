@@ -17,24 +17,27 @@ jobs:
           curl -Ls "https://get.maestro.mobile.dev" | bash
           echo "$HOME/.maestro/bin" >> $GITHUB_PATH
 
-      - name: Install Android SDK and ADB
+      - name: Install Android SDK, Emulator, and Tools
         run: |
           sudo apt-get update
           sudo apt-get install -y android-sdk adb
+          echo "export ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
+          echo "export PATH=$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$PATH" >> $GITHUB_ENV
           echo "Android SDK Installed"
 
-      - name: Set up Android Emulator
+      - name: Install Android System Image
         run: |
-          sudo apt-get install -y qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils
-          sudo adduser `whoami` libvirt
-          sudo adduser `whoami` kvm
-          echo "Starting AVD..."
-          export ANDROID_HOME=$HOME/android-sdk
-          export PATH=$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$PATH
-          echo "Android Emulator Path: $ANDROID_HOME/emulator"
-          echo "Available AVDs:"
-          avdmanager list avd || echo "No AVDs found"
-          nohup emulator -avd test -no-audio -no-window &
+          yes | sdkmanager --install "system-images;android-30;default;x86_64"
+          echo "System Image Installed"
+
+      - name: Create AVD (If Needed)
+        run: |
+          sdkmanager --install "platform-tools" "platforms;android-30" "emulator"
+          echo "no" | avdmanager create avd -n test -k "system-images;android-30;default;x86_64" --device "pixel_3a"
+
+      - name: Start Android Emulator
+        run: |
+          nohup emulator -avd test -no-audio -no-window -gpu swiftshader_indirect &
           adb wait-for-device
           adb devices
 
