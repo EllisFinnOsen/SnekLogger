@@ -30,7 +30,9 @@ jobs:
         run: npm install -g eas-cli@3.7.1 # Legacy version for SDK 52
 
       - name: Authenticate with Expo
-        run: eas login --token ${{ secrets.EXPO_TOKEN }}
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }} # Set token here
+        run: eas login # No flags needed
 
       - name: Install dependencies
         run: npm install
