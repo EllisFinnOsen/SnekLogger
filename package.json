@@ -9,7 +9,7 @@
     "web": "expo start --web",
     "test": "jest",
     "test:watch": "jest --watch",
-    "eas-build-on-success": "bash ./path/to/eas-build-on-success.sh"
+    "eas-build-on-success": "bash ./eas-build-on-success.sh"
   },
   "dependencies": {
     "@react-native-community/datetimepicker": "^8.2.0",
