@@ -18,4 +18,4 @@ else
 fi
 
 MAESTRO_CLOUD_API_KEY=$MAESTRO_CLOUD_API_KEY
-maestro cloud --apiKey $MAESTRO_CLOUD_API_KEY $APP_EXECUTABLE_PATH maestro/home.yaml  
+maestro cloud --apiKey $MAESTRO_CLOUD_API_KEY $APP_EXECUTABLE_PATH maestro/home.yml  
