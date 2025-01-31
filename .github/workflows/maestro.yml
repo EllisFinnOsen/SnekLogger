@@ -1,4 +1,4 @@
-name: preview
+name: Preview & Test
 on: pull_request
 
 jobs:
@@ -12,7 +12,7 @@ jobs:
       - name: Check for EXPO_TOKEN
         run: |
           if [ -z "${{ secrets.EXPO_TOKEN }}" ]; then
-            echo "You must provide an EXPO_TOKEN secret linked to this project's Expo account in this repo's secrets. Learn more: https://docs.expo.dev/eas-update/github-actions"
+            echo "You must provide an EXPO_TOKEN secret"
             exit 1
           fi
 
@@ -38,3 +38,40 @@ jobs:
         uses: expo/expo-github-action/preview@v8
         with:
           command: eas update --auto
+
+  maestro-tests:
+    name: Maestro Android Tests
+    needs: update # Wait for EAS Update job first
+    runs-on: macos-latest # Required for Android emulator
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+
+      - name: Install Expo CLI
+        run: npm install -g expo-cli@5.5.1 # Version compatible with SDK 52
+
+      - name: Install Maestro
+        run: curl -Ls "https://get.maestro.mobile.dev" | bash
+
+      - name: Start Android Emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33 # Match your target Android version
+          script: |
+            # Install Expo Go for SDK 52
+            curl -L -o expo-go.apk https://d1ahtucjixef4r.cloudfront.net/Exponent-2.32.17.apk
+            adb install expo-go.apk
+
+            # Start Expo tunnel
+            nohup expo start --tunnel > expo.log 2>&1 &
+
+            # Wait for tunnel to initialize
+            sleep 30
+
+            # Run Maestro tests
+            maestro test maestro/
