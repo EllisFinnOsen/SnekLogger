@@ -17,5 +17,6 @@ else
    APP_EXECUTABLE_PATH=/home/expo/workingdir/build/android/app/build/outputs/apk/release/app-release.apk
 fi
 
+ls -la /home/expo/workingdir/build/maestro/
 MAESTRO_CLOUD_API_KEY=$MAESTRO_CLOUD_API_KEY
 maestro cloud --apiKey $MAESTRO_CLOUD_API_KEY $APP_EXECUTABLE_PATH maestro/home.yml  
