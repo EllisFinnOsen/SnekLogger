@@ -92,7 +92,6 @@ export default function AddPetScreen({ navigation }) {
   const formattedBirthDate = birthDate
     ? new Date(birthDate).toLocaleDateString()
     : "Select approximate date";
-
   return (
     <ThemedScrollView contentContainerStyle={styles.container}>
       {/* Custom header with Back arrow and Cancel link */}

@@ -143,7 +143,7 @@ export default function AutocompleteInput({
 const styles = StyleSheet.create({
   autocompleteContainer: {
     position: "relative",
-    marginVertical: 8,
+    marginVertical: ,
   },
   inputContainer: {
     flexDirection: "row",
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
     paddingHorizontal: 8,
-    paddingVertical: Platform.OS === "ios" ? 12 : 8,
+    paddingVertical: Platform.OS === "ios" ? 16 : 18,
   },
   input: {
     flex: 1,

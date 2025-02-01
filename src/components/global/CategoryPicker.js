@@ -12,6 +12,7 @@ export default function CategoryPicker({
   items,
   compact = false,
 }) {
+  //console.log("CategoryPicker items:", items);
   const iconColor = useThemeColor({}, "icon");
   const bgColor = useThemeColor({}, "background");
   const textColor = useThemeColor({}, "text");
@@ -27,12 +28,12 @@ export default function CategoryPicker({
   const normalPickerStyles = {
     inputIOS: {
       color: textColor,
-      fontSize: SIZES.small,
+      fontSize: SIZES.medium,
       fontFamily: FONT.regular,
     },
     inputAndroid: {
       color: textColor,
-      fontSize: SIZES.small,
+      fontSize: SIZES.medium,
       fontFamily: FONT.regular,
     },
     placeholder: {

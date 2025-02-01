@@ -19,6 +19,7 @@ export default function SearchablePicker({
   onValueChange,
   placeholder = "Select an option...",
 }) {
+  //console.log("SearchablePicker options:", options);
   const textColor = useThemeColor({}, "text");
   const iconColor = useThemeColor({}, "icon");
   const bgColor = useThemeColor({}, "background");
