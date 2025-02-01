@@ -21,6 +21,8 @@ import {
   SPECIES_BY_CATEGORY,
 } from "@/constants/SpeciesMapping";
 
+import { WEIGHT_TYPES } from "@/constants/WeightTypes";
+
 // Import the picker component (for Category & Species)
 import CategoryPicker from "@/components/global/CategoryPicker";
 
@@ -53,10 +55,13 @@ export default function AddPetScreen({ navigation }) {
   const [birthDate, setBirthDate] = useState("");
   // For weight, we'll use a numeric value starting at 0.00
   const [weight, setWeight] = useState(0);
+  const [weightType, setWeightType] = useState("g"); // default to grams
+
   const [imageURL, setImageURL] = useState("");
 
   // Date picker state
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const WeightTypes = WEIGHT_TYPES;
 
   // Get species suggestions based on the selected category.
   const speciesSuggestions = category
@@ -72,6 +77,7 @@ export default function AddPetScreen({ navigation }) {
         morph,
         birthDate,
         weight,
+        weightType,
         imageURL,
       };
       const petId = await addPetToDb(newPet);
@@ -85,7 +91,7 @@ export default function AddPetScreen({ navigation }) {
   // Format the date for display (you can adjust locale or format as needed)
   const formattedBirthDate = birthDate
     ? new Date(birthDate).toLocaleDateString()
-    : "Select Date";
+    : "Select approximate date";
 
   return (
     <ThemedScrollView contentContainerStyle={styles.container}>
@@ -200,14 +206,29 @@ export default function AddPetScreen({ navigation }) {
         <ThemedText type="default" style={styles.label}>
           Weight
         </ThemedText>
-        <WeightSelector
-          value={weight}
-          onChange={setWeight}
-          min={0}
-          max={10000}
-          step={1}
-        />
+        <View style={styles.weightRow}>
+          {/* Weight number selector */}
+          <WeightSelector
+            value={weight}
+            onChange={setWeight}
+            min={0}
+            max={100000}
+            step={1}
+          />
+          {/* Weight type picker in a container with fixed, smaller width */}
+          <View style={styles.weightTypeContainer}>
+            <CategoryPicker
+              compact={true}
+              selectedValue={weightType}
+              onValueChange={(itemValue) => setWeightType(itemValue)}
+              items={WEIGHT_TYPES}
+              // Pass a custom style prop if your CategoryPicker supports it
+              // Otherwise, wrap it as shown here.
+            />
+          </View>
+        </View>
       </View>
+
       <View style={styles.fieldContainer}>
         <ThemedText type="subtitle" style={styles.label}>
           Image URL
@@ -258,5 +279,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: SIZES.small,
     borderRadius: 5,
     paddingVertical: SIZES.medium,
+  },
+  weightRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flext-start",
+  },
+  weightTypeContainer: {
+    marginLeft: 32,
+    width: 50, // Try 50 pixels first; adjust if needed.
+    // Optionally, you can add styles to center the content:
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

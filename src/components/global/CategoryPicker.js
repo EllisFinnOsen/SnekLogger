@@ -10,52 +10,88 @@ export default function CategoryPicker({
   selectedValue,
   onValueChange,
   items,
+  compact = false,
 }) {
   const iconColor = useThemeColor({}, "icon");
   const bgColor = useThemeColor({}, "background");
   const textColor = useThemeColor({}, "text");
 
+  // Provide a placeholder that is shorter in compact mode.
   const placeholder = {
-    label: "Select an option...",
+    label: compact ? "Select..." : "Select an option...",
     value: null,
     color: iconColor,
   };
 
+  // Define styles for normal mode.
+  const normalPickerStyles = {
+    inputIOS: {
+      color: textColor,
+      fontSize: SIZES.small,
+      fontFamily: FONT.regular,
+    },
+    inputAndroid: {
+      color: textColor,
+      fontSize: SIZES.small,
+      fontFamily: FONT.regular,
+    },
+    placeholder: {
+      color: iconColor,
+      fontFamily: FONT.regular,
+    },
+  };
+
+  // Define styles for compact mode.
+  const compactPickerStyles = {
+    inputIOS: {
+      color: textColor,
+      fontSize: SIZES.medium,
+      fontFamily: FONT.regular,
+      textAlign: "center",
+      paddingVertical: 4,
+      paddingHorizontal: 4,
+    },
+    inputAndroid: {
+      color: textColor,
+      fontSize: SIZES.medium,
+      fontFamily: FONT.regular,
+      textAlign: "center",
+      paddingVertical: 4,
+      paddingHorizontal: 4,
+    },
+    placeholder: {
+      color: iconColor,
+      fontFamily: FONT.regular,
+      textAlign: "center",
+    },
+  };
+
+  const pickerStyles = compact ? compactPickerStyles : normalPickerStyles;
+
   return (
-    <View style={styles.container}>
-      {label && (
+    <View style={compact ? styles.compactContainer : styles.container}>
+      {/* Only show the label in non-compact mode */}
+      {label && !compact && (
         <ThemedText type="default" style={styles.label}>
           {label}
         </ThemedText>
       )}
       <View
         style={[
-          styles.inputContainer,
-          {
-            backgroundColor: bgColor,
-            borderColor: iconColor,
-            fontFamily: FONT.regular,
-          },
+          compact ? styles.compactInputContainer : styles.inputContainer,
+          { backgroundColor: bgColor, borderColor: iconColor },
         ]}
       >
         <RNPickerSelect
           placeholder={placeholder}
           value={selectedValue}
           onValueChange={onValueChange}
-          items={items.map((item) => ({ label: item, value: item }))}
-          style={{
-            inputIOS: {
-              color: textColor,
-              fontSize: SIZES.small,
-              fontFamily: FONT.regular,
-            },
-            inputAndroid: {
-              color: textColor,
-              fontSize: SIZES.small,
-              fontFamily: FONT.regular,
-            },
-            placeholder: { color: iconColor, fontFamily: FONT.regular },
-          }}
+          // Ensure items is always an array to avoid errors.
+          items={
+            items ? items.map((item) => ({ label: item, value: item })) : []
+          }
+          style={pickerStyles}
+          useNativeAndroidPickerStyle={false}
         />
       </View>
     </View>
@@ -64,13 +100,28 @@ export default function CategoryPicker({
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: 0, // Standardizing with AddPetScreen's field spacing
+    marginVertical: 0, // standard spacing with AddPetScreen's field spacing
   },
   label: {
-    marginBottom: 4, // Same as in AddPetScreen
+    marginBottom: 4,
   },
   inputContainer: {
     borderWidth: 1,
     borderRadius: 5,
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+  },
+  compactContainer: {
+    // Fixed width for compact mode—adjust as needed.
+    width: 50,
+    alignItems: "center",
+  },
+  compactInputContainer: {
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 4,
+    paddingVertical: 4,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

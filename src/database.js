@@ -27,6 +27,7 @@ export const initializeDatabase = async () => {
         morph TEXT,
         birthDate TEXT,
         weight REAL,
+        weightType TEXT,
         imageURL TEXT
       );
 
@@ -70,14 +71,14 @@ export const insertMockData = async () => {
     await db.execAsync(`
       INSERT INTO pets (name, category, species, morph, birthDate, weight, imageURL)
       VALUES
-        ('Charlie', 'Snakes', 'Corn Snake', 'Normal', '2020-06-15', 1.2, 'https://www.awsfzoo.com/media/Corn-Snake-Website-906x580.jpg'),
-        ('Max', 'Lizards', 'Leopard Gecko', 'Normal', '2019-04-10', 0.09, NULL),
-        ('Alby', 'Snakes', 'Ball Python', 'Albino', '2022-01-01', 2.5, 'https://www.worldofballpythons.com/files/morphs/albino/014.jpg'),
-        ('RedTail', 'Snakes', 'Red Tail Boa', 'Normal', '2021-05-15', 3.8, 'https://www.thesprucepets.com/thmb/JvQXAZkK-f0DcspbhkbHhQKQfcM=/2099x0/filters:no_upscale():strip_icc()/GettyImages-10014219-56a2bd3b3df78cf772796415.jpg'),
-        ('Bella', 'Snakes', 'King Snake', 'Normal', '2021-03-20', 2.3, 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Scarlet_kingsnake_%28Lampropeltis_elapsoides%29.jpg/1200px-Scarlet_kingsnake_%28Lampropeltis_elapsoides%29.jpg'),
-        ('Luna', 'Turtles', 'Red-Eared Slider', 'Normal', '2022-07-14', 1.1, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTIZ4Zv6ugrmLi9t6In1X7MwvQ30aSxR0jr3w&s'),
-        ('Rocky', 'Lizards', 'Bearded Dragon', 'Normal', '2018-10-08', 0.5, 'https://betterthancrickets.com/cdn/shop/articles/b4ccc6b7-d54c-42d0-b8ba-33564cc0798a.jpg?v=1699154925'),
-        ('Shadow', 'Snakes', 'Milk Snake', 'Black', '2023-02-11', 0.9, 'https://cdn11.bigcommerce.com/s-g64jf8ws/images/stencil/1280x1280/products/1940/5520/black_milk_adult__28339.1710892858.jpg?c=2')
+        ('Charlie', 'Snakes', 'Corn Snake', 'Normal', '2020-06-15', 1.2, 'g', 'https://www.awsfzoo.com/media/Corn-Snake-Website-906x580.jpg'),
+        ('Max', 'Lizards', 'Leopard Gecko', 'Normal', '2019-04-10', 0.09, 'g', NULL),
+        ('Alby', 'Snakes', 'Ball Python', 'Albino', '2022-01-01', 2.5, 'g', 'https://www.worldofballpythons.com/files/morphs/albino/014.jpg'),
+        ('RedTail', 'Snakes', 'Red Tail Boa', 'Normal', '2021-05-15', 3.8, 'g', 'https://www.thesprucepets.com/thmb/JvQXAZkK-f0DcspbhkbHhQKQfcM=/2099x0/filters:no_upscale():strip_icc()/GettyImages-10014219-56a2bd3b3df78cf772796415.jpg'),
+        ('Bella', 'Snakes', 'King Snake', 'Normal', '2021-03-20', 2.3, 'g', 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Scarlet_kingsnake_%28Lampropeltis_elapsoides%29.jpg/1200px-Scarlet_kingsnake_%28Lampropeltis_elapsoides%29.jpg'),
+        ('Luna', 'Turtles', 'Red-Eared Slider', 'Normal', '2022-07-14', 1.1, 'g', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTIZ4Zv6ugrmLi9t6In1X7MwvQ30aSxR0jr3w&s'),
+        ('Rocky', 'Lizards', 'Bearded Dragon', 'Normal', '2018-10-08', 0.5, 'g', 'https://betterthancrickets.com/cdn/shop/articles/b4ccc6b7-d54c-42d0-b8ba-33564cc0798a.jpg?v=1699154925'),
+        ('Shadow', 'Snakes', 'Milk Snake', 'Black', '2023-02-11', 0.9, 'g', 'https://cdn11.bigcommerce.com/s-g64jf8ws/images/stencil/1280x1280/products/1940/5520/black_milk_adult__28339.1710892858.jpg?c=2')
     `);
 
     // --- Insert sample groups ---
@@ -229,7 +230,7 @@ export const addPetToDb = async (pet) => {
   try {
     const db = await openDatabase();
     const result = await db.runAsync(
-      `INSERT INTO pets (name, category, species, morph, birthDate, weight, imageURL)
+      `INSERT INTO pets (name, category, species, morph, birthDate, weight, weightType, imageURL)
        VALUES (?, ?, ?, ?, ?, ?)`,
       [
         pet.name,
@@ -238,6 +239,7 @@ export const addPetToDb = async (pet) => {
         pet.morph,
         pet.birthDate,
         pet.weight,
+        pet.weightType,
         pet.imageURL,
       ]
     );
