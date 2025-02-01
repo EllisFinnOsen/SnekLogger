@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">30% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/10</span>
+                <span class='fraction'>3/10</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">25% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/8</span>
+                <span class='fraction'>2/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">33.33% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/3</span>
+                <span class='fraction'>1/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">30% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/10</span>
+                <span class='fraction'>3/10</span>
             </div>
         
             
@@ -93,21 +93,15 @@
 <a name='L28'></a><a href='#L28'>28</a>
 <a name='L29'></a><a href='#L29'>29</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -115,17 +109,23 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { FETCH_FEEDINGS, UPDATE_FEEDING } from "./actionTypes";
 &nbsp;
-const initialState = <span class="cstat-no" title="statement not covered" >[];</span>
+const initialState = [];
 &nbsp;
-export default function <span class="fstat-no" title="function not covered" >feedingsReducer(</span>state = <span class="branch-0 cbranch-no" title="branch not covered" >initialState,</span> action) {
-<span class="cstat-no" title="statement not covered" >  switch (action.type) {</span>
-    case FETCH_FEEDINGS:
+export default function feedingsReducer(state = initialState, action) {
+  switch (action.type) {
+<span class="branch-0 cbranch-no" title="branch not covered" >    case FETCH_FEEDINGS:</span>
       // Replace any existing feedings for this pet with the new ones
       const newFeedings = <span class="cstat-no" title="statement not covered" >action.payload;</span>
 &nbsp;
@@ -139,12 +139,12 @@ export default function <span class="fstat-no" title="function not covered" >fee
       );
 <span class="cstat-no" title="statement not covered" >      return [...filteredOld, ...newFeedings];</span>
 &nbsp;
-    case UPDATE_FEEDING:
+<span class="branch-1 cbranch-no" title="branch not covered" >    case UPDATE_FEEDING:</span>
 <span class="cstat-no" title="statement not covered" >      return state.map(<span class="fstat-no" title="function not covered" >(f</span>eeding) =&gt;</span>
 <span class="cstat-no" title="statement not covered" >        feeding.id === action.payload.id ? action.payload : feeding</span>
       );
     default:
-<span class="cstat-no" title="statement not covered" >      return state;</span>
+      return state;
   }
 }
 &nbsp;</pre></td></tr></table></pre>
@@ -154,7 +154,7 @@ export default function <span class="fstat-no" title="function not covered" >fee
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-01-30T15:49:22.681Z
+                at 2025-02-01T07:48:34.642Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

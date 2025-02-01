@@ -1,11 +1,6 @@
+// PrimaryPetCard.js
 import React from "react";
-import {
-  View,
-  Button,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-} from "react-native";
+import { View, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { checkImageURL } from "@/utils/checkImage";
 import { SIZES } from "@/constants/Theme";
@@ -18,6 +13,7 @@ export default function PrimaryPetCard({ pet }) {
   return (
     <TouchableOpacity
       onPress={() => navigation.navigate("PetProfile", { petId: pet.id })}
+      testID="primary-pet-card" // Added testID for the card
     >
       <ThemedView style={styles.container}>
         <ThemedView style={styles.imageContainer}>
@@ -29,6 +25,7 @@ export default function PrimaryPetCard({ pet }) {
             }}
             resizeMode="cover"
             style={styles.petImage}
+            testID="primary-pet-image" // Added testID for the image
           />
         </ThemedView>
 
@@ -64,13 +61,5 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     flex: 1,
-  },
-  petName: {
-    fontSize: SIZES.medium,
-  },
-  petType: {
-    fontSize: SIZES.small - 10,
-    marginTop: 3,
-    textTransform: "capitalize",
   },
 });

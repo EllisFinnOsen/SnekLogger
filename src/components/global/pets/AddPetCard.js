@@ -20,9 +20,15 @@ export default function AddPetCard() {
     <TouchableOpacity
       onPress={handlePress}
       style={[styles.card, { borderColor: iconColor }]}
+      testID="add-pet-card" // Added testID for the card container
     >
       <ThemedView style={styles.iconContainer}>
-        <Ionicons name="add-circle-outline" size={48} color={iconColor} />
+        <Ionicons
+          name="add-circle-outline"
+          size={48}
+          color={iconColor}
+          testID="add-pet-icon"
+        />
       </ThemedView>
       <ThemedText style={{ color: subtleColor }} type="default">
         Add New Pet

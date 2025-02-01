@@ -53,6 +53,7 @@ export default function PetParallaxScrollView({
             <ImageBackground
               source={{ uri: headerImageSrc }}
               style={styles.headerImage}
+              testID="header-image" // <-- Added testID here
             >
               <View style={styles.overlay}>
                 <ThemedText style={styles.petName}>{petName}</ThemedText>

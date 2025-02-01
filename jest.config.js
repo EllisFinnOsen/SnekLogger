@@ -10,6 +10,7 @@ module.exports = {
   ],
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
+    "^expo-blur$": "<rootDir>/__mocks__/expo-blur.js",
   },
   collectCoverage: true,
   collectCoverageFrom: [
