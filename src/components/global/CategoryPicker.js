@@ -3,7 +3,7 @@ import RNPickerSelect from "react-native-picker-select";
 import { StyleSheet, View } from "react-native";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { ThemedText } from "./ThemedText";
-import { SIZES } from "@/constants/Theme";
+import { FONT, SIZES } from "@/constants/Theme";
 
 export default function CategoryPicker({
   label,
@@ -31,7 +31,11 @@ export default function CategoryPicker({
       <View
         style={[
           styles.inputContainer,
-          { backgroundColor: bgColor, borderColor: iconColor },
+          {
+            backgroundColor: bgColor,
+            borderColor: iconColor,
+            fontFamily: FONT.regular,
+          },
         ]}
       >
         <RNPickerSelect
@@ -43,12 +47,14 @@ export default function CategoryPicker({
             inputIOS: {
               color: textColor,
               fontSize: SIZES.small,
+              fontFamily: FONT.regular,
             },
             inputAndroid: {
               color: textColor,
               fontSize: SIZES.small,
+              fontFamily: FONT.regular,
             },
-            placeholder: { color: iconColor },
+            placeholder: { color: iconColor, fontFamily: FONT.regular },
           }}
         />
       </View>

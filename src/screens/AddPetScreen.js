@@ -34,6 +34,8 @@ import SearchablePicker from "@/components/global/SearchablePicker";
 import { Ionicons } from "@expo/vector-icons";
 import { SIZES } from "@/constants/Theme";
 import DateTimePicker from "@react-native-community/datetimepicker";
+// Import the custom WeightSelector
+import WeightSelector from "@/components/global/WeightSelector";
 
 export default function AddPetScreen({ navigation }) {
   const dispatch = useDispatch();
@@ -49,7 +51,8 @@ export default function AddPetScreen({ navigation }) {
   const [species, setSpecies] = useState("");
   const [morph, setMorph] = useState("");
   const [birthDate, setBirthDate] = useState("");
-  const [weight, setWeight] = useState("");
+  // For weight, we'll use a numeric value starting at 0.00
+  const [weight, setWeight] = useState(0);
   const [imageURL, setImageURL] = useState("");
 
   // Date picker state
@@ -95,14 +98,12 @@ export default function AddPetScreen({ navigation }) {
           <Text style={[styles.cancelText, { color: textColor }]}>Cancel</Text>
         </TouchableOpacity>
       </View>
-
       <EditHeader
         label={"Add New Pet"}
         description={
           "Enter the listed details and press save to add a new pet."
         }
       />
-
       {/* Field Container for consistent spacing */}
       <View style={styles.fieldContainer}>
         <ThemedText type="default" style={styles.label}>
@@ -124,7 +125,6 @@ export default function AddPetScreen({ navigation }) {
           onChangeText={setName}
         />
       </View>
-
       <View style={styles.fieldContainer}>
         <CategoryPicker
           label="Category"
@@ -138,7 +138,6 @@ export default function AddPetScreen({ navigation }) {
           items={PET_CATEGORIES}
         />
       </View>
-
       {category ? (
         <View style={styles.fieldContainer}>
           <CategoryPicker
@@ -153,7 +152,6 @@ export default function AddPetScreen({ navigation }) {
           />
         </View>
       ) : null}
-
       {species ? (
         <View style={styles.fieldContainer}>
           <ThemedText type="default" style={styles.label}>
@@ -167,7 +165,6 @@ export default function AddPetScreen({ navigation }) {
           />
         </View>
       ) : null}
-
       {/* Birth Date Field */}
       <View style={styles.fieldContainer}>
         <ThemedText type="default" style={styles.label}>
@@ -181,7 +178,9 @@ export default function AddPetScreen({ navigation }) {
           ]}
           onPress={() => setShowDatePicker(true)}
         >
-          <Text style={{ color: textColor }}>{formattedBirthDate}</Text>
+          <ThemedText type="default" style={{ color: textColor }}>
+            {formattedBirthDate}
+          </ThemedText>
         </TouchableOpacity>
         {showDatePicker && (
           <DateTimePicker
@@ -197,28 +196,18 @@ export default function AddPetScreen({ navigation }) {
           />
         )}
       </View>
-
       <View style={styles.fieldContainer}>
         <ThemedText type="default" style={styles.label}>
           Weight
         </ThemedText>
-        <TextInput
-          style={[
-            styles.input,
-            {
-              color: textColor,
-              borderColor: iconColor,
-              backgroundColor: bgColor,
-              fontSize: SIZES.medium,
-            },
-          ]}
-          placeholder="Weight"
-          placeholderTextColor={iconColor}
+        <WeightSelector
           value={weight}
-          onChangeText={setWeight}
+          onChange={setWeight}
+          min={0}
+          max={10000}
+          step={1}
         />
       </View>
-
       <View style={styles.fieldContainer}>
         <ThemedText type="subtitle" style={styles.label}>
           Image URL
@@ -239,7 +228,6 @@ export default function AddPetScreen({ navigation }) {
           onChangeText={setImageURL}
         />
       </View>
-
       <Button title="Save" onPress={handleSave} />
     </ThemedScrollView>
   );
