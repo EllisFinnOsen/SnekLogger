@@ -106,9 +106,10 @@ export default function AddPetScreen({ navigation }) {
               color: textColor,
               borderColor: iconColor,
               backgroundColor: bgColor,
+              fontSize: SIZES.medium,
             },
           ]}
-          placeholder="Name"
+          placeholder="Enter pet's name"
           placeholderTextColor={iconColor}
           value={name}
           onChangeText={setName}
@@ -169,6 +170,7 @@ export default function AddPetScreen({ navigation }) {
               color: textColor,
               borderColor: iconColor,
               backgroundColor: bgColor,
+              fontSize: SIZES.medium,
             },
           ]}
           placeholder="eg. 06/16/2024"
@@ -189,6 +191,7 @@ export default function AddPetScreen({ navigation }) {
               color: textColor,
               borderColor: iconColor,
               backgroundColor: bgColor,
+              fontSize: SIZES.medium,
             },
           ]}
           placeholder="Weight"
@@ -209,6 +212,7 @@ export default function AddPetScreen({ navigation }) {
               color: textColor,
               borderColor: iconColor,
               backgroundColor: bgColor,
+              fontSize: SIZES.medium,
             },
           ]}
           placeholder="Image URL"
@@ -233,7 +237,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingVertical: 8,
-    paddingHorizontal: 16, // Added horizontal padding if needed
   },
   cancelText: {
     fontSize: 16,
