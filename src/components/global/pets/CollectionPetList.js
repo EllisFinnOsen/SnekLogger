@@ -42,6 +42,7 @@ export default function CollectionPetList() {
                 pets={pets}
                 title={group.name}
                 showAllLink={true}
+                groupId={group.id}
                 noPetsText={`No pets available in ${group.name}`}
               />
             </ThemedView>
