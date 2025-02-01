@@ -19,10 +19,15 @@ export const initializeDatabase = async () => {
     await db.execAsync(`
       PRAGMA journal_mode = WAL;
 
+      DROP TABLE IF EXISTS pets;
+      DROP TABLE IF EXISTS groups;
+      DROP TABLE IF EXISTS group_pets;
+      DROP TABLE IF EXISTS feedings;
+
       CREATE TABLE IF NOT EXISTS pets (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
-        category TEXT,        -- New category column
+        category TEXT,
         species TEXT,
         morph TEXT,
         birthDate TEXT,
@@ -57,9 +62,9 @@ export const initializeDatabase = async () => {
       );
     `);
 
-    //console.log("Database initialized");
+    console.log("Database initialized");
   } catch (error) {
-    //console.error("Error initializing database:", error);
+    console.error("Error initializing database:", error);
   }
 };
 
@@ -69,7 +74,7 @@ export const insertMockData = async () => {
 
     // --- Insert sample pets with the new category field ---
     await db.execAsync(`
-      INSERT INTO pets (name, category, species, morph, birthDate, weight, imageURL)
+      INSERT INTO pets (name, category, species, morph, birthDate, weight, weightType, imageURL)
       VALUES
         ('Charlie', 'Snakes', 'Corn Snake', 'Normal', '2020-06-15', 1.2, 'g', 'https://www.awsfzoo.com/media/Corn-Snake-Website-906x580.jpg'),
         ('Max', 'Lizards', 'Leopard Gecko', 'Normal', '2019-04-10', 0.09, 'g', NULL),
@@ -127,10 +132,10 @@ export const fetchPetsFromDb = async () => {
   try {
     const db = await openDatabase();
     const result = await db.getAllAsync("SELECT * FROM pets");
-    //feeding//console.log("Fetched pets from DB:", result);
+    console.log("Fetched pets from DB:", result);
     return result;
   } catch (error) {
-    //feeding//console.error("Error fetching pets:", error);
+    console.error("Error fetching pets:", error);
     throw error;
   }
 };
@@ -143,10 +148,10 @@ export const fetchFeedingsByPetFromDb = async (petId) => {
       "SELECT * FROM feedings WHERE petId = ?",
       [petId]
     );
-    //feeding//console.log("Fetched feedings from DB:", result);
+    console.log("Fetched feedings from DB:", result);
     return result;
   } catch (error) {
-    //feeding//console.error("Error fetching feedings:", error);
+    console.error("Error fetching feedings:", error);
     throw error;
   }
 };
@@ -161,7 +166,7 @@ export const fetchFeedingByIdFromDb = async (feedingId) => {
     );
     return result || null;
   } catch (error) {
-    //feeding//console.error("Error fetching feeding by ID:", error);
+    console.error("Error fetching feeding by ID:", error);
     throw error;
   }
 };
@@ -180,10 +185,10 @@ export const updateFeedingInDb = async (
       "UPDATE feedings SET petId = ?, feedingDate = ?, feedingTime = ?, complete = ? WHERE id = ?",
       [petId, feedingDate, feedingTime, complete, feedingId]
     );
-    //feeding//console.log("Feeding updated in DB:", result);
+    console.log("Feeding updated in DB:", result);
     return result;
   } catch (error) {
-    //feeding//console.error("Error updating feeding in DB:", error);
+    console.error("Error updating feeding in DB:", error);
     throw error;
   }
 };
@@ -231,7 +236,7 @@ export const addPetToDb = async (pet) => {
     const db = await openDatabase();
     const result = await db.runAsync(
       `INSERT INTO pets (name, category, species, morph, birthDate, weight, weightType, imageURL)
-       VALUES (?, ?, ?, ?, ?, ?)`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         pet.name,
         pet.category,
