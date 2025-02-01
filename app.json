@@ -21,11 +21,26 @@
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.ellisosen.TestReduxApp"
     },
     "web": {
       "favicon": "./src/assets/favicon.png"
     },
-    "plugins": ["expo-sqlite"]
+    "plugins": [
+      "expo-sqlite"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "652b1a71-6884-4c40-a75d-ab7df77989ea"
+      }
+    },
+    "owner": "ellisosen",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/652b1a71-6884-4c40-a75d-ab7df77989ea"
+    }
   }
 }
