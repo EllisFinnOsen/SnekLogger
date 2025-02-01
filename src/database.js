@@ -15,13 +15,14 @@ export const initializeDatabase = async () => {
   try {
     const db = await openDatabase();
 
-    // Create tables if they don't exist
+    // Create tables if they don't exist (adding the new 'category' column to pets)
     await db.execAsync(`
       PRAGMA journal_mode = WAL;
 
       CREATE TABLE IF NOT EXISTS pets (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
+        category TEXT,        -- New category column
         species TEXT,
         morph TEXT,
         birthDate TEXT,
@@ -55,9 +56,9 @@ export const initializeDatabase = async () => {
       );
     `);
 
-    //feeding//console.log("Database initialized");
+    //console.log("Database initialized");
   } catch (error) {
-    //feeding//console.error("Error initializing database:", error);
+    //console.error("Error initializing database:", error);
   }
 };
 
@@ -65,18 +66,18 @@ export const insertMockData = async () => {
   try {
     const db = await openDatabase();
 
-    // --- Insert sample pets ---
+    // --- Insert sample pets with the new category field ---
     await db.execAsync(`
-      INSERT INTO pets (name, species, morph, birthDate, weight, imageURL)
+      INSERT INTO pets (name, category, species, morph, birthDate, weight, imageURL)
       VALUES
-        ('Charlie', 'Snake', 'Corn Snake', '2020-06-15', 1.2, 'https://www.awsfzoo.com/media/Corn-Snake-Website-906x580.jpg'),
-        ('Max', 'Lizard', 'Leopard Gecko', '2019-04-10', 0.09, NULL),
-        ('Alby', 'Snake', 'Albino Ball Python', '2022-01-01', 2.5, 'https://www.worldofballpythons.com/files/morphs/albino/014.jpg'),
-        ('RedTail', 'Snake', 'Red Tail Boa', '2021-05-15', 3.8, 'https://www.thesprucepets.com/thmb/JvQXAZkK-f0DcspbhkbHhQKQfcM=/2099x0/filters:no_upscale():strip_icc()/GettyImages-10014219-56a2bd3b3df78cf772796415.jpg'),
-        ('Bella', 'Snake', 'King Snake', '2021-03-20', 2.3, 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Scarlet_kingsnake_%28Lampropeltis_elapsoides%29.jpg/1200px-Scarlet_kingsnake_%28Lampropeltis_elapsoides%29.jpg'),
-        ('Luna', 'Turtle', 'Red-Eared Slider', '2022-07-14', 1.1, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTIZ4Zv6ugrmLi9t6In1X7MwvQ30aSxR0jr3w&s'),
-        ('Rocky', 'Lizard', 'Bearded Dragon', '2018-10-08', 0.5, 'https://betterthancrickets.com/cdn/shop/articles/b4ccc6b7-d54c-42d0-b8ba-33564cc0798a.jpg?v=1699154925'),
-        ('Shadow', 'Snake', 'Black Milk Snake', '2023-02-11', 0.9, 'https://cdn11.bigcommerce.com/s-g64jf8ws/images/stencil/1280x1280/products/1940/5520/black_milk_adult__28339.1710892858.jpg?c=2')
+        ('Charlie', 'Snakes', 'Corn Snake', 'Normal', '2020-06-15', 1.2, 'https://www.awsfzoo.com/media/Corn-Snake-Website-906x580.jpg'),
+        ('Max', 'Lizards', 'Leopard Gecko', 'Normal', '2019-04-10', 0.09, NULL),
+        ('Alby', 'Snakes', 'Ball Python', 'Albino', '2022-01-01', 2.5, 'https://www.worldofballpythons.com/files/morphs/albino/014.jpg'),
+        ('RedTail', 'Snakes', 'Red Tail Boa', 'Normal', '2021-05-15', 3.8, 'https://www.thesprucepets.com/thmb/JvQXAZkK-f0DcspbhkbHhQKQfcM=/2099x0/filters:no_upscale():strip_icc()/GettyImages-10014219-56a2bd3b3df78cf772796415.jpg'),
+        ('Bella', 'Snakes', 'King Snake', 'Normal', '2021-03-20', 2.3, 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Scarlet_kingsnake_%28Lampropeltis_elapsoides%29.jpg/1200px-Scarlet_kingsnake_%28Lampropeltis_elapsoides%29.jpg'),
+        ('Luna', 'Turtles', 'Red-Eared Slider', 'Normal', '2022-07-14', 1.1, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTIZ4Zv6ugrmLi9t6In1X7MwvQ30aSxR0jr3w&s'),
+        ('Rocky', 'Lizards', 'Bearded Dragon', 'Normal', '2018-10-08', 0.5, 'https://betterthancrickets.com/cdn/shop/articles/b4ccc6b7-d54c-42d0-b8ba-33564cc0798a.jpg?v=1699154925'),
+        ('Shadow', 'Snakes', 'Milk Snake', 'Black', '2023-02-11', 0.9, 'https://cdn11.bigcommerce.com/s-g64jf8ws/images/stencil/1280x1280/products/1940/5520/black_milk_adult__28339.1710892858.jpg?c=2')
     `);
 
     // --- Insert sample groups ---
@@ -112,9 +113,9 @@ export const insertMockData = async () => {
         (6, '2025-05-11', '09:30:00', 'Veggies', 0.4, 'Added leafy greens', 1);
     `);
 
-    //feeding//console.log("Mock data inserted");
+    //console.log("Mock data inserted");
   } catch (error) {
-    //feeding//console.error("Error inserting mock data:", error);
+    //console.error("Error inserting mock data:", error);
   }
 };
 
@@ -228,10 +229,11 @@ export const addPetToDb = async (pet) => {
   try {
     const db = await openDatabase();
     const result = await db.runAsync(
-      `INSERT INTO pets (name, species, morph, birthDate, weight, imageURL)
+      `INSERT INTO pets (name, category, species, morph, birthDate, weight, imageURL)
        VALUES (?, ?, ?, ?, ?, ?)`,
       [
         pet.name,
+        pet.category,
         pet.species,
         pet.morph,
         pet.birthDate,
