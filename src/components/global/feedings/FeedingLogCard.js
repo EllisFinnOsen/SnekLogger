@@ -1,3 +1,4 @@
+// FeedingLogCard.js
 import React, { useState, useEffect } from "react";
 import { TouchableOpacity, StyleSheet, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
@@ -23,9 +24,7 @@ export default function FeedingLogCard({ item }) {
   const [isChecked, setIsChecked] = useState(item.complete === 1);
 
   const textColor = useThemeColor({}, "text");
-  const iconColor = useThemeColor({}, "icon");
   const fieldColor = useThemeColor({}, "field");
-  const subtleTextColor = useThemeColor({}, "subtleText");
   const activeColor = useThemeColor({}, "active");
   const bgColor = useThemeColor({}, "background");
 
@@ -46,7 +45,7 @@ export default function FeedingLogCard({ item }) {
       dispatch(updateFeeding({ ...item, complete: newCompleteValue }));
       setIsChecked(!isChecked);
     } catch (error) {
-      //feeding//console.error("Error updating feeding:", error);
+      // Optionally log the error.
     }
   };
 
@@ -65,20 +64,28 @@ export default function FeedingLogCard({ item }) {
           styles.container,
           { backgroundColor: isChecked ? fieldColor : textColor },
         ]}
+        testID="feeding-log-card" // Main card testID
       >
         <View style={styles.topRow}>
           <TouchableOpacity
             onPress={(e) => {
-              e.stopPropagation();
+              // In tests, e might be undefined so we safeguard here.
+              if (e && typeof e.stopPropagation === "function") {
+                e.stopPropagation();
+              }
               handleToggleCheck();
             }}
             style={styles.toggle}
+            testID="feeding-log-toggle" // Toggle button testID
           >
-            <Ionicons
-              name={isChecked ? "checkbox" : "square-outline"}
-              size={24}
-              color={isChecked ? activeColor : fieldColor}
-            />
+            {/* Wrap the Ionicons in a View that has a testID */}
+            <View testID="feeding-log-icon">
+              <Ionicons
+                name={isChecked ? "checkbox" : "square-outline"}
+                size={24}
+                color={isChecked ? activeColor : fieldColor}
+              />
+            </View>
           </TouchableOpacity>
           <View style={styles.dateColumn}>
             <ThemedText

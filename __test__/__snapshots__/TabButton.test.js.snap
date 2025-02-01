@@ -1,0 +1,111 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TabButton applies active styles when name equals activeTab 1`] = `
+<View
+  accessibilityState={
+    {
+      "busy": undefined,
+      "checked": undefined,
+      "disabled": undefined,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
+  accessible={true}
+  collapsable={false}
+  focusable={true}
+  onClick={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    {
+      "backgroundColor": "blue",
+      "borderRadius": 10,
+      "marginLeft": 2,
+      "opacity": 1,
+      "paddingHorizontal": 20,
+      "paddingVertical": 12,
+      "shadowColor": "red",
+    }
+  }
+>
+  <Text
+    style={
+      {
+        "color": "white",
+        "fontFamily": "OutfitMed",
+        "fontSize": 16,
+      }
+    }
+  >
+    Home
+  </Text>
+</View>
+`;
+
+exports[`TabButton applies inactive styles when name does not equal activeTab 1`] = `
+<View
+  accessibilityState={
+    {
+      "busy": undefined,
+      "checked": undefined,
+      "disabled": undefined,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
+  accessible={true}
+  collapsable={false}
+  focusable={true}
+  onClick={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    {
+      "backgroundColor": "gray",
+      "borderRadius": 10,
+      "marginLeft": 2,
+      "opacity": 1,
+      "paddingHorizontal": 20,
+      "paddingVertical": 12,
+      "shadowColor": "red",
+    }
+  }
+>
+  <Text
+    style={
+      {
+        "color": "black",
+        "fontFamily": "OutfitMed",
+        "fontSize": 16,
+      }
+    }
+  >
+    Home
+  </Text>
+</View>
+`;

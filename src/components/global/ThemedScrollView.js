@@ -15,6 +15,7 @@ export default function SimpleScrollView({ children }) {
         scrollEventThrottle={16}
         scrollIndicatorInsets={{ bottom }}
         contentContainerStyle={{ paddingBottom: bottom }}
+        testID="simple-scrollview" // <-- Added testID for testing
       >
         <ThemedView style={styles.content}>{children}</ThemedView>
       </Animated.ScrollView>
