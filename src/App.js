@@ -10,6 +10,10 @@ import store from "@/redux/store";
 import StackNavigator from "@/navigation/StackNavigator";
 import useColorScheme from "@/hooks/useColorScheme";
 import { Provider as PaperProvider } from "react-native-paper";
+import { LogBox } from "react-native";
+
+// Ignore VirtualizedLists nested warning
+LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
 
 export default function App() {
   const colorScheme = useColorScheme();

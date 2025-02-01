@@ -2,8 +2,11 @@ import React from "react";
 import RNPickerSelect from "react-native-picker-select";
 import { StyleSheet, View } from "react-native";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { ThemedText } from "./ThemedText";
+import { SIZES } from "@/constants/Theme";
 
 export default function CategoryPicker({
+  label,
   selectedValue,
   onValueChange,
   items,
@@ -19,40 +22,49 @@ export default function CategoryPicker({
   };
 
   return (
-    <View
-      style={[
-        styles.inputContainer,
-        { backgroundColor: bgColor, borderColor: iconColor },
-      ]}
-    >
-      <RNPickerSelect
-        placeholder={placeholder}
-        value={selectedValue}
-        onValueChange={onValueChange}
-        items={items.map((item) => ({ label: item, value: item }))}
-        style={{
-          inputIOS: {
-            color: textColor,
-            padding: 12,
-          },
-          inputAndroid: {
-            color: textColor,
-            padding: 8,
-          },
-          placeholder: {
-            color: iconColor,
-          },
-        }}
-      />
+    <View style={styles.container}>
+      {label && (
+        <ThemedText type="default" style={styles.label}>
+          {label}
+        </ThemedText>
+      )}
+      <View
+        style={[
+          styles.inputContainer,
+          { backgroundColor: bgColor, borderColor: iconColor },
+        ]}
+      >
+        <RNPickerSelect
+          placeholder={placeholder}
+          value={selectedValue}
+          onValueChange={onValueChange}
+          items={items.map((item) => ({ label: item, value: item }))}
+          style={{
+            inputIOS: {
+              color: textColor,
+              fontSize: SIZES.small,
+            },
+            inputAndroid: {
+              color: textColor,
+              fontSize: SIZES.small,
+            },
+            placeholder: { color: iconColor },
+          }}
+        />
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    marginVertical: 0, // Standardizing with AddPetScreen's field spacing
+  },
+  label: {
+    marginBottom: 4, // Same as in AddPetScreen
+  },
   inputContainer: {
     borderWidth: 1,
     borderRadius: 5,
-    marginVertical: 8,
-    paddingHorizontal: 8,
   },
 });

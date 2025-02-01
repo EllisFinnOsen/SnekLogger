@@ -1,12 +1,19 @@
-// AddPetScreen.js
 import React, { useState } from "react";
-import { TextInput, Button, StyleSheet } from "react-native";
+import {
+  TextInput,
+  Button,
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+} from "react-native";
 import { useDispatch } from "react-redux";
 import { addPetToDb } from "@/database";
 import { addPet } from "@/redux/actions";
-import { ThemedView } from "@/components/global/ThemedView";
+import ThemedScrollView from "@/components/global/ThemedScrollView";
 import { ThemedText } from "@/components/global/ThemedText";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import EditHeader from "@/components/global/EditHeader";
 
 // Import categories and species mapping
 import {
@@ -14,31 +21,35 @@ import {
   SPECIES_BY_CATEGORY,
 } from "@/constants/SpeciesMapping";
 
-// Import the Picker component
+// Import the picker component (for Category & Species)
 import CategoryPicker from "@/components/global/CategoryPicker";
+
 // Import morph types
 import { MORPH_TYPES } from "@/constants/MorphTypes";
-// Import AutocompleteInput for the morph field (this is your custom autocomplete component)
-import AutocompleteInput from "@/components/global/AutocompleteInput";
+
+// Import our AutocompleteInput for the morph field
+import SearchablePicker from "@/components/global/SearchablePicker";
+
+// If you are using Expo, you can use Ionicons (or replace with your icon library)
+import { Ionicons } from "@expo/vector-icons";
+import { SIZES } from "@/constants/Theme";
 
 export default function AddPetScreen({ navigation }) {
   const dispatch = useDispatch();
 
-  // Pet details state
+  // Theme colors (retrieved once for reuse)
+  const textColor = useThemeColor({}, "text");
+  const iconColor = useThemeColor({}, "icon");
+  const bgColor = useThemeColor({}, "background");
+
+  // State for pet details
   const [name, setName] = useState("");
-  const [category, setCategory] = useState(""); // New category field
-  const [species, setSpecies] = useState(""); // Species now depends on category
+  const [category, setCategory] = useState("");
+  const [species, setSpecies] = useState("");
   const [morph, setMorph] = useState("");
   const [birthDate, setBirthDate] = useState("");
   const [weight, setWeight] = useState("");
   const [imageURL, setImageURL] = useState("");
-
-  // Theme colors
-  const subtleColor = useThemeColor({}, "subtle");
-  const iconColor = useThemeColor({}, "icon");
-  const fieldColor = useThemeColor({}, "field");
-  const textColor = useThemeColor({}, "text");
-  const bgColor = useThemeColor({}, "background");
 
   // Get species suggestions based on the selected category.
   const speciesSuggestions = category
@@ -49,7 +60,7 @@ export default function AddPetScreen({ navigation }) {
     try {
       const newPet = {
         name,
-        category, // save the category too
+        category,
         species,
         morph,
         birthDate,
@@ -65,125 +76,178 @@ export default function AddPetScreen({ navigation }) {
   };
 
   return (
-    <ThemedView style={[styles.container]}>
-      <ThemedText type="title">Add New Pet</ThemedText>
+    <ThemedScrollView contentContainerStyle={styles.container}>
+      {/* Custom header with Back arrow and Cancel link */}
+      <View style={styles.customHeader}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back" size={24} color={textColor} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Text style={[styles.cancelText, { color: textColor }]}>Cancel</Text>
+        </TouchableOpacity>
+      </View>
 
-      {/* Name field */}
-      <TextInput
-        style={[
-          styles.input,
-          {
-            color: textColor,
-            borderColor: iconColor,
-            backgroundColor: bgColor,
-          },
-        ]}
-        placeholder="Name"
-        placeholderTextColor={iconColor}
-        value={name}
-        onChangeText={setName}
+      <EditHeader
+        label={"Add New Pet"}
+        description={
+          "Enter the listed details and press save to add a new pet."
+        }
       />
 
-      {/* Category selection using native picker */}
-      <CategoryPicker
-        selectedValue={category}
-        onValueChange={(itemValue) => {
-          setCategory(itemValue);
-          // Clear species and morph when category changes
-          setSpecies("");
-          setMorph("");
-        }}
-        items={PET_CATEGORIES}
-      />
+      {/* Field Container for consistent spacing */}
+      <View style={styles.fieldContainer}>
+        <ThemedText type="default" style={styles.label}>
+          Name
+        </ThemedText>
+        <TextInput
+          style={[
+            styles.input,
+            {
+              color: textColor,
+              borderColor: iconColor,
+              backgroundColor: bgColor,
+            },
+          ]}
+          placeholder="Name"
+          placeholderTextColor={iconColor}
+          value={name}
+          onChangeText={setName}
+        />
+      </View>
 
-      {/* Species selection: only render if a category is selected */}
-      {category ? (
+      <View style={styles.fieldContainer}>
         <CategoryPicker
-          selectedValue={species}
+          label="Category"
+          selectedValue={category}
           onValueChange={(itemValue) => {
-            setSpecies(itemValue);
-            // Clear morph when species changes
+            setCategory(itemValue);
+            // Reset species and morph if category changes.
+            setSpecies("");
             setMorph("");
           }}
-          items={speciesSuggestions}
+          items={PET_CATEGORIES}
         />
+      </View>
+
+      {category ? (
+        <View style={styles.fieldContainer}>
+          <CategoryPicker
+            label="Species"
+            selectedValue={species}
+            onValueChange={(itemValue) => {
+              setSpecies(itemValue);
+              // Reset morph when species changes.
+              setMorph("");
+            }}
+            items={speciesSuggestions}
+          />
+        </View>
       ) : null}
 
-      {/* Morph autocomplete: only show if a species is selected */}
       {species ? (
-        <AutocompleteInput
-          suggestions={MORPH_TYPES[species] || []}
-          value={morph}
-          onChangeText={setMorph}
-          placeholder="Morph"
-          textColor={textColor}
-          iconColor={iconColor}
-          bgColor={bgColor}
-        />
+        <View style={styles.fieldContainer}>
+          <ThemedText type="default" style={styles.label}>
+            Morph
+          </ThemedText>
+          <SearchablePicker
+            options={MORPH_TYPES[species] || []}
+            selectedValue={morph}
+            onValueChange={setMorph}
+            placeholder="Select a morph..."
+          />
+        </View>
       ) : null}
 
-      {/* Birth Date field */}
-      <TextInput
-        style={[
-          styles.input,
-          {
-            color: textColor,
-            borderColor: iconColor,
-            backgroundColor: bgColor,
-          },
-        ]}
-        placeholder="Birth Date"
-        placeholderTextColor={iconColor}
-        value={birthDate}
-        onChangeText={setBirthDate}
-      />
+      <View style={styles.fieldContainer}>
+        <ThemedText type="default" style={styles.label}>
+          Birth Date
+        </ThemedText>
+        <TextInput
+          style={[
+            styles.input,
+            {
+              color: textColor,
+              borderColor: iconColor,
+              backgroundColor: bgColor,
+            },
+          ]}
+          placeholder="eg. 06/16/2024"
+          placeholderTextColor={iconColor}
+          value={birthDate}
+          onChangeText={setBirthDate}
+        />
+      </View>
 
-      {/* Weight field */}
-      <TextInput
-        style={[
-          styles.input,
-          {
-            color: textColor,
-            borderColor: iconColor,
-            backgroundColor: bgColor,
-          },
-        ]}
-        placeholder="Weight"
-        placeholderTextColor={iconColor}
-        value={weight}
-        onChangeText={setWeight}
-      />
+      <View style={styles.fieldContainer}>
+        <ThemedText type="default" style={styles.label}>
+          Weight
+        </ThemedText>
+        <TextInput
+          style={[
+            styles.input,
+            {
+              color: textColor,
+              borderColor: iconColor,
+              backgroundColor: bgColor,
+            },
+          ]}
+          placeholder="Weight"
+          placeholderTextColor={iconColor}
+          value={weight}
+          onChangeText={setWeight}
+        />
+      </View>
 
-      {/* Image URL field */}
-      <TextInput
-        style={[
-          styles.input,
-          {
-            color: textColor,
-            borderColor: iconColor,
-            backgroundColor: bgColor,
-          },
-        ]}
-        placeholder="Image URL"
-        placeholderTextColor={iconColor}
-        value={imageURL}
-        onChangeText={setImageURL}
-      />
+      <View style={styles.fieldContainer}>
+        <ThemedText type="subtitle" style={styles.label}>
+          Image URL
+        </ThemedText>
+        <TextInput
+          style={[
+            styles.input,
+            {
+              color: textColor,
+              borderColor: iconColor,
+              backgroundColor: bgColor,
+            },
+          ]}
+          placeholder="Image URL"
+          placeholderTextColor={iconColor}
+          value={imageURL}
+          onChangeText={setImageURL}
+        />
+      </View>
 
       <Button title="Save" onPress={handleSave} />
-    </ThemedView>
+    </ThemedScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 16,
+    flexGrow: 1,
+    padding: 8, // Ensure no extra padding is added by the scroll view
+  },
+  customHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 8,
+    paddingHorizontal: 16, // Added horizontal padding if needed
+  },
+  cancelText: {
+    fontSize: 16,
+  },
+  fieldContainer: {
+    marginVertical: 0, // Matches the marginVertical used in CategoryPicker's container
+  },
+  label: {
+    marginBottom: 4, // Matches CategoryPicker's label marginBottom
   },
   input: {
     borderWidth: 1,
-    padding: 8,
-    marginVertical: 8,
+    paddingHorizontal: SIZES.small,
     borderRadius: 5,
+    paddingVertical: SIZES.medium,
   },
 });

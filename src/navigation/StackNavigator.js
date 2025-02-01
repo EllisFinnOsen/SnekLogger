@@ -32,7 +32,11 @@ export default function StackNavigator() {
         <Stack.Screen name="PetProfile" component={PetProfileScreen} />
         <Stack.Screen name="EditFeeding" component={EditFeedingScreen} />
         <Stack.Screen name="GroupScreen" component={GroupScreen} />
-        <Stack.Screen name="AddPetScreen" component={AddPetScreen} />
+        <Stack.Screen
+          name="AddPetScreen"
+          component={AddPetScreen}
+          options={{ headerShown: false }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
