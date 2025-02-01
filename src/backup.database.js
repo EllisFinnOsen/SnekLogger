@@ -19,10 +19,6 @@ export const initializeDatabase = async () => {
     await db.execAsync(`
       PRAGMA journal_mode = WAL;
 
-DROP TABLE IF EXISTS pets;
-      DROP TABLE IF EXISTS feedings;
-      DROP TABLE IF EXISTS group_pets;
-      DROP TABLE IF EXISTS groups;
 
       CREATE TABLE IF NOT EXISTS pets (
         id INTEGER PRIMARY KEY AUTOINCREMENT,

@@ -8,8 +8,8 @@ import {
 import {
   fetchPetsFromDb,
   fetchFeedingsByPetFromDb,
-  fetchGroupsFromDb,
-  fetchGroupPetsFromDb,
+  getGroupsFromDb,
+  fetchPetsByGroupIdFromDb,
 } from "@/database";
 
 export const fetchPets = () => async (dispatch) => {
@@ -32,19 +32,25 @@ export const fetchFeedingsByPet = (petId) => async (dispatch) => {
 
 export const fetchGroups = () => async (dispatch) => {
   try {
-    const groups = await fetchGroupsFromDb();
-    dispatch({ type: FETCH_GROUPS, payload: groups });
+    const groups = await getGroupsFromDb();
+    dispatch({
+      type: FETCH_GROUPS,
+      payload: groups,
+    });
   } catch (error) {
-    //feeding//console.error("Error fetching groups:", error);
+    console.error("Error fetching groups:", error);
   }
 };
 
-export const fetchGroupPets = () => async (dispatch) => {
+export const fetchPetsByGroupId = (groupId) => async (dispatch) => {
   try {
-    const groupPets = await fetchGroupPetsFromDb();
-    dispatch({ type: FETCH_GROUP_PETS, payload: groupPets });
+    const pets = await fetchPetsByGroupIdFromDb(groupId);
+    dispatch({
+      type: FETCH_GROUP_PETS,
+      payload: { groupId, pets },
+    });
   } catch (error) {
-    //feeding//console.error("Error fetching group pets:", error);
+    console.error(`Error fetching pets for group ${groupId}:`, error);
   }
 };
 

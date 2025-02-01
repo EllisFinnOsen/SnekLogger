@@ -1,8 +1,9 @@
-import { FETCH_GROUPS } from './actionTypes';
+// groupsReducer.js
+import { FETCH_GROUPS } from "./actionTypes";
 
-const initialState = [];
+const initialGroupsState = [];
 
-export default function groupsReducer(state = initialState, action) {
+export default function groupsReducer(state = initialGroupsState, action) {
   switch (action.type) {
     case FETCH_GROUPS:
       return action.payload;

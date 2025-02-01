@@ -14,3 +14,25 @@ export const selectUpcomingFeedings = createSelector(
   (feedings) =>
     feedings.filter((feeding) => new Date(feeding.feedingDate) > new Date())
 );
+
+export const selectPastFeedings = createSelector(
+  [feedingsSelector],
+  (feedings) =>
+    feedings.filter((feeding) => new Date(feeding.feedingDate) < new Date())
+);
+
+export const selectCompleteFeedings = createSelector(
+  [feedingsSelector],
+  (feedings) => feedings.filter((feeding) => feeding.complete === 1)
+);
+
+export const selectPastCompleteFeedings = createSelector(
+  [feedingsSelector],
+  (feedings) =>
+    feedings
+      .filter(
+        (feeding) =>
+          feeding.complete === 1 && new Date(feeding.feedingDate) < new Date()
+      )
+      .sort((a, b) => new Date(b.feedingDate) - new Date(a.feedingDate)) // Sort from newest to oldest
+);

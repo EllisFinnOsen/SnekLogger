@@ -1,18 +1,18 @@
 import React from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View, ScrollView } from "react-native";
 import { ThemedView } from "@/components/global/ThemedView";
 import { ThemedText } from "@/components/global/ThemedText";
-import FeedingLogCard from "@/components/global/feedings/FeedingLogCard";
+import PrimaryPetCard from "@/components/global/pets/PrimaryPetCard";
 
-export default function FeedingsList({
-  feedings = [],
+export default function PetList({
+  pets = [],
   title,
   showAllLink = false,
-  noFeedingsText = "No feedings available",
+  noPetsText = "No pets available",
 }) {
-  // If no feedings, show a fallback message
-  if (feedings.length === 0) {
-    return <ThemedText type="default">{noFeedingsText}</ThemedText>;
+  // If no pets, show a fallback message
+  if (pets.length === 0) {
+    return <ThemedText type="default">{noPetsText}</ThemedText>;
   }
 
   return (
@@ -30,13 +30,11 @@ export default function FeedingsList({
       ) : null}
 
       {/* Render cards */}
-      <ThemedView style={styles.displayCardsContainer}>
-        {feedings.map((item) => (
-          <View key={item.id} style={styles.cardContainer}>
-            <FeedingLogCard item={item} />
-          </View>
+      <ScrollView horizontal style={styles.petList}>
+        {pets.map((pet) => (
+          <PrimaryPetCard key={pet.id} pet={pet} /> // Use the new component
         ))}
-      </ThemedView>
+      </ScrollView>
     </ThemedView>
   );
 }
@@ -49,6 +47,14 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   displayCardsContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 16,
+  },
+  cardContainer: {
+    width: "48%",
+  },
+  petList: {
     marginBottom: 32,
   },
 });
