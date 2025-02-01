@@ -14,7 +14,11 @@ import {
   SPECIES_BY_CATEGORY,
 } from "@/constants/SpeciesMapping";
 
-// Import the updated Autocomplete component
+// Import the Picker component
+import CategoryPicker from "@/components/global/CategoryPicker";
+// Import morph types
+import { MORPH_TYPES } from "@/constants/MorphTypes";
+// Import AutocompleteInput for the morph field (this is your custom autocomplete component)
 import AutocompleteInput from "@/components/global/AutocompleteInput";
 
 export default function AddPetScreen({ navigation }) {
@@ -37,7 +41,6 @@ export default function AddPetScreen({ navigation }) {
   const bgColor = useThemeColor({}, "background");
 
   // Get species suggestions based on the selected category.
-  // If no category is selected, species suggestions can be an empty array or a default list.
   const speciesSuggestions = category
     ? SPECIES_BY_CATEGORY[category] || []
     : [];
@@ -62,7 +65,7 @@ export default function AddPetScreen({ navigation }) {
   };
 
   return (
-    <ThemedView style={[styles.container, { overflow: "visible" }]}>
+    <ThemedView style={[styles.container]}>
       <ThemedText type="title">Add New Pet</ThemedText>
 
       {/* Name field */}
@@ -81,47 +84,43 @@ export default function AddPetScreen({ navigation }) {
         onChangeText={setName}
       />
 
-      {/* Category selection */}
-      <AutocompleteInput
-        suggestions={PET_CATEGORIES}
-        value={category}
-        onChangeText={(value) => {
-          setCategory(value);
-          // Clear species when category changes
+      {/* Category selection using native picker */}
+      <CategoryPicker
+        selectedValue={category}
+        onValueChange={(itemValue) => {
+          setCategory(itemValue);
+          // Clear species and morph when category changes
           setSpecies("");
+          setMorph("");
         }}
-        placeholder="Category"
-        textColor={textColor}
-        iconColor={iconColor}
-        bgColor={bgColor}
+        items={PET_CATEGORIES}
       />
 
-      {/* Species selection - suggestions change based on selected category */}
-      <AutocompleteInput
-        suggestions={speciesSuggestions}
-        value={species}
-        onChangeText={setSpecies}
-        placeholder="Species"
-        textColor={textColor}
-        iconColor={iconColor}
-        bgColor={bgColor}
-      />
+      {/* Species selection: only render if a category is selected */}
+      {category ? (
+        <CategoryPicker
+          selectedValue={species}
+          onValueChange={(itemValue) => {
+            setSpecies(itemValue);
+            // Clear morph when species changes
+            setMorph("");
+          }}
+          items={speciesSuggestions}
+        />
+      ) : null}
 
-      {/* Morph field */}
-      <TextInput
-        style={[
-          styles.input,
-          {
-            color: textColor,
-            borderColor: iconColor,
-            backgroundColor: bgColor,
-          },
-        ]}
-        placeholder="Morph"
-        placeholderTextColor={iconColor}
-        value={morph}
-        onChangeText={setMorph}
-      />
+      {/* Morph autocomplete: only show if a species is selected */}
+      {species ? (
+        <AutocompleteInput
+          suggestions={MORPH_TYPES[species] || []}
+          value={morph}
+          onChangeText={setMorph}
+          placeholder="Morph"
+          textColor={textColor}
+          iconColor={iconColor}
+          bgColor={bgColor}
+        />
+      ) : null}
 
       {/* Birth Date field */}
       <TextInput

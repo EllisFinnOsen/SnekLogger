@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+// AutocompleteInput.js
+import { useDebounce } from "@/hooks/useDebounce";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   TextInput,
@@ -8,8 +11,9 @@ import {
   StyleSheet,
   Platform,
 } from "react-native";
-// Import Portal from react-native-paper (or another portal library)
+// Import Portal from react-native-paper
 import { Portal } from "react-native-paper";
+import { ThemedText } from "./ThemedText";
 
 export default function AutocompleteInput({
   suggestions = [],
@@ -23,23 +27,56 @@ export default function AutocompleteInput({
 }) {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
+  const [dropdownTop, setDropdownTop] = useState(0);
+  const containerRef = useRef(null);
+  const fieldColor = useThemeColor({}, "field");
 
+  // Ensure value is a string (if it's null, default to "")
+  const safeValue = value || "";
+
+  // Measure the position of the autocomplete container on layout
+  const measurePosition = () => {
+    if (containerRef.current) {
+      containerRef.current.measureInWindow((x, y, width, height) => {
+        // Position dropdown just below the container with an added offset of 5px
+        setDropdownTop(y + height + 50);
+      });
+    }
+  };
+
+  // Re-measure whenever the input is focused or safeValue changes
+  useEffect(() => {
+    if (isFocused) {
+      measurePosition();
+    }
+  }, [isFocused, safeValue]);
+
+  // Determine which suggestions to show:
+  const debouncedValue = useDebounce(safeValue, 300);
   const filteredSuggestions =
-    isFocused && value.trim() === "" && showAllOnFocus
-      ? suggestions
-      : suggestions.filter((item) =>
-          item.toLowerCase().includes(value.toLowerCase())
-        );
+    isFocused && debouncedValue.trim() === "" && showAllOnFocus
+      ? suggestions.slice(0, 50)
+      : suggestions
+          .filter(
+            (item) =>
+              item && item.toLowerCase().includes(debouncedValue.toLowerCase())
+          )
+          .slice(0, 50);
 
   const toggleDropdown = () => {
     setShowSuggestions((prev) => !prev);
     if (!showSuggestions) {
       setIsFocused(true);
+      measurePosition();
     }
   };
 
   return (
-    <View style={styles.autocompleteContainer}>
+    <View
+      ref={containerRef}
+      onLayout={measurePosition}
+      style={styles.autocompleteContainer}
+    >
       <View style={styles.inputContainer}>
         <TextInput
           style={[
@@ -52,18 +89,21 @@ export default function AutocompleteInput({
           ]}
           placeholder={placeholder}
           placeholderTextColor={iconColor}
-          value={value}
+          value={safeValue}
           onChangeText={(text) => {
             onChangeText(text);
             setShowSuggestions(true);
           }}
           onFocus={() => {
             setIsFocused(true);
-            if (value.trim() === "" && showAllOnFocus) {
+            // Show suggestions immediately on focus if nothing has been typed yet
+            if (safeValue.trim() === "" && showAllOnFocus) {
               setShowSuggestions(true);
             }
+            measurePosition();
           }}
           onBlur={() => {
+            // Delay hiding suggestions to allow press events on suggestion items
             setTimeout(() => {
               setShowSuggestions(false);
               setIsFocused(false);
@@ -84,19 +124,28 @@ export default function AutocompleteInput({
           <FlatList
             style={[
               styles.suggestionsContainer,
-              { backgroundColor: bgColor, borderColor: iconColor },
+              {
+                backgroundColor: bgColor,
+                borderColor: iconColor,
+                top: dropdownTop,
+              },
             ]}
             data={filteredSuggestions}
             keyExtractor={(item, index) => item + index}
             renderItem={({ item }) => (
               <TouchableOpacity
-                style={styles.suggestionItem}
+                style={[
+                  styles.suggestionItem,
+                  { borderBottomColor: fieldColor },
+                ]}
                 onPress={() => {
                   onChangeText(item);
                   setShowSuggestions(false);
                 }}
               >
-                <Text style={{ color: textColor }}>{item}</Text>
+                <ThemedText type="default" style={{ color: textColor }}>
+                  {item}
+                </ThemedText>
               </TouchableOpacity>
             )}
           />
@@ -129,18 +178,17 @@ const styles = StyleSheet.create({
   },
   suggestionsContainer: {
     position: "absolute",
-    top: Platform.OS === "ios" ? 50 : 45,
     left: 0,
     right: 0,
     borderWidth: 1,
+    marginHorizontal: 16,
     borderTopWidth: 0,
     maxHeight: 150,
-    zIndex: 9999,
-    elevation: 20,
+    zIndex: 9999, // high z-index for proper stacking
+    elevation: 20, // ensures the dropdown appears above other elements on Android
   },
   suggestionItem: {
     padding: 8,
     borderBottomWidth: 1,
-    borderBottomColor: "#eee",
   },
 });
