@@ -1,19 +1,19 @@
 // AutocompleteInput.js
 import { useDebounce } from "@/hooks/useDebounce";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import {
   View,
   TextInput,
   FlatList,
   TouchableOpacity,
-  Text,
   StyleSheet,
   Platform,
 } from "react-native";
 // Import Portal from react-native-paper
 import { Portal } from "react-native-paper";
 import { ThemedText } from "./ThemedText";
+import Fuse from "fuse.js";
 
 export default function AutocompleteInput({
   suggestions = [],
@@ -34,11 +34,25 @@ export default function AutocompleteInput({
   // Ensure value is a string (if it's null, default to "")
   const safeValue = value || "";
 
+  // Debounce the input value
+  const debouncedValue = useDebounce(safeValue, 300);
+
+  // Create a Fuse instance with your suggestions. We use useMemo so it only recomputes
+  // if the suggestions array changes.
+  const fuse = useMemo(() => {
+    const options = {
+      threshold: 0.4, // Adjust this value (0.0 = exact match, 1.0 = very fuzzy)
+      // Optionally, if your suggestion items are objects, you can define keys here.
+      // For a simple array of strings, Fuse.js works out of the box.
+    };
+    return new Fuse(suggestions, options);
+  }, [suggestions]);
+
   // Measure the position of the autocomplete container on layout
   const measurePosition = () => {
     if (containerRef.current) {
       containerRef.current.measureInWindow((x, y, width, height) => {
-        // Position dropdown just below the container with an added offset of 5px
+        // Position dropdown just below the container with an added offset (adjust offset as needed)
         setDropdownTop(y + height + 50);
       });
     }
@@ -52,15 +66,14 @@ export default function AutocompleteInput({
   }, [isFocused, safeValue]);
 
   // Determine which suggestions to show:
-  const debouncedValue = useDebounce(safeValue, 300);
+  // If input is empty and we're showing all on focus, limit to 50.
+  // Otherwise, use Fuse.js to search and return the best 50 matches.
   const filteredSuggestions =
     isFocused && debouncedValue.trim() === "" && showAllOnFocus
       ? suggestions.slice(0, 50)
-      : suggestions
-          .filter(
-            (item) =>
-              item && item.toLowerCase().includes(debouncedValue.toLowerCase())
-          )
+      : fuse
+          .search(debouncedValue)
+          .map((result) => result.item)
           .slice(0, 50);
 
   const toggleDropdown = () => {
@@ -96,7 +109,6 @@ export default function AutocompleteInput({
           }}
           onFocus={() => {
             setIsFocused(true);
-            // Show suggestions immediately on focus if nothing has been typed yet
             if (safeValue.trim() === "" && showAllOnFocus) {
               setShowSuggestions(true);
             }
@@ -114,7 +126,9 @@ export default function AutocompleteInput({
           style={styles.arrowContainer}
           onPress={toggleDropdown}
         >
-          <Text style={{ color: iconColor, fontSize: 18 }}>▼</Text>
+          <ThemedText type="default" style={{ color: iconColor, fontSize: 18 }}>
+            ▼
+          </ThemedText>
         </TouchableOpacity>
       </View>
 
@@ -132,6 +146,8 @@ export default function AutocompleteInput({
             ]}
             data={filteredSuggestions}
             keyExtractor={(item, index) => item + index}
+            showsVerticalScrollIndicator={true}
+            keyboardShouldPersistTaps="always"
             renderItem={({ item }) => (
               <TouchableOpacity
                 style={[
@@ -184,8 +200,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     borderTopWidth: 0,
     maxHeight: 150,
-    zIndex: 9999, // high z-index for proper stacking
-    elevation: 20, // ensures the dropdown appears above other elements on Android
+    zIndex: 9999,
+    elevation: 20,
   },
   suggestionItem: {
     padding: 8,
