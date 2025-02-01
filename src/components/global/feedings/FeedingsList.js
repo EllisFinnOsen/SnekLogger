@@ -48,4 +48,7 @@ const styles = StyleSheet.create({
     alignItems: "baseline",
     marginBottom: 8,
   },
+  displayCardsContainer: {
+    marginBottom: 32,
+  },
 });

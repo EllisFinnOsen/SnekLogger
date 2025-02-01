@@ -2,12 +2,14 @@ import React, { useEffect } from "react";
 import { StyleSheet } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchPets, fetchFeedingsByPet } from "@/redux/actions";
-import { initializeDatabase } from "@/database";
+import { initializeDatabase, insertMockData } from "@/database";
 import { ThemedView } from "@/components/global/ThemedView";
 import { ThemedText } from "@/components/global/ThemedText";
 import ThemedScrollView from "@/components/global/ThemedScrollView";
-import HorizontalPetsList from "@/components/global/pets/HorizontalPetsList";
+import HomePetList from "@/components/global/pets/HomePetList";
 import ViewAllFeedingsList from "@/components/global/feedings/ViewAllFeedingsList";
+import ViewAllPastFeedings from "@/components/global/feedings/ViewAllPastFeedings";
+import ViewPastCompleteFeedings from "@/components/global/feedings/ViewCompleteFeedings";
 import { HelloWave } from "@/components/global/HelloWave";
 import { SIZES } from "@/constants/Theme";
 
@@ -19,6 +21,7 @@ export default function HomeScreen({ navigation }) {
     const setupDatabase = async () => {
       try {
         await initializeDatabase();
+        //await insertMockData();
         dispatch(fetchPets());
       } catch (error) {
         //feeding//console.error("Error setting up database:", error);
@@ -38,11 +41,15 @@ export default function HomeScreen({ navigation }) {
     <ThemedScrollView>
       <ThemedView>
         <ThemedView style={styles.titleContainer}>
-          <ThemedText type="title">Hello, Ellis</ThemedText>
+          <ThemedText style={styles.wave} type="title">
+            Hello, Ellis
+          </ThemedText>
           <HelloWave />
         </ThemedView>
-        <HorizontalPetsList />
+        <HomePetList />
+
         <ViewAllFeedingsList />
+        <ViewPastCompleteFeedings />
       </ThemedView>
     </ThemedScrollView>
   );
@@ -63,5 +70,8 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 16,
+  },
+  wave: {
+    marginRight: 16,
   },
 });
