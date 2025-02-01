@@ -33,6 +33,7 @@ import SearchablePicker from "@/components/global/SearchablePicker";
 // If you are using Expo, you can use Ionicons (or replace with your icon library)
 import { Ionicons } from "@expo/vector-icons";
 import { SIZES } from "@/constants/Theme";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 export default function AddPetScreen({ navigation }) {
   const dispatch = useDispatch();
@@ -50,6 +51,9 @@ export default function AddPetScreen({ navigation }) {
   const [birthDate, setBirthDate] = useState("");
   const [weight, setWeight] = useState("");
   const [imageURL, setImageURL] = useState("");
+
+  // Date picker state
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   // Get species suggestions based on the selected category.
   const speciesSuggestions = category
@@ -74,6 +78,11 @@ export default function AddPetScreen({ navigation }) {
       console.error("Error adding pet:", error);
     }
   };
+
+  // Format the date for display (you can adjust locale or format as needed)
+  const formattedBirthDate = birthDate
+    ? new Date(birthDate).toLocaleDateString()
+    : "Select Date";
 
   return (
     <ThemedScrollView contentContainerStyle={styles.container}>
@@ -159,25 +168,34 @@ export default function AddPetScreen({ navigation }) {
         </View>
       ) : null}
 
+      {/* Birth Date Field */}
       <View style={styles.fieldContainer}>
         <ThemedText type="default" style={styles.label}>
           Birth Date
         </ThemedText>
-        <TextInput
+        <TouchableOpacity
           style={[
             styles.input,
-            {
-              color: textColor,
-              borderColor: iconColor,
-              backgroundColor: bgColor,
-              fontSize: SIZES.medium,
-            },
+            styles.dateInput,
+            { backgroundColor: bgColor, borderColor: iconColor },
           ]}
-          placeholder="eg. 06/16/2024"
-          placeholderTextColor={iconColor}
-          value={birthDate}
-          onChangeText={setBirthDate}
-        />
+          onPress={() => setShowDatePicker(true)}
+        >
+          <Text style={{ color: textColor }}>{formattedBirthDate}</Text>
+        </TouchableOpacity>
+        {showDatePicker && (
+          <DateTimePicker
+            value={birthDate ? new Date(birthDate) : new Date()}
+            mode="date"
+            display="default"
+            onChange={(event, selectedDate) => {
+              setShowDatePicker(false);
+              if (selectedDate) {
+                setBirthDate(selectedDate.toISOString());
+              }
+            }}
+          />
+        )}
       </View>
 
       <View style={styles.fieldContainer}>
