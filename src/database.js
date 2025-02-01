@@ -16,13 +16,14 @@ export const initializeDatabase = async () => {
     const db = await openDatabase();
 
     // Create tables if they don't exist (adding the new 'category' column to pets)
+    //DROP TABLE IF EXISTS pets;
+    //DROP TABLE IF EXISTS groups;
+    // DROP TABLE IF EXISTS group_pets;
+    //DROP TABLE IF EXISTS feedings;
     await db.execAsync(`
       PRAGMA journal_mode = WAL;
 
-      DROP TABLE IF EXISTS pets;
-      DROP TABLE IF EXISTS groups;
-      DROP TABLE IF EXISTS group_pets;
-      DROP TABLE IF EXISTS feedings;
+      
 
       CREATE TABLE IF NOT EXISTS pets (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
