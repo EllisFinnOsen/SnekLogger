@@ -5,6 +5,7 @@ import { addPetToDb } from "@/database";
 import { addPet } from "@/redux/actions";
 import { ThemedView } from "@/components/global/ThemedView";
 import { ThemedText } from "@/components/global/ThemedText";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 export default function AddPetScreen({ navigation }) {
   const dispatch = useDispatch();
@@ -14,6 +15,11 @@ export default function AddPetScreen({ navigation }) {
   const [birthDate, setBirthDate] = useState("");
   const [weight, setWeight] = useState("");
   const [imageURL, setImageURL] = useState("");
+
+  const subtleColor = useThemeColor({}, "subtle");
+  const iconColor = useThemeColor({}, "icon");
+  const fieldColor = useThemeColor({}, "field");
+  const textColor = useThemeColor({}, "text");
 
   const handleSave = async () => {
     try {
@@ -37,38 +43,80 @@ export default function AddPetScreen({ navigation }) {
     <ThemedView style={styles.container}>
       <ThemedText type="title">Add New Pet</ThemedText>
       <TextInput
-        style={styles.input}
+        style={[
+          styles.input,
+          {
+            color: textColor,
+            borderColor: iconColor,
+          },
+        ]}
         placeholder="Name"
+        placeholderTextColor={iconColor} // Set placeholder text color
         value={name}
         onChangeText={setName}
       />
       <TextInput
-        style={styles.input}
+        style={[
+          styles.input,
+          {
+            color: textColor,
+            borderColor: iconColor,
+          },
+        ]}
         placeholder="Species"
+        placeholderTextColor={iconColor} // Set placeholder text color
         value={species}
         onChangeText={setSpecies}
       />
       <TextInput
-        style={styles.input}
+        style={[
+          styles.input,
+          {
+            color: textColor,
+            borderColor: iconColor,
+          },
+        ]}
         placeholder="Morph"
+        placeholderTextColor={iconColor} // Set placeholder text color
         value={morph}
         onChangeText={setMorph}
       />
       <TextInput
-        style={styles.input}
+        style={[
+          styles.input,
+          {
+            color: textColor,
+            borderColor: iconColor,
+          },
+        ]}
         placeholder="Birth Date"
+        placeholderTextColor={iconColor} // Set placeholder text color
         value={birthDate}
         onChangeText={setBirthDate}
       />
       <TextInput
-        style={styles.input}
+        style={[
+          styles.input,
+          {
+            color: textColor,
+            borderColor: iconColor,
+          },
+        ]}
         placeholder="Weight"
+        placeholderTextColor={iconColor} // Set placeholder text color
         value={weight}
         onChangeText={setWeight}
       />
       <TextInput
-        style={styles.input}
+        style={[
+          styles.input,
+          {
+            color: textColor,
+            borderColor: iconColor,
+          },
+        ]}
         placeholder="Image URL"
+        placeholderTextColor={iconColor} // Set placeholder text color
         value={imageURL}
         onChangeText={setImageURL}
       />
@@ -84,7 +132,6 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ddd",
     padding: 8,
     marginVertical: 8,
     borderRadius: 5,

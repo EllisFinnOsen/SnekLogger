@@ -4,12 +4,14 @@ import {
   FETCH_GROUPS,
   FETCH_GROUP_PETS,
   UPDATE_FEEDING,
+  ADD_PET, // Add this line
 } from "./actionTypes";
 import {
   fetchPetsFromDb,
   fetchFeedingsByPetFromDb,
   getGroupsFromDb,
   fetchPetsByGroupIdFromDb,
+  addPetToDb, // Add this line
 } from "@/database";
 
 export const fetchPets = () => async (dispatch) => {
@@ -57,4 +59,9 @@ export const fetchPetsByGroupId = (groupId) => async (dispatch) => {
 export const updateFeeding = (updatedFeeding) => ({
   type: UPDATE_FEEDING,
   payload: updatedFeeding,
+});
+
+export const addPet = (pet) => ({
+  type: ADD_PET,
+  payload: pet,
 });

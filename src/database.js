@@ -222,3 +222,26 @@ export const fetchPetsByGroupIdFromDb = async (groupId) => {
     return []; // Always return an array to avoid breaking `.map()`
   }
 };
+
+// Function to add a new pet to the database
+export const addPetToDb = async (pet) => {
+  try {
+    const db = await openDatabase();
+    const result = await db.runAsync(
+      `INSERT INTO pets (name, species, morph, birthDate, weight, imageURL)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [
+        pet.name,
+        pet.species,
+        pet.morph,
+        pet.birthDate,
+        pet.weight,
+        pet.imageURL,
+      ]
+    );
+    return result.insertId; // Return the ID of the newly inserted pet
+  } catch (error) {
+    console.error("Error adding pet to database:", error);
+    throw error;
+  }
+};
