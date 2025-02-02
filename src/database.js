@@ -16,13 +16,13 @@ export const initializeDatabase = async () => {
     const db = await openDatabase();
 
     // Create tables if they don't exist (adding the new 'category' column to pets)
-    //DROP TABLE IF EXISTS pets;
-    //DROP TABLE IF EXISTS groups;
-    // DROP TABLE IF EXISTS group_pets;
-    //DROP TABLE IF EXISTS feedings;
+
     await db.execAsync(`
       PRAGMA journal_mode = WAL;
-
+      DROP TABLE IF EXISTS pets;
+      DROP TABLE IF EXISTS groups;
+      DROP TABLE IF EXISTS group_pets;
+      DROP TABLE IF EXISTS feedings;
       
 
       CREATE TABLE IF NOT EXISTS pets (
@@ -63,9 +63,9 @@ export const initializeDatabase = async () => {
       );
     `);
 
-    console.log("Database initialized");
+    //console.log("Database initialized");
   } catch (error) {
-    console.error("Error initializing database:", error);
+    //console.error("Error initializing database:", error);
   }
 };
 
@@ -120,9 +120,9 @@ export const insertMockData = async () => {
         (6, '2025-05-11', '09:30:00', 'Veggies', 0.4, 'Added leafy greens', 1);
     `);
 
-    //console.log("Mock data inserted");
+    console.log("Mock data inserted");
   } catch (error) {
-    //console.error("Error inserting mock data:", error);
+    console.error("Error inserting mock data:", error);
   }
 };
 
@@ -133,10 +133,10 @@ export const fetchPetsFromDb = async () => {
   try {
     const db = await openDatabase();
     const result = await db.getAllAsync("SELECT * FROM pets");
-    console.log("Fetched pets from DB:", result);
+    //console.log("Fetched pets from DB:", result);
     return result;
   } catch (error) {
-    console.error("Error fetching pets:", error);
+    //console.error("Error fetching pets:", error);
     throw error;
   }
 };
@@ -149,10 +149,10 @@ export const fetchFeedingsByPetFromDb = async (petId) => {
       "SELECT * FROM feedings WHERE petId = ?",
       [petId]
     );
-    console.log("Fetched feedings from DB:", result);
+    //console.log("Fetched feedings from DB:", result);
     return result;
   } catch (error) {
-    console.error("Error fetching feedings:", error);
+    //console.error("Error fetching feedings:", error);
     throw error;
   }
 };
@@ -167,7 +167,7 @@ export const fetchFeedingByIdFromDb = async (feedingId) => {
     );
     return result || null;
   } catch (error) {
-    console.error("Error fetching feeding by ID:", error);
+    //console.error("Error fetching feeding by ID:", error);
     throw error;
   }
 };
@@ -186,10 +186,10 @@ export const updateFeedingInDb = async (
       "UPDATE feedings SET petId = ?, feedingDate = ?, feedingTime = ?, complete = ? WHERE id = ?",
       [petId, feedingDate, feedingTime, complete, feedingId]
     );
-    console.log("Feeding updated in DB:", result);
+    //console.log("Feeding updated in DB:", result);
     return result;
   } catch (error) {
-    console.error("Error updating feeding in DB:", error);
+    //console.error("Error updating feeding in DB:", error);
     throw error;
   }
 };
@@ -199,10 +199,10 @@ export const getGroupsFromDb = async () => {
   try {
     const db = await openDatabase();
     const result = await db.getAllAsync("SELECT * FROM groups");
-    console.log("Fetched groups from DB:", result); // Log groups
+    console.log("Fetched groups from DB:", result); // This will log the groups.
     return result;
   } catch (error) {
-    console.error("Error fetching groups:", error);
+    console.error("Error fetching groups from DB:", error);
     throw error;
   }
 };
@@ -231,6 +231,21 @@ export const fetchPetsByGroupIdFromDb = async (groupId) => {
   }
 };
 
+// Fetch a single pet by its ID
+export const fetchPetById = async (petId) => {
+  try {
+    const db = await openDatabase();
+    // Using getFirstAsync (similar to your fetchFeedingByIdFromDb function)
+    const pet = await db.getFirstAsync("SELECT * FROM pets WHERE id = ?", [
+      petId,
+    ]);
+    return pet || null;
+  } catch (error) {
+    console.error("Error fetching pet by ID:", error);
+    throw error;
+  }
+};
+
 // Function to add a new pet to the database
 export const addPetToDb = async (pet) => {
   try {
@@ -251,7 +266,43 @@ export const addPetToDb = async (pet) => {
     );
     return result.insertId; // Return the ID of the newly inserted pet
   } catch (error) {
-    console.error("Error adding pet to database:", error);
+    //console.error("Error adding pet to database:", error);
+    throw error;
+  }
+};
+
+export const updatePetToDb = async (pet) => {
+  try {
+    console.log("Updating pet:", pet); // Should log an object with id and other fields
+    const db = await openDatabase();
+    const result = await db.runAsync(
+      `UPDATE pets
+       SET
+         name = ?,
+         category = ?,
+         species = ?,
+         morph = ?,
+         birthDate = ?,
+         weight = ?,
+         weightType = ?,
+         imageURL = ?
+       WHERE id = ?`,
+      [
+        pet.name,
+        pet.category,
+        pet.species,
+        pet.morph,
+        pet.birthDate,
+        pet.weight,
+        pet.weightType,
+        pet.imageURL,
+        pet.id,
+      ]
+    );
+    console.log("Update result:", result);
+    return result;
+  } catch (error) {
+    console.error("Error updating pet in database:", error);
     throw error;
   }
 };

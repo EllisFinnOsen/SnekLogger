@@ -1,4 +1,3 @@
-// groupsReducer.js
 import { FETCH_GROUPS } from "./actionTypes";
 
 const initialGroupsState = [];

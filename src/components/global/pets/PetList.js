@@ -1,29 +1,43 @@
+// PetList.jsx
 import React from "react";
-import { StyleSheet, TouchableOpacity, ScrollView, View } from "react-native";
+import {
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { ThemedView } from "@/components/global/ThemedView";
 import { ThemedText } from "@/components/global/ThemedText";
 import PrimaryPetCard from "@/components/global/pets/PrimaryPetCard";
-import AddPetCard from "@/components/global/pets/AddPetCard"; // Import AddPetCard
+import AddPetCard from "@/components/global/pets/AddPetCard";
 
 export default function PetList({
   pets = [],
   title,
   showAllLink = false,
   noPetsText = "No pets available",
-  onShowAllPress, // optional custom press handler
-  groupId, // if provided and no custom onShowAllPress, navigate to GroupScreen
+  onShowAllPress,
+  groupId,
+  loading = false,
 }) {
   const navigation = useNavigation();
 
-  // Determine what happens when the "Show all" link is pressed.
-  // If a custom onShowAllPress is provided, use that.
-  // Otherwise, if a groupId is provided, navigate to "GroupScreen" with that groupId.
   const handleShowAllPress =
     onShowAllPress ||
     (groupId ? () => navigation.navigate("GroupScreen", { groupId }) : null);
 
-  // If there are no pets, display the fallback text.
+  if (loading) {
+    return (
+      <ThemedView style={styles.loadingContainer}>
+        <ActivityIndicator size="small" color="#0000ff" />
+        <ThemedText type="default" style={styles.loadingText}>
+          Loading...
+        </ThemedText>
+      </ThemedView>
+    );
+  }
+
   if (pets.length === 0) {
     return <ThemedText type="default">{noPetsText}</ThemedText>;
   }
@@ -40,12 +54,11 @@ export default function PetList({
           )}
         </ThemedView>
       )}
-
       <ScrollView horizontal style={styles.petList}>
         {pets.map((pet) => (
           <PrimaryPetCard key={pet.id} pet={pet} />
         ))}
-        <AddPetCard />
+        <AddPetCard key="add-pet-card" />
       </ScrollView>
     </ThemedView>
   );
@@ -60,5 +73,14 @@ const styles = StyleSheet.create({
   },
   petList: {
     flexDirection: "row",
+  },
+  loadingContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 16,
+  },
+  loadingText: {
+    marginLeft: 8,
   },
 });

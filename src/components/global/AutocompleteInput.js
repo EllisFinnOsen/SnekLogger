@@ -143,7 +143,6 @@ export default function AutocompleteInput({
 const styles = StyleSheet.create({
   autocompleteContainer: {
     position: "relative",
-    marginVertical: ,
   },
   inputContainer: {
     flexDirection: "row",

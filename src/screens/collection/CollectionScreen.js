@@ -1,66 +1,61 @@
-import React, { useEffect } from "react";
-import { StyleSheet } from "react-native";
-import { useSelector, useDispatch } from "react-redux";
-import { fetchPets, fetchFeedingsByPet } from "@/redux/actions";
-import { initializeDatabase } from "@/database";
+import React, { useEffect, useState } from "react";
+import { StyleSheet, ActivityIndicator } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+import ThemedScrollView from "@/components/global/ThemedScrollView";
 import { ThemedView } from "@/components/global/ThemedView";
 import { ThemedText } from "@/components/global/ThemedText";
-import ThemedScrollView from "@/components/global/ThemedScrollView";
-import HorizontalPetsList from "@/components/global/pets/HorizontalPetsList";
-import ViewAllFeedingsList from "@/components/global/feedings/ViewAllFeedingsList";
-import { HelloWave } from "@/components/global/HelloWave";
-import { SIZES } from "@/constants/Theme";
 import CollectionPetList from "@/components/global/pets/CollectionPetList";
+import { SIZES } from "@/constants/Theme";
+import { fetchGroups } from "@/redux/actions"; // Import your fetchGroups action
 
-export default function CollectionScreen({ navigation }) {
+export default function CollectionScreen() {
   const dispatch = useDispatch();
-  const pets = useSelector((state) => state.pets.pets || []);
+  const groups = useSelector((state) => state.groups || []); // assuming your groups reducer is set up
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const setupDatabase = async () => {
+    const setupData = async () => {
       try {
-        await initializeDatabase();
-        dispatch(fetchPets());
+        // Dispatch the action to fetch groups from your database
+        await dispatch(fetchGroups());
       } catch (error) {
-        //feeding//console.error("Error setting up database:", error);
+        console.error("Error fetching groups:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    setupDatabase();
+    setupData();
   }, [dispatch]);
 
-  useEffect(() => {
-    if (pets.length > 0) {
-      pets.forEach((pet) => dispatch(fetchFeedingsByPet(pet.id)));
-    }
-  }, [dispatch, pets]);
+  if (isLoading) {
+    return (
+      <ThemedView style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </ThemedView>
+    );
+  }
 
   return (
     <ThemedScrollView>
-      <ThemedView>
-        <ThemedView style={styles.titleContainer}>
-          <ThemedText type="title">Collection</ThemedText>
-        </ThemedView>
-        <CollectionPetList />
+      <ThemedView style={styles.container}>
+        <ThemedText type="title" style={styles.title}>
+          Collection
+        </ThemedText>
+        {/* Pass the groups from Redux into CollectionPetList */}
+        <CollectionPetList groups={groups} />
       </ThemedView>
     </ThemedScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+  title: {
     marginBottom: SIZES.xLarge,
   },
-  container: {
-    paddingTop: 48,
+  loadingContainer: {
     flex: 1,
-    padding: 16,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 16,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

@@ -35,84 +35,23 @@ export default function PetProfileScreen({ route, navigation }) {
   useFocusEffect(
     React.useCallback(() => {
       loadPetDetails();
-      dispatch(fetchFeedingsByPet(petId));
-    }, [dispatch, petId])
+    }, [petId])
   );
 
-  if (!pet) return <Text>Loading pet details...</Text>;
+  const handleEditPress = () => {
+    navigation.navigate("EditPetScreen", { petId: petId });
+  };
 
   return (
     <PetParallaxScrollView
       headerImageSrc={pet?.imageURL}
-      headerBackgroundColor={{ light: "#fff", dark: "#000" }}
+      headerBackgroundColor={{ light: "#ccc", dark: "#333" }}
       petName={pet?.name}
       petBirthdate={pet?.birthDate}
       petMorph={pet?.morph}
+      onEditPress={handleEditPress} // Pass handleEditPress to PetParallaxScrollView
     >
-      <View style={styles.container}>
-        <View style={styles.tabContainer}>
-          <TabButton
-            title="Feedings"
-            isSelected={selectedTab === "Feedings"}
-            onPress={() => setSelectedTab("Feedings")}
-          />
-          <TabButton
-            title="Details"
-            isSelected={selectedTab === "Details"}
-            onPress={() => setSelectedTab("Details")}
-          />
-        </View>
-
-        {selectedTab === "Feedings" ? (
-          <ViewPetProfileFeedings petId={petId} />
-        ) : (
-          <ScrollView>
-            <Text>Details about {pet.name}</Text>
-            {/* Add more details about the pet here */}
-          </ScrollView>
-        )}
-      </View>
+      <ViewPetProfileFeedings feedings={feedings} />
     </PetParallaxScrollView>
   );
 }
-
-const TabButton = ({ title, isSelected, onPress }) => (
-  <TouchableOpacity
-    style={[styles.tabButton, isSelected && styles.selectedTabButton]}
-    onPress={onPress}
-  >
-    <Text style={styles.tabButtonText}>{title}</Text>
-  </TouchableOpacity>
-);
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 8,
-  },
-  detail: {
-    fontSize: 16,
-    marginBottom: 16,
-  },
-  tabContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginVertical: 10,
-  },
-  tabButton: {
-    padding: 10,
-    borderRadius: 5,
-    backgroundColor: "#ccc",
-  },
-  selectedTabButton: {
-    backgroundColor: "#0a7ea4",
-  },
-  tabButtonText: {
-    color: "#fff",
-  },
-});
