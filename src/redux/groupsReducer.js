@@ -3,7 +3,8 @@ import {
   FETCH_GROUPS,
   FETCH_GROUP_PETS,
   ADD_PET_TO_GROUP,
-  FETCH_GROUPS_FOR_PETS, // New action type
+  FETCH_GROUPS_FOR_PETS,
+  REMOVE_PET_FROM_GROUP,
 } from "./actionTypes";
 
 const initialState = {
@@ -46,6 +47,18 @@ export default function groupsReducer(state = initialState, action) {
         petGroups: {
           ...state.petGroups,
           [petId]: groups,
+        },
+      };
+    }
+
+    case REMOVE_PET_FROM_GROUP: {
+      const { groupId, petId } = action.payload;
+      const currentGroupPets = state.groupPets[groupId] || [];
+      return {
+        ...state,
+        groupPets: {
+          ...state.groupPets,
+          [groupId]: currentGroupPets.filter((pet) => pet.id !== petId),
         },
       };
     }

@@ -344,3 +344,17 @@ export const fetchGroupsForPetFromDb = async (petId) => {
     return [];
   }
 };
+
+export const removePetFromGroup = async (groupId, petId) => {
+  try {
+    const db = await openDatabase();
+    const result = await db.runAsync(
+      "DELETE FROM group_pets WHERE groupId = ? AND petId = ?",
+      [groupId, petId]
+    );
+    return result;
+  } catch (error) {
+    console.error("Error removing pet from group:", error);
+    throw error;
+  }
+};

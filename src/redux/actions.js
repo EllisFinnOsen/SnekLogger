@@ -10,6 +10,7 @@ import {
   UPDATE_PET,
   FETCH_GROUPS_FOR_PETS,
   ADD_PET_TO_GROUP,
+  REMOVE_PET_FROM_GROUP,
 } from "./actionTypes";
 import {
   fetchPetsFromDb,
@@ -21,6 +22,7 @@ import {
   fetchPetById,
   fetchGroupsForPetFromDb,
   addPetToGroup,
+  removePetFromGroup,
 } from "@/database";
 
 export const fetchPets = () => async (dispatch) => {
@@ -119,3 +121,18 @@ export const fetchGroupsForPet = (petId) => async (dispatch) => {
     console.error("Error fetching groups for pet:", error);
   }
 };
+
+export const removePetFromGroupAction =
+  (groupId, petId) => async (dispatch) => {
+    try {
+      await removePetFromGroup(groupId, petId);
+      // Optionally, re-fetch the pet list for this group:
+      await dispatch(fetchPetsByGroupId(groupId));
+      dispatch({
+        type: REMOVE_PET_FROM_GROUP,
+        payload: { groupId, petId },
+      });
+    } catch (error) {
+      console.error("Error removing pet from group:", error);
+    }
+  };

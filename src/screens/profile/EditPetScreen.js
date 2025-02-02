@@ -1,13 +1,16 @@
-// EditPetScreen.js
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   fetchPetById,
   updatePetToDb,
   fetchGroupsForPetFromDb,
 } from "@/database"; // Make sure fetchGroupsForPetFromDb exists
-import { updatePet, addPetToGroupAction } from "@/redux/actions";
+import {
+  updatePet,
+  addPetToGroupAction,
+  removePetFromGroupAction,
+} from "@/redux/actions";
 import ThemedScrollView from "@/components/global/ThemedScrollView";
 import { SIZES } from "@/constants/Theme";
 import EditHeader from "@/components/global/EditHeader";
@@ -22,8 +25,6 @@ import PetImageField from "@/components/global/pets/add_pet/PetImageField";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import CustomButton from "@/components/global/CustomButton";
 import MultipleGroupPicker from "@/components/global/pets/add_pet/MultipleGroupPicker";
-import { useSelector } from "react-redux";
-import { fetchGroupsForPet } from "@/redux/actions";
 
 export default function EditPetScreen({ route, navigation }) {
   const { petId } = route.params;
@@ -44,23 +45,16 @@ export default function EditPetScreen({ route, navigation }) {
   const [imageURL, setImageURL] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
 
-  // State for the pet's group memberships (an array of group objects)
+  // State for the pet's group memberships.
+  // selectedGroups: the current selection in the picker.
+  // initialGroups: the groups that the pet was originally linked to.
   const [selectedGroups, setSelectedGroups] = useState([]);
+  const [initialGroups, setInitialGroups] = useState([]);
 
   // Get available groups from Redux.
   const availableGroups = useSelector((state) => state.groups.groups || []);
+  console.log("Available Groups:", availableGroups);
 
-  // In your component’s useEffect:
-  useEffect(() => {
-    async function loadPetGroups() {
-      if (petId) {
-        await dispatch(fetchGroupsForPet(petId));
-      }
-    }
-    loadPetGroups();
-  }, [dispatch, petId]);
-  const petGroups = useSelector((state) => state.groups.petGroups[petId]) || [];
-  console.log("Groups for pet:", petGroups);
   // Load pet data (including current group memberships) when the screen mounts.
   useEffect(() => {
     async function loadPetData() {
@@ -88,6 +82,7 @@ export default function EditPetScreen({ route, navigation }) {
           const petGroups = await fetchGroupsForPetFromDb(petId);
           console.log("Fetched groups for pet:", petGroups);
           setSelectedGroups(petGroups || []);
+          setInitialGroups(petGroups || []);
         } else {
           console.warn("No pet returned for id:", petId);
         }
@@ -111,7 +106,7 @@ export default function EditPetScreen({ route, navigation }) {
 
     try {
       const updatedPet = {
-        id: petId, // include the pet's id
+        id: petId, // include the pet's id here
         name,
         category,
         species,
@@ -122,16 +117,26 @@ export default function EditPetScreen({ route, navigation }) {
         imageURL,
       };
 
-      // Update the pet in the database.
+      // Update the pet in your database.
       await updatePetToDb(updatedPet);
 
       // Optionally dispatch an action to update your Redux store.
       dispatch(updatePet(updatedPet));
 
-      // Now, update group links.
-      // For simplicity, we loop over all selected groups and call addPetToGroupAction.
-      // (In a more complete implementation you might compare with the pet's original groups and remove old links.)
-      for (const grp of selectedGroups.filter((g) => g !== null)) {
+      // Update group links:
+      // Remove any group links that were in the initialGroups but are no longer selected.
+      const groupsToRemove = initialGroups.filter(
+        (grp) => !selectedGroups.some((sGrp) => sGrp && sGrp.id === grp.id)
+      );
+      for (const grp of groupsToRemove) {
+        await dispatch(removePetFromGroupAction(grp.id, petId));
+      }
+
+      // Add any new group links: (if a group is selected that wasn't originally linked)
+      const groupsToAdd = selectedGroups.filter(
+        (grp) => !initialGroups.some((iGrp) => iGrp && iGrp.id === grp.id)
+      );
+      for (const grp of groupsToAdd) {
         await dispatch(addPetToGroupAction(grp.id, petId));
       }
 

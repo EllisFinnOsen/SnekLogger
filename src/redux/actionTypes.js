@@ -10,3 +10,4 @@ export const UPDATE_PET = "UPDATE_PET";
 // actionTypes.js
 export const ADD_PET_TO_GROUP = "ADD_PET_TO_GROUP";
 export const FETCH_GROUPS_FOR_PETS = "FETCH_GROUPS_FOR_PETS";
+export const REMOVE_PET_FROM_GROUP = "REMOVE_PET_FROM_GROUP";
