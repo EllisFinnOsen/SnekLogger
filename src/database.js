@@ -113,10 +113,12 @@ export const insertMockData = async () => {
     await db.execAsync(`
       INSERT INTO feedings (petId, feedingDate, feedingTime, preyType, preyWeight, notes, complete)
       VALUES
-        (3, '2025-01-10', '09:00:00', 'Rat', 2.0, 'Weekly feeding', 1),
+        (3, '2025-01-10', '09:00:00', 'Rat', 2.0, 'Weekly feeding', 0),
+        (2, '2025-02-02', '09:00:00', 'Pig', 2.0, 'Weekly feeding', 0),
+        (5, '2025-02-03', '09:00:00', 'Dog', 2.0, 'Weekly feeding', 0),
         (3, '2025-02-17', '09:00:00', 'Rat', 2.0, 'Regular feeding schedule', 1),
         (4, '2025-04-12', '10:00:00', 'Rat', 3.5, 'Fed larger prey for growth', 0),
-        (1, '2025-03-18', '08:00:00', 'Mouse', 1.2, 'Feeding after growth spurt', 0),
+        (5, '2025-03-18', '08:00:00', 'Mouse', 1.2, 'Feeding after growth spurt', 0),
         (6, '2025-05-11', '09:30:00', 'Veggies', 0.4, 'Added leafy greens', 1);
     `);
 
@@ -143,16 +145,20 @@ export const fetchPetsFromDb = async () => {
 
 // Fetch feedings by petId
 export const fetchFeedingsByPetFromDb = async (petId) => {
+  if (petId === undefined || petId === null) {
+    throw new Error("fetchFeedingsByPetFromDb requires a valid petId");
+  }
+
   try {
     const db = await openDatabase();
     const result = await db.getAllAsync(
       "SELECT * FROM feedings WHERE petId = ?",
       [petId]
     );
-    ////console("Fetched feedings from DB:", result);
+    console.log("Fetched feedings from DB for petId", petId, ":", result);
     return result;
   } catch (error) {
-    //console.error("Error fetching feedings:", error);
+    console.error("Error fetching feedings:", error);
     throw error;
   }
 };

@@ -1,12 +1,13 @@
 import { createSelector } from "reselect";
-
+import { startOfToday } from "date-fns";
 // Input selector: gets the entire feedings array
 const feedingsSelector = (state) => state.feedings;
 
 // Memoized selector: filters feedings for a specific pet
 export const selectFeedingsByPet = createSelector(
-  [feedingsSelector, (_, petId) => petId], // Dependencies
-  (feedings, petId) => feedings.filter((feeding) => feeding.petId === petId) // Output calculation
+  [feedingsSelector, (_, petId) => Number(petId)],
+  (feedings, petId) =>
+    feedings.filter((feeding) => Number(feeding.petId) === petId)
 );
 
 // Selector to filter upcoming and incomplete feedings, then sort them by feedingDate (soonest first)
@@ -34,8 +35,46 @@ export const selectCompleteFeedings = createSelector(
 
 export const selectPastCompleteFeedings = createSelector(
   [feedingsSelector],
-  (feedings) =>
-    feedings
-      .filter((feeding) => feeding.complete === 1)
-      .sort((a, b) => new Date(b.feedingDate) - new Date(a.feedingDate)) // Newest to oldest
+  (feedings) => {
+    // Filter the feedings that are complete
+    const completeFeedings = feedings.filter(
+      (feeding) => feeding.complete === 1
+    );
+
+    // Clone the array so we don't mutate the original
+    const clonedFeedings = completeFeedings.slice();
+
+    // Log each feeding's combined timestamp for debugging
+    clonedFeedings.forEach((feeding) => {
+      const isoString = feeding.feedingDate + "T" + feeding.feedingTime;
+      const timestamp = new Date(isoString).getTime();
+      console.log(
+        `Feeding ID: ${feeding.id} | Date: ${feeding.feedingDate} | Time: ${feeding.feedingTime} | ISO: ${isoString} | Timestamp: ${timestamp}`
+      );
+    });
+
+    // Sort feedings from newest to oldest (descending)
+    return clonedFeedings.sort((a, b) => {
+      const aTime = new Date(a.feedingDate + "T" + a.feedingTime).getTime();
+      const bTime = new Date(b.feedingDate + "T" + b.feedingTime).getTime();
+      return bTime - aTime;
+    });
+  }
 );
+
+export const debugPastCompleteFeedings = (state) => {
+  const feedings = state.feedings;
+  const completeFeedings = feedings.filter((feeding) => feeding.complete === 1);
+  completeFeedings.forEach((feeding) => {
+    const isoString = feeding.feedingDate + "T" + feeding.feedingTime;
+    const timestamp = new Date(isoString).getTime();
+    console.log(
+      `Feeding ID: ${feeding.id} | Date: ${feeding.feedingDate} | Time: ${feeding.feedingTime} | Timestamp: ${timestamp}`
+    );
+  });
+  return completeFeedings.sort((a, b) => {
+    const aTime = new Date(a.feedingDate + "T" + a.feedingTime).getTime();
+    const bTime = new Date(b.feedingDate + "T" + b.feedingTime).getTime();
+    return bTime - aTime;
+  });
+};

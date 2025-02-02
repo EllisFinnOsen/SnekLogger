@@ -86,7 +86,7 @@ export default function PetList({
               style={styles.plusButton}
               onPress={handleAddCardPress}
             >
-              <Ionicons name="add-circle" size={18} color={iconColor} />
+              <Ionicons name="add-circle" size={24} color={iconColor} />
             </TouchableOpacity>
           </View>
           {showAllLink && handleShowAllPress && (
