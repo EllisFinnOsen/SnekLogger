@@ -1,18 +1,19 @@
-// PetList.jsx
 import React, { useState } from "react";
 import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
-  Alert,
+  View,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons";
 import { ThemedView } from "@/components/global/ThemedView";
 import { ThemedText } from "@/components/global/ThemedText";
 import PrimaryPetCard from "@/components/global/pets/PrimaryPetCard";
 import AddPetCard from "@/components/global/pets/AddPetCard";
 import AddPetPickerModal from "./add_pet/AddPetPickerModal";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 export default function PetList({
   pets = [],
@@ -23,6 +24,7 @@ export default function PetList({
   groupId, // if provided, indicates this pet list belongs to a group
   loading = false,
 }) {
+  const iconColor = useThemeColor({}, "icon");
   const navigation = useNavigation();
   const [pickerVisible, setPickerVisible] = useState(false);
 
@@ -31,7 +33,7 @@ export default function PetList({
     onShowAllPress ||
     (groupId ? () => navigation.navigate("GroupScreen", { groupId }) : null);
 
-  // Handler for tapping the add card.
+  // Handler for tapping the add button (plus icon or add card).
   const handleAddCardPress = () => {
     console.log("handleAddCardPress triggered");
     if (!groupId) {
@@ -44,15 +46,14 @@ export default function PetList({
   };
 
   // When an option is selected from the picker.
-  // PetList.jsx
   const handleSelectOption = (option) => {
     console.log("Picker option selected:", option);
     setPickerVisible(false);
     if (option === "new") {
       console.log("Navigating to AddPetScreen with groupId:", groupId);
-      navigation.navigate("AddPetScreen", { groupId: groupId });
+      navigation.navigate("AddPetScreen", { groupId });
     }
-    // Remove the "existing" branch since the modal Save button will dispatch the action.
+    // The modal Save button for "existing" handles linking.
   };
 
   // If loading, show loading indicator.
@@ -74,15 +75,26 @@ export default function PetList({
 
   return (
     <ThemedView>
+      {/* Header */}
       {(title || showAllLink) && (
-        <ThemedView style={styles.header}>
-          {title && <ThemedText type="subtitle">{title}</ThemedText>}
+        <View style={styles.headerContainer}>
+          <View style={styles.leftHeader}>
+            <ThemedText type="subtitle" style={styles.headerTitle}>
+              {title}
+            </ThemedText>
+            <TouchableOpacity
+              style={styles.plusButton}
+              onPress={handleAddCardPress}
+            >
+              <Ionicons name="add-circle" size={18} color={iconColor} />
+            </TouchableOpacity>
+          </View>
           {showAllLink && handleShowAllPress && (
             <TouchableOpacity onPress={handleShowAllPress}>
               <ThemedText type="link">Show all</ThemedText>
             </TouchableOpacity>
           )}
-        </ThemedView>
+        </View>
       )}
 
       <ScrollView horizontal style={styles.petList}>
@@ -110,11 +122,21 @@ export default function PetList({
 }
 
 const styles = StyleSheet.create({
-  header: {
+  headerContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "baseline",
+    alignItems: "center",
     marginBottom: 8,
+  },
+  leftHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  headerTitle: {
+    fontSize: 18,
+  },
+  plusButton: {
+    marginLeft: 8,
   },
   petList: {
     flexDirection: "row",
