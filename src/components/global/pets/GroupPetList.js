@@ -2,29 +2,34 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, ActivityIndicator } from "react-native";
 import { ThemedView } from "@/components/global/ThemedView";
-import { ThemedText } from "@/components/global/ThemedText";
 import PetList from "@/components/global/pets/PetList";
-import { fetchPetsByGroupIdFromDb } from "@/database";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchPetsByGroupId } from "@/redux/actions"; // This action should update state.groups.groupPets
 
 export default function GroupPetList({ group }) {
-  const [pets, setPets] = useState([]);
+  const dispatch = useDispatch();
+
+  // Select the pet list for this group from Redux.
+  const groupPets = useSelector(
+    (state) => state.groups.groupPets[group.id] || []
+  );
+
+  // Use local loading state if needed.
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchPets() {
+    async function fetchData() {
       try {
-        const petsData = await fetchPetsByGroupIdFromDb(group.id);
-        // Ensure petsData is an array (default to [] if undefined)
-        setPets(petsData || []);
+        // Dispatch an action that fetches pets for the group and updates Redux state.
+        await dispatch(fetchPetsByGroupId(group.id));
       } catch (error) {
         console.error(`Error fetching pets for group ${group.id}:`, error);
-        setPets([]);
       } finally {
         setLoading(false);
       }
     }
-    fetchPets();
-  }, [group.id]);
+    fetchData();
+  }, [dispatch, group.id]);
 
   return (
     <ThemedView style={styles.groupContainer}>
@@ -32,7 +37,7 @@ export default function GroupPetList({ group }) {
         <ActivityIndicator size="small" color="#0000ff" />
       ) : (
         <PetList
-          pets={pets}
+          pets={groupPets}
           title={group.name}
           groupId={group.id}
           loading={loading}
@@ -47,8 +52,5 @@ export default function GroupPetList({ group }) {
 const styles = StyleSheet.create({
   groupContainer: {
     marginBottom: 24,
-  },
-  groupTitle: {
-    marginBottom: 8,
   },
 });

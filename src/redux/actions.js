@@ -8,6 +8,7 @@ import {
   ADD_PET, // Add this line
   FETCH_PET,
   UPDATE_PET,
+  ADD_PET_TO_GROUP,
 } from "./actionTypes";
 import {
   fetchPetsFromDb,
@@ -17,6 +18,7 @@ import {
   updatePetToDb,
   addPetToDb, // Add this line
   fetchPetById,
+  addPetToGroup,
 } from "@/database";
 
 export const fetchPets = () => async (dispatch) => {
@@ -84,3 +86,17 @@ export const addPet = (pet) => ({
   type: ADD_PET,
   payload: pet,
 });
+
+export const addPetToGroupAction = (groupId, petId) => async (dispatch) => {
+  try {
+    await addPetToGroup(groupId, petId);
+    // Re-fetch the updated pet list for this group.
+    await dispatch(fetchPetsByGroupId(groupId));
+    dispatch({
+      type: ADD_PET_TO_GROUP,
+      payload: { groupId, petId },
+    });
+  } catch (error) {
+    console.error("Error adding pet to group:", error);
+  }
+};

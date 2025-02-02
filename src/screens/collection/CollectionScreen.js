@@ -1,3 +1,4 @@
+// CollectionScreen.jsx
 import React, { useEffect, useState } from "react";
 import { StyleSheet, ActivityIndicator } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
@@ -6,17 +7,19 @@ import { ThemedView } from "@/components/global/ThemedView";
 import { ThemedText } from "@/components/global/ThemedText";
 import CollectionPetList from "@/components/global/pets/CollectionPetList";
 import { SIZES } from "@/constants/Theme";
-import { fetchGroups } from "@/redux/actions"; // Import your fetchGroups action
+import { fetchGroups } from "@/redux/actions";
 
 export default function CollectionScreen() {
   const dispatch = useDispatch();
-  const groups = useSelector((state) => state.groups || []); // assuming your groups reducer is set up
+  // Extract the groups array from the groups reducer
+  const groups = useSelector((state) => state.groups.groups || []);
+  console.log("Groups from Redux:", groups);
+
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const setupData = async () => {
       try {
-        // Dispatch the action to fetch groups from your database
         await dispatch(fetchGroups());
       } catch (error) {
         console.error("Error fetching groups:", error);
@@ -42,7 +45,6 @@ export default function CollectionScreen() {
         <ThemedText type="title" style={styles.title}>
           Collection
         </ThemedText>
-        {/* Pass the groups from Redux into CollectionPetList */}
         <CollectionPetList groups={groups} />
       </ThemedView>
     </ThemedScrollView>

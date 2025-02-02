@@ -7,3 +7,5 @@ export const FETCH_GROUPS = "FETCH_GROUPS";
 export const FETCH_GROUP_PETS = "FETCH_GROUP_PETS";
 export const ADD_PET = "ADD_PET"; // Add this line
 export const UPDATE_PET = "UPDATE_PET";
+// actionTypes.js
+export const ADD_PET_TO_GROUP = "ADD_PET_TO_GROUP";
