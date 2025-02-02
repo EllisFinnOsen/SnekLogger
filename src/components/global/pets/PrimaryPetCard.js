@@ -13,7 +13,7 @@ export default function PrimaryPetCard({ pet }) {
   return (
     <TouchableOpacity
       onPress={() => navigation.navigate("PetProfile", { petId: pet.id })}
-      testID="primary-pet-card" // Added testID for the card
+      testID="primary-pet-card"
     >
       <ThemedView style={styles.container}>
         <ThemedView style={styles.imageContainer}>
@@ -25,7 +25,7 @@ export default function PrimaryPetCard({ pet }) {
             }}
             resizeMode="cover"
             style={styles.petImage}
-            testID="primary-pet-image" // Added testID for the image
+            testID="primary-pet-image"
           />
         </ThemedView>
 

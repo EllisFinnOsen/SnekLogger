@@ -1,49 +1,74 @@
 import React from "react";
-import { View, TextInput, StyleSheet } from "react-native";
-import { ThemedText } from "@/components/global/ThemedText";
+import { View, TextInput, StyleSheet, Text } from "react-native";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { SIZES } from "@/constants/Theme";
+import { FONT, SIZES } from "@/constants/Theme";
+import { ThemedText } from "../../ThemedText";
 
-export default function PetNameField({ name, setName }) {
+export default function PetNameField({
+  name,
+  setName,
+  required = false,
+  errorMessage = "",
+}) {
   const textColor = useThemeColor({}, "text");
+  const errorColor = useThemeColor({}, "error");
   const iconColor = useThemeColor({}, "icon");
-  const bgColor = useThemeColor({}, "background");
+  const subtleColor = useThemeColor({}, "subtleText");
+
+  // Determine border color based on error presence
+  const borderColor = errorMessage ? errorColor : iconColor;
 
   return (
-    <View style={styles.fieldContainer}>
+    <View style={styles.container}>
       <ThemedText type="default" style={styles.label}>
-        Name
+        Pet Name{" "}
+        {required && (
+          <ThemedText type="default" style={styles.required}>
+            *
+          </ThemedText>
+        )}
       </ThemedText>
       <TextInput
         style={[
           styles.input,
           {
+            borderColor: borderColor,
+            fontFamily: FONT.regular,
             color: textColor,
-            borderColor: iconColor,
-            backgroundColor: bgColor,
-            fontSize: SIZES.medium,
           },
         ]}
-        placeholder="Enter pet's name"
-        placeholderTextColor={iconColor}
         value={name}
         onChangeText={setName}
+        placeholder="Enter pet name"
+        placeholderTextColor={subtleColor}
       />
+      {errorMessage ? (
+        <Text style={[styles.errorText, { color: errorColor }]}>
+          {errorMessage}
+        </Text>
+      ) : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  fieldContainer: {
+  container: {
     marginVertical: 8,
   },
   label: {
     marginBottom: 4,
+    fontSize: 16,
+  },
+  required: {
+    color: "red",
   },
   input: {
     borderWidth: 1,
-    paddingHorizontal: SIZES.small,
+    padding: 12,
     borderRadius: 5,
-    paddingVertical: SIZES.medium,
+    fontSize: SIZES.medium,
+  },
+  errorText: {
+    marginTop: 4,
   },
 });
