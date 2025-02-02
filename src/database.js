@@ -322,3 +322,25 @@ export const addPetToGroup = async (groupId, petId) => {
     throw error;
   }
 };
+
+export const fetchGroupsForPetFromDb = async (petId) => {
+  try {
+    const db = await openDatabase();
+    // First, get the group IDs for the given pet from group_pets
+    const groupRows = await db.getAllAsync(
+      "SELECT groupId FROM group_pets WHERE petId = ?",
+      [petId]
+    );
+    const groupIds = groupRows.map((row) => row.groupId);
+    if (groupIds.length === 0) return [];
+    // Then, fetch the full group objects using an IN clause.
+    // (Make sure groupIds are numbers.)
+    const groups = await db.getAllAsync(
+      `SELECT * FROM groups WHERE id IN (${groupIds.join(",")})`
+    );
+    return groups;
+  } catch (error) {
+    console.error("Error fetching groups for pet:", error);
+    return [];
+  }
+};

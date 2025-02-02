@@ -1,14 +1,18 @@
 // EditPetScreen.js
 import React, { useEffect, useState } from "react";
-import { Button, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { useDispatch } from "react-redux";
-import { fetchPetById, updatePetToDb } from "@/database"; // Create/update these functions as needed
-import { updatePet } from "@/redux/actions"; // Create an update action if you don't have one already
+import {
+  fetchPetById,
+  updatePetToDb,
+  fetchGroupsForPetFromDb,
+} from "@/database"; // Make sure fetchGroupsForPetFromDb exists
+import { updatePet, addPetToGroupAction } from "@/redux/actions";
 import ThemedScrollView from "@/components/global/ThemedScrollView";
 import { SIZES } from "@/constants/Theme";
 import EditHeader from "@/components/global/EditHeader";
 
-// Import subcomponents (same as AddPetScreen)
+// Import subcomponents (reuse from AddPetScreen)
 import HeaderSection from "@/components/global/pets/add_pet/HeaderSection";
 import PetNameField from "@/components/global/pets/add_pet/PetNameField";
 import CategorySection from "@/components/global/pets/add_pet/CategorySection";
@@ -17,16 +21,18 @@ import WeightField from "@/components/global/pets/add_pet/WeightField";
 import PetImageField from "@/components/global/pets/add_pet/PetImageField";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import CustomButton from "@/components/global/CustomButton";
+import MultipleGroupPicker from "@/components/global/pets/add_pet/MultipleGroupPicker";
+import { useSelector } from "react-redux";
+import { fetchGroupsForPet } from "@/redux/actions";
 
 export default function EditPetScreen({ route, navigation }) {
   const { petId } = route.params;
-
   const dispatch = useDispatch();
 
   // Theme colors
   const activeColor = useThemeColor({}, "active");
 
-  // State for pet details (initially empty)
+  // State for pet details
   const [name, setName] = useState("");
   const [nameError, setNameError] = useState("");
   const [category, setCategory] = useState("");
@@ -38,7 +44,24 @@ export default function EditPetScreen({ route, navigation }) {
   const [imageURL, setImageURL] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
 
-  // Load pet data when the screen mounts (or petId changes)
+  // State for the pet's group memberships (an array of group objects)
+  const [selectedGroups, setSelectedGroups] = useState([]);
+
+  // Get available groups from Redux.
+  const availableGroups = useSelector((state) => state.groups.groups || []);
+
+  // In your component’s useEffect:
+  useEffect(() => {
+    async function loadPetGroups() {
+      if (petId) {
+        await dispatch(fetchGroupsForPet(petId));
+      }
+    }
+    loadPetGroups();
+  }, [dispatch, petId]);
+  const petGroups = useSelector((state) => state.groups.petGroups[petId]) || [];
+  console.log("Groups for pet:", petGroups);
+  // Load pet data (including current group memberships) when the screen mounts.
   useEffect(() => {
     async function loadPetData() {
       try {
@@ -60,6 +83,11 @@ export default function EditPetScreen({ route, navigation }) {
           setWeight(pet.weight || 0);
           setWeightType(pet.weightType || "g");
           setImageURL(pet.imageURL || "");
+
+          // Fetch the groups this pet is currently in.
+          const petGroups = await fetchGroupsForPetFromDb(petId);
+          console.log("Fetched groups for pet:", petGroups);
+          setSelectedGroups(petGroups || []);
         } else {
           console.warn("No pet returned for id:", petId);
         }
@@ -83,7 +111,7 @@ export default function EditPetScreen({ route, navigation }) {
 
     try {
       const updatedPet = {
-        id: petId, // include the pet's id here
+        id: petId, // include the pet's id
         name,
         category,
         species,
@@ -94,21 +122,23 @@ export default function EditPetScreen({ route, navigation }) {
         imageURL,
       };
 
-      // Update the pet in your database
+      // Update the pet in the database.
       await updatePetToDb(updatedPet);
 
-      // Optionally dispatch an action to update your Redux store
+      // Optionally dispatch an action to update your Redux store.
       dispatch(updatePet(updatedPet));
+
+      // Now, update group links.
+      // For simplicity, we loop over all selected groups and call addPetToGroupAction.
+      // (In a more complete implementation you might compare with the pet's original groups and remove old links.)
+      for (const grp of selectedGroups.filter((g) => g !== null)) {
+        await dispatch(addPetToGroupAction(grp.id, petId));
+      }
 
       navigation.goBack();
     } catch (error) {
       console.error("Error updating pet:", error);
     }
-  };
-
-  const confirmUpdate = async () => {
-    const petAfterUpdate = await fetchPetById(petId);
-    console.log("Pet after update:", petAfterUpdate);
   };
 
   return (
@@ -143,6 +173,14 @@ export default function EditPetScreen({ route, navigation }) {
         weightType={weightType}
         setWeightType={setWeightType}
       />
+
+      {/* Render the multiple group picker */}
+      <MultipleGroupPicker
+        selectedGroups={selectedGroups}
+        setSelectedGroups={setSelectedGroups}
+        availableGroups={availableGroups}
+      />
+
       <CategorySection
         category={category}
         setCategory={setCategory}

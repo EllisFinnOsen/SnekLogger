@@ -9,3 +9,4 @@ export const ADD_PET = "ADD_PET"; // Add this line
 export const UPDATE_PET = "UPDATE_PET";
 // actionTypes.js
 export const ADD_PET_TO_GROUP = "ADD_PET_TO_GROUP";
+export const FETCH_GROUPS_FOR_PETS = "FETCH_GROUPS_FOR_PETS";

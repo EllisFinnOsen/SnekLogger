@@ -3,12 +3,15 @@ import {
   FETCH_GROUPS,
   FETCH_GROUP_PETS,
   ADD_PET_TO_GROUP,
+  FETCH_GROUPS_FOR_PETS, // New action type
 } from "./actionTypes";
 
 const initialState = {
   groups: [],
-  // groupPets: { groupId: [ petObject, ... ] }
+  // groupPets: mapping of groupId to an array of pet objects
   groupPets: {},
+  // petGroups: mapping of petId to an array of group objects
+  petGroups: {},
 };
 
 export default function groupsReducer(state = initialState, action) {
@@ -16,7 +19,7 @@ export default function groupsReducer(state = initialState, action) {
     case FETCH_GROUPS:
       return {
         ...state,
-        groups: action.payload, // payload should be an array of group objects
+        groups: action.payload, // payload is an array of group objects
       };
 
     case FETCH_GROUP_PETS: {
@@ -31,16 +34,18 @@ export default function groupsReducer(state = initialState, action) {
     }
 
     case ADD_PET_TO_GROUP: {
-      // Option 1: Re-fetch the group's pets in your action after adding.
-      // Option 2: If the action provides the full pet object, append it.
-      // For example, if action.payload.pet contains the full pet object:
-      const { groupId, petId } = action.payload; // note: pet, not petId
-      const currentGroupPets = state.groupPets[groupId] || [];
+      // This case is used when a pet is linked to a group.
+      // In our updated implementation, we rely on re-fetching with FETCH_GROUP_PETS.
+      return state;
+    }
+
+    case FETCH_GROUPS_FOR_PETS: {
+      const { petId, groups } = action.payload;
       return {
         ...state,
-        groupPets: {
-          ...state.groupPets,
-          [groupId]: [...currentGroupPets, petId],
+        petGroups: {
+          ...state.petGroups,
+          [petId]: groups,
         },
       };
     }

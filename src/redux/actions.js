@@ -8,6 +8,7 @@ import {
   ADD_PET, // Add this line
   FETCH_PET,
   UPDATE_PET,
+  FETCH_GROUPS_FOR_PETS,
   ADD_PET_TO_GROUP,
 } from "./actionTypes";
 import {
@@ -18,6 +19,7 @@ import {
   updatePetToDb,
   addPetToDb, // Add this line
   fetchPetById,
+  fetchGroupsForPetFromDb,
   addPetToGroup,
 } from "@/database";
 
@@ -103,5 +105,17 @@ export const addPetToGroupAction = (groupId, petId) => async (dispatch) => {
     });
   } catch (error) {
     console.error("Error adding pet to group:", error);
+  }
+};
+
+export const fetchGroupsForPet = (petId) => async (dispatch) => {
+  try {
+    const groups = await fetchGroupsForPetFromDb(petId);
+    dispatch({
+      type: FETCH_GROUPS_FOR_PETS,
+      payload: { petId, groups },
+    });
+  } catch (error) {
+    console.error("Error fetching groups for pet:", error);
   }
 };
