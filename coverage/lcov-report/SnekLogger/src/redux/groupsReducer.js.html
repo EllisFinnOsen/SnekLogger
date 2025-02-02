@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">23.07% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>3/13</span>
+                <span class='fraction'>0/13</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">22.22% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>2/9</span>
+                <span class='fraction'>0/9</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/2</span>
+                <span class='fraction'>0/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">23.07% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>3/13</span>
+                <span class='fraction'>0/13</span>
             </div>
         
             
@@ -141,7 +141,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -150,7 +150,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -198,7 +198,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// groupsReducer.js
@@ -210,7 +210,7 @@ import {
   REMOVE_PET_FROM_GROUP,
 } from "./actionTypes";
 &nbsp;
-const initialState = {
+const initialState = <span class="cstat-no" title="statement not covered" >{</span>
   groups: [],
   // groupPets: mapping of groupId to an array of pet objects
   groupPets: {},
@@ -218,15 +218,15 @@ const initialState = {
   petGroups: {},
 };
 &nbsp;
-export default function groupsReducer(state = initialState, action) {
-  switch (action.type) {
-<span class="branch-0 cbranch-no" title="branch not covered" >    case FETCH_GROUPS:</span>
+export default function <span class="fstat-no" title="function not covered" >groupsReducer(</span>state = <span class="branch-0 cbranch-no" title="branch not covered" >initialState,</span> action) {
+<span class="cstat-no" title="statement not covered" >  switch (action.type) {</span>
+    case FETCH_GROUPS:
 <span class="cstat-no" title="statement not covered" >      return {</span>
         ...state,
         groups: action.payload, // payload is an array of group objects
       };
 &nbsp;
-<span class="branch-1 cbranch-no" title="branch not covered" >    case FETCH_GROUP_PETS: {</span>
+    case FETCH_GROUP_PETS: {
       const { groupId, pets } = <span class="cstat-no" title="statement not covered" >action.payload;</span>
 <span class="cstat-no" title="statement not covered" >      return {</span>
         ...state,
@@ -237,13 +237,13 @@ export default function groupsReducer(state = initialState, action) {
       };
     }
 &nbsp;
-<span class="branch-2 cbranch-no" title="branch not covered" >    case ADD_PET_TO_GROUP: {</span>
+    case ADD_PET_TO_GROUP: {
       // This case is used when a pet is linked to a group.
       // In our updated implementation, we rely on re-fetching with FETCH_GROUP_PETS.
 <span class="cstat-no" title="statement not covered" >      return state;</span>
     }
 &nbsp;
-<span class="branch-3 cbranch-no" title="branch not covered" >    case FETCH_GROUPS_FOR_PETS: {</span>
+    case FETCH_GROUPS_FOR_PETS: {
       const { petId, groups } = <span class="cstat-no" title="statement not covered" >action.payload;</span>
 <span class="cstat-no" title="statement not covered" >      return {</span>
         ...state,
@@ -254,7 +254,7 @@ export default function groupsReducer(state = initialState, action) {
       };
     }
 &nbsp;
-<span class="branch-4 cbranch-no" title="branch not covered" >    case REMOVE_PET_FROM_GROUP: {</span>
+    case REMOVE_PET_FROM_GROUP: {
       const { groupId, petId } = <span class="cstat-no" title="statement not covered" >action.payload;</span>
       const currentGroupPets = <span class="cstat-no" title="statement not covered" >state.groupPets[groupId] || [];</span>
 <span class="cstat-no" title="statement not covered" >      return {</span>
@@ -267,7 +267,7 @@ export default function groupsReducer(state = initialState, action) {
     }
 &nbsp;
     default:
-      return state;
+<span class="cstat-no" title="statement not covered" >      return state;</span>
   }
 }
 &nbsp;</pre></td></tr></table></pre>
@@ -277,7 +277,7 @@ export default function groupsReducer(state = initialState, action) {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-02-02T18:45:41.442Z
+                at 2025-02-02T20:04:11.232Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

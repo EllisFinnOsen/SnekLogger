@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">31.57% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>6/19</span>
+                <span class='fraction'>0/19</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">42.85% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>6/14</span>
+                <span class='fraction'>0/14</span>
             </div>
         
             
@@ -104,32 +104,32 @@
 <a name='L39'></a><a href='#L39'>39</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -142,32 +142,32 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { createSelector } from "reselect";
 &nbsp;
 // Input selector: gets the entire feedings array
-const feedingsSelector = <span class="fstat-no" title="function not covered" >(s</span>tate) =&gt; <span class="cstat-no" title="statement not covered" >state.feedings;</span>
+const feedingsSelector = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>tate) =&gt; <span class="cstat-no" title="statement not covered" >state.feedings;</span></span>
 &nbsp;
 // Memoized selector: filters feedings for a specific pet
-export const selectFeedingsByPet = createSelector(
+export const selectFeedingsByPet = <span class="cstat-no" title="statement not covered" >createSelector(</span>
   [feedingsSelector, <span class="fstat-no" title="function not covered" >(_</span>, petId) =&gt; <span class="cstat-no" title="statement not covered" >petId]</span>, // Dependencies
 <span class="fstat-no" title="function not covered" >  (f</span>eedings, petId) =&gt; <span class="cstat-no" title="statement not covered" >feedings.filter(<span class="fstat-no" title="function not covered" >(f</span>eeding) =&gt; <span class="cstat-no" title="statement not covered" >feeding.petId === petId)</span> </span>// Output calculation
 );
 &nbsp;
-export const selectUpcomingFeedings = createSelector(
+export const selectUpcomingFeedings = <span class="cstat-no" title="statement not covered" >createSelector(</span>
   [feedingsSelector],
 <span class="fstat-no" title="function not covered" >  (f</span>eedings) =&gt;
 <span class="cstat-no" title="statement not covered" >    feedings.filter(<span class="fstat-no" title="function not covered" >(f</span>eeding) =&gt; <span class="cstat-no" title="statement not covered" >new Date(feeding.feedingDate) &gt; new Date())</span></span>
 );
 &nbsp;
-export const selectPastFeedings = createSelector(
+export const selectPastFeedings = <span class="cstat-no" title="statement not covered" >createSelector(</span>
   [feedingsSelector],
 <span class="fstat-no" title="function not covered" >  (f</span>eedings) =&gt;
 <span class="cstat-no" title="statement not covered" >    feedings.filter(<span class="fstat-no" title="function not covered" >(f</span>eeding) =&gt; <span class="cstat-no" title="statement not covered" >new Date(feeding.feedingDate) &lt; new Date())</span></span>
 );
 &nbsp;
-export const selectCompleteFeedings = createSelector(
+export const selectCompleteFeedings = <span class="cstat-no" title="statement not covered" >createSelector(</span>
   [feedingsSelector],
 <span class="fstat-no" title="function not covered" >  (f</span>eedings) =&gt; <span class="cstat-no" title="statement not covered" >feedings.filter(<span class="fstat-no" title="function not covered" >(f</span>eeding) =&gt; <span class="cstat-no" title="statement not covered" >feeding.complete === 1)</span></span>
 );
 &nbsp;
-export const selectPastCompleteFeedings = createSelector(
+export const selectPastCompleteFeedings = <span class="cstat-no" title="statement not covered" >createSelector(</span>
   [feedingsSelector],
 <span class="fstat-no" title="function not covered" >  (f</span>eedings) =&gt;
 <span class="cstat-no" title="statement not covered" >    feedings</span>
@@ -184,7 +184,7 @@ export const selectPastCompleteFeedings = createSelector(
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-02-02T18:45:41.442Z
+                at 2025-02-02T20:04:11.232Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

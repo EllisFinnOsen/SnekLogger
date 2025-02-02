@@ -148,7 +148,11 @@ export default function EditPetScreen({ route, navigation }) {
 
   return (
     <ThemedScrollView contentContainerStyle={styles.container}>
-      <HeaderSection onCancel={() => navigation.goBack()} />
+      <HeaderSection
+        onSave={handleSave}
+        hasSave="true"
+        onCancel={() => navigation.goBack()}
+      />
       <EditHeader
         label="Edit Pet"
         description="Update the pet details below and press save."

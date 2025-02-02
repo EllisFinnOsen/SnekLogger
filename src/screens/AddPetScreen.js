@@ -116,6 +116,7 @@ export default function AddPetScreen({ navigation, route }) {
       />
       <PetImageField imageURL={imageURL} setImageURL={setImageURL} />
       <PetNameField
+        testID="pet-name-field"
         name={name}
         setName={(text) => {
           setName(text);
@@ -156,6 +157,7 @@ export default function AddPetScreen({ navigation, route }) {
       />
 
       <CustomButton
+        testID="save-button"
         title="Save"
         textType="title"
         onPress={handleSave}

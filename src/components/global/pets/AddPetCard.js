@@ -14,7 +14,7 @@ export default function AddPetCard() {
 
   return (
     <ThemedView
-      testID="add-pet-card"
+      testID="add-pet-card-view"
       style={[styles.card, { borderColor: iconColor }]}
     >
       <ThemedView style={styles.iconContainer}>

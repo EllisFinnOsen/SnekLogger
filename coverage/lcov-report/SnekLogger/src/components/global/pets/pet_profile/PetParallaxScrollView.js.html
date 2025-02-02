@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>9/9</span>
+                <span class='fraction'>0/9</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">75% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>3/4</span>
+                <span class='fraction'>0/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>2/2</span>
+                <span class='fraction'>0/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>9/9</span>
+                <span class='fraction'>0/9</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -200,7 +200,13 @@
 <a name='L135'></a><a href='#L135'>135</a>
 <a name='L136'></a><a href='#L136'>136</a>
 <a name='L137'></a><a href='#L137'>137</a>
-<a name='L138'></a><a href='#L138'>138</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L138'></a><a href='#L138'>138</a>
+<a name='L139'></a><a href='#L139'>139</a>
+<a name='L140'></a><a href='#L140'>140</a>
+<a name='L141'></a><a href='#L141'>141</a>
+<a name='L142'></a><a href='#L142'>142</a>
+<a name='L143'></a><a href='#L143'>143</a>
+<a name='L144'></a><a href='#L144'>144</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -221,7 +227,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -232,12 +238,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -250,7 +256,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -299,7 +305,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -358,9 +370,9 @@ import { useBottomTabOverflow } from "@/components/global/TabBarBackground";
 import { checkImageURL } from "@/utils/checkImage";
 import useColorScheme from "@/hooks/useColorScheme";
 &nbsp;
-const HEADER_HEIGHT = 250;
+const HEADER_HEIGHT = <span class="cstat-no" title="statement not covered" >250;</span>
 &nbsp;
-export default function PetParallaxScrollView({
+export default function <span class="fstat-no" title="function not covered" >PetParallaxScrollView(</span>{
   children,
   headerImageSrc,
   headerBackgroundColor,
@@ -369,12 +381,12 @@ export default function PetParallaxScrollView({
   petMorph,
   onEditPress, // Add onEditPress prop
 }) {
-  const colorScheme = useColorScheme() ?? <span class="branch-1 cbranch-no" title="branch not covered" >"light";</span>
-  const scrollRef = useAnimatedRef();
-  const scrollOffset = useScrollViewOffset(scrollRef);
-  const bottom = useBottomTabOverflow();
-  const headerAnimatedStyle = useAnimatedStyle(() =&gt; {
-    return {
+  const colorScheme = <span class="cstat-no" title="statement not covered" >useColorScheme() ?? "light";</span>
+  const scrollRef = <span class="cstat-no" title="statement not covered" >useAnimatedRef();</span>
+  const scrollOffset = <span class="cstat-no" title="statement not covered" >useScrollViewOffset(scrollRef);</span>
+  const bottom = <span class="cstat-no" title="statement not covered" >useBottomTabOverflow();</span>
+  const headerAnimatedStyle = <span class="cstat-no" title="statement not covered" >useAnimatedStyle(<span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    return {</span>
       transform: [
         {
           translateY: interpolate(
@@ -387,7 +399,7 @@ export default function PetParallaxScrollView({
     };
   });
 &nbsp;
-  return (
+<span class="cstat-no" title="statement not covered" >  return (</span>
     &lt;ThemedView style={styles.container}&gt;
       &lt;Animated.ScrollView
         ref={scrollRef}
@@ -402,10 +414,16 @@ export default function PetParallaxScrollView({
               testID="header-image" // &lt;-- Added testID here
             &gt;
               &lt;View style={styles.overlay}&gt;
-                &lt;ThemedText style={styles.petName}&gt;{petName}&lt;/ThemedText&gt;
+                &lt;ThemedText testID="pet-profile-header" style={styles.petName}&gt;
+                  {petName}
+                &lt;/ThemedText&gt;
                 &lt;ThemedText style={styles.petDetail}&gt;{petBirthdate}&lt;/ThemedText&gt;
                 &lt;ThemedText style={styles.petDetail}&gt;{petMorph}&lt;/ThemedText&gt;
-                &lt;TouchableOpacity style={styles.editIcon} onPress={onEditPress}&gt;
+                &lt;TouchableOpacity
+                  testID="edit-pet-button"
+                  style={styles.editIcon}
+                  onPress={onEditPress}
+                &gt;
                   &lt;Ionicons name="pencil" size={24} color="#fff" /&gt;
                 &lt;/TouchableOpacity&gt;
               &lt;/View&gt;
@@ -436,7 +454,7 @@ export default function PetParallaxScrollView({
   );
 }
 &nbsp;
-const styles = StyleSheet.create({
+const styles = <span class="cstat-no" title="statement not covered" >StyleSheet.create({</span>
   container: {
     flex: 1,
   },
@@ -481,7 +499,7 @@ const styles = StyleSheet.create({
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-02-02T18:45:41.442Z
+                at 2025-02-02T20:04:11.232Z
             </div>
         <script src="../../../../../../prettify.js"></script>
         <script>

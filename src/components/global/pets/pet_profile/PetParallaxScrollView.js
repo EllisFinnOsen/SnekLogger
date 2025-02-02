@@ -63,10 +63,16 @@ export default function PetParallaxScrollView({
               testID="header-image" // <-- Added testID here
             >
               <View style={styles.overlay}>
-                <ThemedText style={styles.petName}>{petName}</ThemedText>
+                <ThemedText testID="pet-profile-header" style={styles.petName}>
+                  {petName}
+                </ThemedText>
                 <ThemedText style={styles.petDetail}>{petBirthdate}</ThemedText>
                 <ThemedText style={styles.petDetail}>{petMorph}</ThemedText>
-                <TouchableOpacity style={styles.editIcon} onPress={onEditPress}>
+                <TouchableOpacity
+                  testID="edit-pet-button"
+                  style={styles.editIcon}
+                  onPress={onEditPress}
+                >
                   <Ionicons name="pencil" size={24} color="#fff" />
                 </TouchableOpacity>
               </View>

@@ -1,0 +1,13 @@
+appId: com.ellisosen.TestReduxApp
+---
+- launchApp
+- waitFor element with id 'pet-list'
+- scroll element with id 'pet-list' right full
+- tap element with id 'add-pet-card'
+- waitFor element with id 'pet-name-field'
+- enterText 'Fluffy' into element with id 'pet-name-field'
+- tap element with id 'save-button'
+- waitFor element with text 'Fluffy'
+- tap element with text 'Fluffy'
+- waitFor element with id 'pet-profile-header'
+- assert element with id 'pet-profile-header' text 'Fluffy'

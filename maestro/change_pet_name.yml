@@ -1,0 +1,26 @@
+appId: com.ellisosen.TestReduxApp
+---
+- launchApp
+- tapOn:
+    id: "primary-pet-card"
+    index: 0
+- tapOn:
+    id: "edit-pet-button"
+- tapOn: "Enter pet name"
+- tapOn: "Delete"
+- tapOn: "Delete"
+- tapOn: "Delete"
+- tapOn: "Delete"
+- tapOn: "Delete"
+- tapOn: "Delete"
+- tapOn: "Delete"
+- tapOn: "Shift"
+- tapOn: "S"
+- tapOn: "P"
+- tapOn: "I"
+- tapOn: "K"
+- tapOn: "E"
+- tapOn: "Done"
+- tapOn:
+    id: "save-link"
+- assertVisible: "Spike"

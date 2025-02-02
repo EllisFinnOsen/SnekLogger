@@ -8,3 +8,4 @@ jest.mock("@expo/vector-icons", () => {
     Ionicons: jest.fn(() => null),
   };
 });
+jest.mock("expo-image-picker");

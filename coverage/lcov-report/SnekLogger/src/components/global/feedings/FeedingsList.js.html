@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>5/5</span>
+                <span class='fraction'>0/5</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">92.3% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>12/13</span>
+                <span class='fraction'>0/13</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>2/2</span>
+                <span class='fraction'>0/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>5/5</span>
+                <span class='fraction'>0/5</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -130,14 +130,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -151,7 +148,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -160,7 +160,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -177,18 +177,18 @@ import { ThemedView } from "@/components/global/ThemedView";
 import { ThemedText } from "@/components/global/ThemedText";
 import FeedingLogCard from "@/components/global/feedings/FeedingLogCard";
 &nbsp;
-export default function FeedingsList({
+export default function <span class="fstat-no" title="function not covered" >FeedingsList(</span>{
   feedings = <span class="branch-0 cbranch-no" title="branch not covered" >[],</span>
   title,
-  showAllLink = false,
-  noFeedingsText = "No feedings available",
+  showAllLink = <span class="branch-0 cbranch-no" title="branch not covered" >false,</span>
+  noFeedingsText = <span class="branch-0 cbranch-no" title="branch not covered" >"No feedings available",</span>
 }) {
   // If no feedings, show a fallback message
-  if (feedings.length === 0) {
-    return &lt;ThemedText type="default"&gt;{noFeedingsText}&lt;/ThemedText&gt;;
+<span class="cstat-no" title="statement not covered" >  if (feedings.length === 0) {</span>
+<span class="cstat-no" title="statement not covered" >    return &lt;ThemedText type="default"&gt;{noFeedingsText}&lt;/ThemedText&gt;;</span>
   }
 &nbsp;
-  return (
+<span class="cstat-no" title="statement not covered" >  return (</span>
     &lt;ThemedView&gt;
       {/* Optional header area */}
       {title || showAllLink ? (
@@ -204,8 +204,8 @@ export default function FeedingsList({
 &nbsp;
       {/* Render cards */}
       &lt;ThemedView style={styles.displayCardsContainer}&gt;
-        {feedings.map((item) =&gt; (
-          &lt;View key={item.id} style={styles.cardContainer}&gt;
+        {feedings.map(<span class="fstat-no" title="function not covered" >(i</span>tem) =&gt; (
+<span class="cstat-no" title="statement not covered" >          &lt;View key={item.id} style={styles.cardContainer}&gt;</span>
             &lt;FeedingLogCard item={item} /&gt;
           &lt;/View&gt;
         ))}
@@ -214,7 +214,7 @@ export default function FeedingsList({
   );
 }
 &nbsp;
-const styles = StyleSheet.create({
+const styles = <span class="cstat-no" title="statement not covered" >StyleSheet.create({</span>
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -232,7 +232,7 @@ const styles = StyleSheet.create({
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-02-02T18:45:41.442Z
+                at 2025-02-02T20:04:11.232Z
             </div>
         <script src="../../../../../prettify.js"></script>
         <script>

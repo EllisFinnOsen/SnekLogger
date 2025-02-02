@@ -85,11 +85,15 @@ export default function PetList({
         </ThemedView>
       )}
 
-      <ScrollView horizontal style={styles.petList}>
+      <ScrollView
+        testID="horizontal-scroll-view"
+        horizontal
+        style={styles.petList}
+      >
         {pets.map((pet) => (
           <PrimaryPetCard key={pet.id} pet={pet} />
         ))}
-        <TouchableOpacity onPress={handleAddCardPress}>
+        <TouchableOpacity testID="add-pet-card" onPress={handleAddCardPress}>
           <AddPetCard />
         </TouchableOpacity>
       </ScrollView>
