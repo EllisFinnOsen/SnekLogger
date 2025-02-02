@@ -7,7 +7,7 @@ import { ThemedView } from "@/components/global/ThemedView";
 import { ThemedText } from "@/components/global/ThemedText";
 import ThemedScrollView from "@/components/global/ThemedScrollView";
 import HomePetList from "@/components/global/pets/HomePetList";
-import ViewAllFeedingsList from "@/components/global/feedings/ViewAllFeedingsList";
+import ViewAllUpcomingList from "@/components/global/feedings/ViewAllUpcomingList";
 import ViewAllPastFeedings from "@/components/global/feedings/ViewAllPastFeedings";
 import ViewPastCompleteFeedings from "@/components/global/feedings/ViewCompleteFeedings";
 import { HelloWave } from "@/components/global/HelloWave";
@@ -48,7 +48,7 @@ export default function HomeScreen({ navigation }) {
         </ThemedView>
         <HomePetList />
 
-        <ViewAllFeedingsList />
+        <ViewAllUpcomingList />
         <ViewPastCompleteFeedings />
       </ThemedView>
     </ThemedScrollView>

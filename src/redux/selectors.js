@@ -9,10 +9,16 @@ export const selectFeedingsByPet = createSelector(
   (feedings, petId) => feedings.filter((feeding) => feeding.petId === petId) // Output calculation
 );
 
+// Selector to filter upcoming and incomplete feedings, then sort them by feedingDate (soonest first)
 export const selectUpcomingFeedings = createSelector(
   [feedingsSelector],
   (feedings) =>
-    feedings.filter((feeding) => new Date(feeding.feedingDate) > new Date())
+    feedings
+      .filter(
+        (feeding) =>
+          new Date(feeding.feedingDate) > new Date() && feeding.complete === 0
+      )
+      .sort((a, b) => new Date(a.feedingDate) - new Date(b.feedingDate))
 );
 
 export const selectPastFeedings = createSelector(
@@ -30,9 +36,6 @@ export const selectPastCompleteFeedings = createSelector(
   [feedingsSelector],
   (feedings) =>
     feedings
-      .filter(
-        (feeding) =>
-          feeding.complete === 1 && new Date(feeding.feedingDate) < new Date()
-      )
-      .sort((a, b) => new Date(b.feedingDate) - new Date(a.feedingDate)) // Sort from newest to oldest
+      .filter((feeding) => feeding.complete === 1)
+      .sort((a, b) => new Date(b.feedingDate) - new Date(a.feedingDate)) // Newest to oldest
 );

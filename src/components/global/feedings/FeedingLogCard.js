@@ -1,8 +1,8 @@
 // FeedingLogCard.js
 import React, { useState, useEffect } from "react";
-import { TouchableOpacity, StyleSheet, View } from "react-native";
+import { TouchableOpacity, StyleSheet, View, Image } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { ThemedText } from "@/components/global/ThemedText";
 import {
   toISODateTime,
@@ -19,14 +19,24 @@ import { Ionicons } from "@expo/vector-icons";
 export default function FeedingLogCard({ item }) {
   const navigation = useNavigation();
   const dispatch = useDispatch();
+
+  // Get the pets list from Redux state
+  const pets = useSelector((state) => state.pets.pets || []);
+
+  // Find the pet object using the feeding's petId
+  const pet = pets.find((pet) => pet.id === item.petId);
+  const petName = pet ? pet.name : "Unknown Pet";
+  const petImageUrl = pet ? pet.imageURL : null;
+
   const dateObj = toISODateTime(item.feedingDate, item.feedingTime);
 
   const [isChecked, setIsChecked] = useState(item.complete === 1);
 
   const textColor = useThemeColor({}, "text");
   const fieldColor = useThemeColor({}, "field");
+  const fieldAccent = useThemeColor({}, "fieldAccent");
   const activeColor = useThemeColor({}, "active");
-  const bgColor = useThemeColor({}, "background");
+  const iconColor = useThemeColor({}, "icon");
 
   useEffect(() => {
     setIsChecked(item.complete === 1);
@@ -45,7 +55,7 @@ export default function FeedingLogCard({ item }) {
       dispatch(updateFeeding({ ...item, complete: newCompleteValue }));
       setIsChecked(!isChecked);
     } catch (error) {
-      // Optionally log the error.
+      console.error("Error toggling complete status:", error);
     }
   };
 
@@ -53,68 +63,72 @@ export default function FeedingLogCard({ item }) {
     <ThemedView
       style={[
         styles.wrap,
-        { backgroundColor: isChecked ? fieldColor : textColor },
+        {
+          backgroundColor: fieldColor,
+          borderColor: isChecked ? fieldAccent : iconColor,
+        },
       ]}
     >
       <TouchableOpacity
         onPress={() =>
           navigation.navigate("EditFeeding", { feedingId: item.id })
         }
-        style={[
-          styles.container,
-          { backgroundColor: isChecked ? fieldColor : textColor },
-        ]}
-        testID="feeding-log-card" // Main card testID
+        style={styles.container}
+        testID="feeding-log-card"
       >
+        {/* Top Row: Pet Image, Name, and Date */}
         <View style={styles.topRow}>
-          <TouchableOpacity
-            onPress={(e) => {
-              // In tests, e might be undefined so we safeguard here.
-              if (e && typeof e.stopPropagation === "function") {
-                e.stopPropagation();
-              }
-              handleToggleCheck();
-            }}
-            style={styles.toggle}
-            testID="feeding-log-toggle" // Toggle button testID
-          >
-            {/* Wrap the Ionicons in a View that has a testID */}
-            <View testID="feeding-log-icon">
-              <Ionicons
-                name={isChecked ? "checkbox" : "square-outline"}
-                size={24}
-                color={isChecked ? activeColor : fieldColor}
-              />
-            </View>
-          </TouchableOpacity>
-          <View style={styles.dateColumn}>
+          {petImageUrl && (
+            <Image source={{ uri: petImageUrl }} style={styles.petImage} />
+          )}
+          <View style={styles.nameDateColumn}>
             <ThemedText
-              type="smDetail"
-              style={{ color: isChecked ? textColor : bgColor }}
+              type="defaultSemiBold"
+              style={{ color: isChecked ? iconColor : textColor }}
             >
-              {item.petName}
+              {petName}
             </ThemedText>
             <ThemedText
-              type="subtitle"
-              style={{ color: isChecked ? textColor : bgColor }}
+              type="default"
+              style={{ color: isChecked ? iconColor : textColor }}
             >
               {formatDateString(dateObj, "MM/DD")}
             </ThemedText>
           </View>
         </View>
-        <View style={styles.details}>
-          <ThemedText
-            type="default"
-            style={{ color: isChecked ? textColor : bgColor }}
+
+        {/* Bottom Row: Prey Type / Time and Checkbox Toggle */}
+        <View style={styles.bottomRow}>
+          <View style={styles.details}>
+            <ThemedText
+              type="default"
+              style={{ color: isChecked ? iconColor : textColor }}
+            >
+              {item.preyType}
+            </ThemedText>
+            <ThemedText
+              type="smDetail"
+              style={{ color: isChecked ? iconColor : textColor }}
+            >
+              ({formatTimeString(dateObj)})
+            </ThemedText>
+          </View>
+          <TouchableOpacity
+            onPress={(e) => {
+              if (e && typeof e.stopPropagation === "function") {
+                e.stopPropagation();
+              }
+              handleToggleCheck();
+            }}
+            style={styles.checkbox}
+            testID="feeding-log-toggle"
           >
-            {item.preyType}
-          </ThemedText>
-          <ThemedText
-            type="default"
-            style={{ color: isChecked ? textColor : bgColor }}
-          >
-            ({formatTimeString(dateObj)})
-          </ThemedText>
+            <Ionicons
+              name={isChecked ? "checkbox" : "square-outline"}
+              size={24}
+              color={isChecked ? activeColor : textColor}
+            />
+          </TouchableOpacity>
         </View>
       </TouchableOpacity>
     </ThemedView>
@@ -123,35 +137,42 @@ export default function FeedingLogCard({ item }) {
 
 const styles = StyleSheet.create({
   wrap: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignContent: "center",
     borderRadius: SIZES.xSmall,
     width: "100%",
-    alignItems: "center",
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
     marginBottom: SIZES.xxSmall,
+    borderWidth: 2,
   },
   container: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
-    borderRadius: SIZES.xSmall,
     width: "100%",
   },
   topRow: {
     flexDirection: "row",
     alignItems: "center",
   },
+  bottomRow: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+  },
+  nameDateColumn: {
+    flexDirection: "column",
+    marginLeft: 10,
+  },
+  petImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+  },
   details: {
     flexDirection: "column",
     alignItems: "flex-end",
+    marginRight: 16,
   },
-  toggle: {
-    flexDirection: "row",
-    gap: SIZES.xxSmall,
-  },
-  dateColumn: {
-    flexDirection: "row",
+  checkbox: {
+    padding: 4,
   },
 });
