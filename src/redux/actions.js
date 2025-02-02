@@ -4,14 +4,25 @@ import {
   FETCH_GROUPS,
   FETCH_GROUP_PETS,
   UPDATE_FEEDING,
+  UPDATE_FEEDING_PET,
   ADD_PET, // Add this line
+  FETCH_PET,
+  UPDATE_PET,
+  FETCH_GROUPS_FOR_PETS,
+  ADD_PET_TO_GROUP,
+  REMOVE_PET_FROM_GROUP,
 } from "./actionTypes";
 import {
   fetchPetsFromDb,
   fetchFeedingsByPetFromDb,
   getGroupsFromDb,
   fetchPetsByGroupIdFromDb,
+  updatePetToDb,
   addPetToDb, // Add this line
+  fetchPetById,
+  fetchGroupsForPetFromDb,
+  addPetToGroup,
+  removePetFromGroup,
 } from "@/database";
 
 export const fetchPets = () => async (dispatch) => {
@@ -20,6 +31,15 @@ export const fetchPets = () => async (dispatch) => {
     dispatch({ type: FETCH_PETS, payload: pets });
   } catch (error) {
     //feeding//console.error("Error fetching pets:", error);
+  }
+};
+
+export const fetchPet = () => async (dispatch) => {
+  try {
+    const pet = await fetchPetById();
+    dispatch({ type: FETCH_PETS, payload: pets });
+  } catch (error) {
+    console.error("Error fetching pet", error);
   }
 };
 
@@ -61,7 +81,58 @@ export const updateFeeding = (updatedFeeding) => ({
   payload: updatedFeeding,
 });
 
+export const updatePet = (updatedPet) => ({
+  type: UPDATE_PET,
+  payload: updatedPet,
+});
+
 export const addPet = (pet) => ({
   type: ADD_PET,
   payload: pet,
 });
+
+export const addPetToGroupAction = (groupId, petId) => async (dispatch) => {
+  if (!petId) {
+    console.error("Invalid petId:", petId);
+    return; // Stop if petId is invalid
+  }
+  try {
+    await addPetToGroup(groupId, petId);
+    // Optionally, refresh the pet list for this group:
+    await dispatch(fetchPetsByGroupId(groupId));
+    // Dispatch an action if you want to update local redux state (optional if fetchPetsByGroupId re-fetches)
+    dispatch({
+      type: ADD_PET_TO_GROUP,
+      payload: { groupId, petId },
+    });
+  } catch (error) {
+    console.error("Error adding pet to group:", error);
+  }
+};
+
+export const fetchGroupsForPet = (petId) => async (dispatch) => {
+  try {
+    const groups = await fetchGroupsForPetFromDb(petId);
+    dispatch({
+      type: FETCH_GROUPS_FOR_PETS,
+      payload: { petId, groups },
+    });
+  } catch (error) {
+    console.error("Error fetching groups for pet:", error);
+  }
+};
+
+export const removePetFromGroupAction =
+  (groupId, petId) => async (dispatch) => {
+    try {
+      await removePetFromGroup(groupId, petId);
+      // Optionally, re-fetch the pet list for this group:
+      await dispatch(fetchPetsByGroupId(groupId));
+      dispatch({
+        type: REMOVE_PET_FROM_GROUP,
+        payload: { groupId, petId },
+      });
+    } catch (error) {
+      console.error("Error removing pet from group:", error);
+    }
+  };

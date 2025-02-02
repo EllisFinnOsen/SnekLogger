@@ -15,17 +15,25 @@ export const initializeDatabase = async () => {
   try {
     const db = await openDatabase();
 
-    // Create tables if they don't exist
+    // Create tables if they don't exist (adding the new 'category' column to pets)
+
     await db.execAsync(`
       PRAGMA journal_mode = WAL;
+      DROP TABLE IF EXISTS pets;
+      DROP TABLE IF EXISTS groups;
+      DROP TABLE IF EXISTS group_pets;
+      DROP TABLE IF EXISTS feedings;
+      
 
       CREATE TABLE IF NOT EXISTS pets (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
+        category TEXT,
         species TEXT,
         morph TEXT,
         birthDate TEXT,
         weight REAL,
+        weightType TEXT,
         imageURL TEXT
       );
 
@@ -55,9 +63,9 @@ export const initializeDatabase = async () => {
       );
     `);
 
-    //feeding//console.log("Database initialized");
+    ////console("Database initialized");
   } catch (error) {
-    //feeding//console.error("Error initializing database:", error);
+    //console.error("Error initializing database:", error);
   }
 };
 
@@ -65,18 +73,18 @@ export const insertMockData = async () => {
   try {
     const db = await openDatabase();
 
-    // --- Insert sample pets ---
+    // --- Insert sample pets with the new category field ---
     await db.execAsync(`
-      INSERT INTO pets (name, species, morph, birthDate, weight, imageURL)
+      INSERT INTO pets (name, category, species, morph, birthDate, weight, weightType, imageURL)
       VALUES
-        ('Charlie', 'Snake', 'Corn Snake', '2020-06-15', 1.2, 'https://www.awsfzoo.com/media/Corn-Snake-Website-906x580.jpg'),
-        ('Max', 'Lizard', 'Leopard Gecko', '2019-04-10', 0.09, NULL),
-        ('Alby', 'Snake', 'Albino Ball Python', '2022-01-01', 2.5, 'https://www.worldofballpythons.com/files/morphs/albino/014.jpg'),
-        ('RedTail', 'Snake', 'Red Tail Boa', '2021-05-15', 3.8, 'https://www.thesprucepets.com/thmb/JvQXAZkK-f0DcspbhkbHhQKQfcM=/2099x0/filters:no_upscale():strip_icc()/GettyImages-10014219-56a2bd3b3df78cf772796415.jpg'),
-        ('Bella', 'Snake', 'King Snake', '2021-03-20', 2.3, 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Scarlet_kingsnake_%28Lampropeltis_elapsoides%29.jpg/1200px-Scarlet_kingsnake_%28Lampropeltis_elapsoides%29.jpg'),
-        ('Luna', 'Turtle', 'Red-Eared Slider', '2022-07-14', 1.1, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTIZ4Zv6ugrmLi9t6In1X7MwvQ30aSxR0jr3w&s'),
-        ('Rocky', 'Lizard', 'Bearded Dragon', '2018-10-08', 0.5, 'https://betterthancrickets.com/cdn/shop/articles/b4ccc6b7-d54c-42d0-b8ba-33564cc0798a.jpg?v=1699154925'),
-        ('Shadow', 'Snake', 'Black Milk Snake', '2023-02-11', 0.9, 'https://cdn11.bigcommerce.com/s-g64jf8ws/images/stencil/1280x1280/products/1940/5520/black_milk_adult__28339.1710892858.jpg?c=2')
+        ('Charlie', 'Snakes', 'Corn Snake', 'Normal', '2020-06-15', 1.2, 'g', 'https://www.awsfzoo.com/media/Corn-Snake-Website-906x580.jpg'),
+        ('Max', 'Lizards', 'Leopard Gecko', 'Normal', '2019-04-10', 0.09, 'g', NULL),
+        ('Alby', 'Snakes', 'Ball Python', 'Albino', '2022-01-01', 2.5, 'g', 'https://www.worldofballpythons.com/files/morphs/albino/014.jpg'),
+        ('RedTail', 'Snakes', 'Red Tail Boa', 'Normal', '2021-05-15', 3.8, 'g', 'https://www.thesprucepets.com/thmb/JvQXAZkK-f0DcspbhkbHhQKQfcM=/2099x0/filters:no_upscale():strip_icc()/GettyImages-10014219-56a2bd3b3df78cf772796415.jpg'),
+        ('Bella', 'Snakes', 'King Snake', 'Normal', '2021-03-20', 2.3, 'g', 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Scarlet_kingsnake_%28Lampropeltis_elapsoides%29.jpg/1200px-Scarlet_kingsnake_%28Lampropeltis_elapsoides%29.jpg'),
+        ('Luna', 'Turtles', 'Red-Eared Slider', 'Normal', '2022-07-14', 1.1, 'g', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTIZ4Zv6ugrmLi9t6In1X7MwvQ30aSxR0jr3w&s'),
+        ('Rocky', 'Lizards', 'Bearded Dragon', 'Normal', '2018-10-08', 0.5, 'g', 'https://betterthancrickets.com/cdn/shop/articles/b4ccc6b7-d54c-42d0-b8ba-33564cc0798a.jpg?v=1699154925'),
+        ('Shadow', 'Snakes', 'Milk Snake', 'Black', '2023-02-11', 0.9, 'g', 'https://cdn11.bigcommerce.com/s-g64jf8ws/images/stencil/1280x1280/products/1940/5520/black_milk_adult__28339.1710892858.jpg?c=2')
     `);
 
     // --- Insert sample groups ---
@@ -112,9 +120,9 @@ export const insertMockData = async () => {
         (6, '2025-05-11', '09:30:00', 'Veggies', 0.4, 'Added leafy greens', 1);
     `);
 
-    //feeding//console.log("Mock data inserted");
+    //console("Mock data inserted");
   } catch (error) {
-    //feeding//console.error("Error inserting mock data:", error);
+    console.error("Error inserting mock data:", error);
   }
 };
 
@@ -125,10 +133,10 @@ export const fetchPetsFromDb = async () => {
   try {
     const db = await openDatabase();
     const result = await db.getAllAsync("SELECT * FROM pets");
-    //feeding//console.log("Fetched pets from DB:", result);
+    ////console("Fetched pets from DB:", result);
     return result;
   } catch (error) {
-    //feeding//console.error("Error fetching pets:", error);
+    //console.error("Error fetching pets:", error);
     throw error;
   }
 };
@@ -141,10 +149,10 @@ export const fetchFeedingsByPetFromDb = async (petId) => {
       "SELECT * FROM feedings WHERE petId = ?",
       [petId]
     );
-    //feeding//console.log("Fetched feedings from DB:", result);
+    ////console("Fetched feedings from DB:", result);
     return result;
   } catch (error) {
-    //feeding//console.error("Error fetching feedings:", error);
+    //console.error("Error fetching feedings:", error);
     throw error;
   }
 };
@@ -159,7 +167,7 @@ export const fetchFeedingByIdFromDb = async (feedingId) => {
     );
     return result || null;
   } catch (error) {
-    //feeding//console.error("Error fetching feeding by ID:", error);
+    //console.error("Error fetching feeding by ID:", error);
     throw error;
   }
 };
@@ -178,10 +186,10 @@ export const updateFeedingInDb = async (
       "UPDATE feedings SET petId = ?, feedingDate = ?, feedingTime = ?, complete = ? WHERE id = ?",
       [petId, feedingDate, feedingTime, complete, feedingId]
     );
-    //feeding//console.log("Feeding updated in DB:", result);
+    ////console("Feeding updated in DB:", result);
     return result;
   } catch (error) {
-    //feeding//console.error("Error updating feeding in DB:", error);
+    //console.error("Error updating feeding in DB:", error);
     throw error;
   }
 };
@@ -191,10 +199,10 @@ export const getGroupsFromDb = async () => {
   try {
     const db = await openDatabase();
     const result = await db.getAllAsync("SELECT * FROM groups");
-    console.log("Fetched groups from DB:", result); // Log groups
+    //console("Fetched groups from DB:", result); // This will log the groups.
     return result;
   } catch (error) {
-    console.error("Error fetching groups:", error);
+    console.error("Error fetching groups from DB:", error);
     throw error;
   }
 };
@@ -209,7 +217,7 @@ export const fetchPetsByGroupIdFromDb = async (groupId) => {
       [groupId]
     );
 
-    console.log(`Fetched pets for group ${groupId}:`, result);
+    //console(`Fetched pets for group ${groupId}:`, result);
 
     if (!Array.isArray(result)) {
       console.error(`Expected an array but got:`, result);
@@ -223,25 +231,130 @@ export const fetchPetsByGroupIdFromDb = async (groupId) => {
   }
 };
 
+// Fetch a single pet by its ID
+export const fetchPetById = async (petId) => {
+  try {
+    const db = await openDatabase();
+    // Using getFirstAsync (similar to your fetchFeedingByIdFromDb function)
+    const pet = await db.getFirstAsync("SELECT * FROM pets WHERE id = ?", [
+      petId,
+    ]);
+    return pet || null;
+  } catch (error) {
+    console.error("Error fetching pet by ID:", error);
+    throw error;
+  }
+};
+
 // Function to add a new pet to the database
 export const addPetToDb = async (pet) => {
   try {
     const db = await openDatabase();
     const result = await db.runAsync(
-      `INSERT INTO pets (name, species, morph, birthDate, weight, imageURL)
-       VALUES (?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO pets (name, category, species, morph, birthDate, weight, weightType, imageURL)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         pet.name,
+        pet.category,
         pet.species,
         pet.morph,
         pet.birthDate,
         pet.weight,
+        pet.weightType,
         pet.imageURL,
       ]
     );
-    return result.insertId; // Return the ID of the newly inserted pet
+    console.log("addPetToDb result:", result);
+    // Explicitly return lastInsertRowId:
+    return result.lastInsertRowId;
   } catch (error) {
     console.error("Error adding pet to database:", error);
+    throw error;
+  }
+};
+
+export const updatePetToDb = async (pet) => {
+  try {
+    //console("Updating pet:", pet); // Should log an object with id and other fields
+    const db = await openDatabase();
+    const result = await db.runAsync(
+      `UPDATE pets
+       SET
+         name = ?,
+         category = ?,
+         species = ?,
+         morph = ?,
+         birthDate = ?,
+         weight = ?,
+         weightType = ?,
+         imageURL = ?
+       WHERE id = ?`,
+      [
+        pet.name,
+        pet.category,
+        pet.species,
+        pet.morph,
+        pet.birthDate,
+        pet.weight,
+        pet.weightType,
+        pet.imageURL,
+        pet.id,
+      ]
+    );
+    //console("Update result:", result);
+    return result;
+  } catch (error) {
+    console.error("Error updating pet in database:", error);
+    throw error;
+  }
+};
+
+export const addPetToGroup = async (groupId, petId) => {
+  try {
+    const db = await openDatabase();
+    const result = await db.runAsync(
+      "INSERT INTO group_pets (groupId, petId) VALUES (?, ?)",
+      [groupId, petId]
+    );
+    return result;
+  } catch (error) {
+    console.error("Error adding pet to group:", error);
+    throw error;
+  }
+};
+
+export const fetchGroupsForPetFromDb = async (petId) => {
+  try {
+    const db = await openDatabase();
+    // First, get the group IDs for the given pet from group_pets
+    const groupRows = await db.getAllAsync(
+      "SELECT groupId FROM group_pets WHERE petId = ?",
+      [petId]
+    );
+    const groupIds = groupRows.map((row) => row.groupId);
+    if (groupIds.length === 0) return [];
+    // Then, fetch the full group objects using an IN clause.
+    // (Make sure groupIds are numbers.)
+    const groups = await db.getAllAsync(
+      `SELECT * FROM groups WHERE id IN (${groupIds.join(",")})`
+    );
+    return groups;
+  } catch (error) {
+    console.error("Error fetching groups for pet:", error);
+    return [];
+  }
+};
+
+export const removePetFromGroup = async (groupId, petId) => {
+  try {
+    const db = await openDatabase();
+    const result = await db.runAsync(
+      "DELETE FROM group_pets WHERE groupId = ? AND petId = ?",
+      [groupId, petId]
+    );
+    return result;
+  } catch (error) {
+    console.error("Error removing pet from group:", error);
     throw error;
   }
 };

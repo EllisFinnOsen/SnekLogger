@@ -1,29 +1,73 @@
-import React from "react";
-import { StyleSheet, TouchableOpacity, ScrollView, View } from "react-native";
+// PetList.jsx
+import React, { useState } from "react";
+import {
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { ThemedView } from "@/components/global/ThemedView";
 import { ThemedText } from "@/components/global/ThemedText";
 import PrimaryPetCard from "@/components/global/pets/PrimaryPetCard";
-import AddPetCard from "@/components/global/pets/AddPetCard"; // Import AddPetCard
+import AddPetCard from "@/components/global/pets/AddPetCard";
+import AddPetPickerModal from "./add_pet/AddPetPickerModal";
 
 export default function PetList({
   pets = [],
   title,
   showAllLink = false,
   noPetsText = "No pets available",
-  onShowAllPress, // optional custom press handler
-  groupId, // if provided and no custom onShowAllPress, navigate to GroupScreen
+  onShowAllPress,
+  groupId, // if provided, indicates this pet list belongs to a group
+  loading = false,
 }) {
   const navigation = useNavigation();
+  const [pickerVisible, setPickerVisible] = useState(false);
 
   // Determine what happens when the "Show all" link is pressed.
-  // If a custom onShowAllPress is provided, use that.
-  // Otherwise, if a groupId is provided, navigate to "GroupScreen" with that groupId.
   const handleShowAllPress =
     onShowAllPress ||
     (groupId ? () => navigation.navigate("GroupScreen", { groupId }) : null);
 
-  // If there are no pets, display the fallback text.
+  // Handler for tapping the add card.
+  const handleAddCardPress = () => {
+    console.log("handleAddCardPress triggered");
+    if (!groupId) {
+      console.log("No groupId provided; navigating to AddPetScreen");
+      navigation.navigate("AddPetScreen");
+    } else {
+      console.log("GroupId present:", groupId, "; displaying picker");
+      setPickerVisible(true);
+    }
+  };
+
+  // When an option is selected from the picker.
+  // PetList.jsx
+  const handleSelectOption = (option) => {
+    console.log("Picker option selected:", option);
+    setPickerVisible(false);
+    if (option === "new") {
+      console.log("Navigating to AddPetScreen with groupId:", groupId);
+      navigation.navigate("AddPetScreen", { groupId: groupId });
+    }
+    // Remove the "existing" branch since the modal Save button will dispatch the action.
+  };
+
+  // If loading, show loading indicator.
+  if (loading) {
+    return (
+      <ThemedView style={styles.loadingContainer}>
+        <ActivityIndicator size="small" color="#0000ff" />
+        <ThemedText type="default" style={styles.loadingText}>
+          Loading...
+        </ThemedText>
+      </ThemedView>
+    );
+  }
+
+  // If no pets and not loading, display fallback text.
   if (pets.length === 0) {
     return <ThemedText type="default">{noPetsText}</ThemedText>;
   }
@@ -45,8 +89,22 @@ export default function PetList({
         {pets.map((pet) => (
           <PrimaryPetCard key={pet.id} pet={pet} />
         ))}
-        <AddPetCard />
+        <TouchableOpacity onPress={handleAddCardPress}>
+          <AddPetCard />
+        </TouchableOpacity>
       </ScrollView>
+
+      {pickerVisible && (
+        <AddPetPickerModal
+          visible={pickerVisible}
+          onSelectOption={handleSelectOption}
+          groupId={groupId}
+          onClose={() => {
+            console.log("Picker closed without selection.");
+            setPickerVisible(false);
+          }}
+        />
+      )}
     </ThemedView>
   );
 }
@@ -60,5 +118,14 @@ const styles = StyleSheet.create({
   },
   petList: {
     flexDirection: "row",
+  },
+  loadingContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 16,
+  },
+  loadingText: {
+    marginLeft: 8,
   },
 });

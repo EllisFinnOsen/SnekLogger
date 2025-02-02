@@ -28,6 +28,7 @@ exports[`HelloWave matches the snapshot 1`] = `
         undefined,
         undefined,
         undefined,
+        undefined,
         {
           "fontSize": 24,
           "lineHeight": 32,

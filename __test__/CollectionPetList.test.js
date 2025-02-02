@@ -3,29 +3,17 @@ import React from "react";
 import { render } from "@testing-library/react-native";
 import CollectionPetList from "@/components/global/pets/CollectionPetList";
 
-// --- Mock react-redux hooks ---
-import { useSelector, useDispatch } from "react-redux";
-jest.mock("react-redux", () => ({
-  useSelector: jest.fn(),
-  useDispatch: jest.fn(),
-}));
+// --- Remove Redux mocks since the component no longer uses Redux ---
 
-// --- Mock actions ---
-import { fetchGroups, fetchPetsByGroupId } from "@/redux/actions";
-jest.mock("@/redux/actions", () => ({
-  fetchGroups: jest.fn(() => ({ type: "FETCH_GROUPS" })),
-  fetchPetsByGroupId: jest.fn((groupId) => ({
-    type: "FETCH_PETS_BY_GROUP_ID",
-    payload: groupId,
-  })),
-}));
-
-// --- Mock PetList ---
-jest.mock("@/components/global/pets/PetList", () => {
+// --- Mock GroupPetList ---
+// We assume that GroupPetList is responsible for rendering the pet list for a group.
+// For testing, we can simply have it render its props as JSON (with a testID for easy querying).
+jest.mock("@/components/global/pets/GroupPetList", () => {
   const React = require("react");
   const { Text } = require("react-native");
-  // This dummy component renders its props as JSON inside a Text element for inspection.
-  return (props) => <Text testID="pet-list">{JSON.stringify(props)}</Text>;
+  return (props) => (
+    <Text testID="group-pet-list">{JSON.stringify(props)}</Text>
+  );
 });
 
 // --- Mock ThemedView ---
@@ -47,66 +35,26 @@ jest.mock("@/components/global/ThemedText", () => {
 });
 
 describe("CollectionPetList", () => {
-  const mockDispatch = jest.fn();
-
-  beforeEach(() => {
-    useDispatch.mockReturnValue(mockDispatch);
-    jest.clearAllMocks();
-  });
-
   it("renders 'No groups available' when groups is empty", () => {
-    // Simulate state with empty groups.
-    const state = { groups: [], groupPets: {} };
-    useSelector.mockImplementation((selector) => selector(state));
-
-    const { getByText } = render(<CollectionPetList />);
+    // Pass an empty groups array.
+    const groups = [];
+    const { getByText } = render(<CollectionPetList groups={groups} />);
     expect(getByText("No groups available")).toBeTruthy();
   });
 
-  it("dispatches fetchGroups on mount and fetches pets for each group when groups are present", () => {
+  it("renders a GroupPetList for each group when groups are present", () => {
     const groups = [
-      { id: "1", name: "Group One" },
-      { id: "2", name: "Group Two" },
+      { id: "1", name: "Group One", pets: [{ id: "a", name: "Pet A" }] },
+      { id: "2", name: "Group Two", pets: [] },
     ];
-    const groupPets = { 1: [{ id: "a", name: "Pet A" }], 2: [] };
-    const state = { groups, groupPets };
-    useSelector.mockImplementation((selector) => selector(state));
 
-    render(<CollectionPetList />);
+    const { getAllByTestId } = render(<CollectionPetList groups={groups} />);
+    const groupLists = getAllByTestId("group-pet-list");
+    expect(groupLists.length).toBe(groups.length);
 
-    // Expect fetchGroups is dispatched.
-    expect(mockDispatch).toHaveBeenCalledWith(fetchGroups());
-    // For each group, expect fetchPetsByGroupId is dispatched.
-    groups.forEach((group) => {
-      expect(mockDispatch).toHaveBeenCalledWith(fetchPetsByGroupId(group.id));
-    });
-  });
-
-  it("renders a PetList for each group when groups are present", () => {
-    const groups = [
-      { id: "1", name: "Group One" },
-      { id: "2", name: "Group Two" },
-    ];
-    const groupPets = {
-      1: [{ id: "a", name: "Pet A" }],
-      2: [
-        { id: "b", name: "Pet B" },
-        { id: "c", name: "Pet C" },
-      ],
-    };
-    const state = { groups, groupPets };
-    useSelector.mockImplementation((selector) => selector(state));
-
-    const { getAllByTestId } = render(<CollectionPetList />);
-    const petLists = getAllByTestId("pet-list");
-    expect(petLists.length).toBe(groups.length);
-
-    // Inspect the props passed to the first PetList.
-    const firstProps = JSON.parse(petLists[0].props.children);
-    expect(firstProps.pets).toEqual(groupPets["1"]);
-    expect(firstProps.title).toBe("Group One");
-    expect(firstProps.groupId).toBe("1");
-    expect(firstProps.noPetsText).toBe("No pets available in Group One");
-    expect(firstProps.showAllLink).toBe(true);
+    // Inspect the props passed to the first GroupPetList.
+    // (Our mock renders the props as JSON inside the Text's children.)
+    const firstProps = JSON.parse(groupLists[0].props.children);
+    expect(firstProps.group).toEqual(groups[0]);
   });
 });

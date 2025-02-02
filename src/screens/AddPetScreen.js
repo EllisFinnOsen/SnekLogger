@@ -1,38 +1,106 @@
-import React, { useState } from "react";
-import { View, TextInput, Button, StyleSheet } from "react-native";
-import { useDispatch } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { StyleSheet, View } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 import { addPetToDb } from "@/database";
-import { addPet } from "@/redux/actions";
-import { ThemedView } from "@/components/global/ThemedView";
-import { ThemedText } from "@/components/global/ThemedText";
-import { useThemeColor } from "@/hooks/useThemeColor";
+import { addPet, addPetToGroupAction, fetchGroups } from "@/redux/actions";
+import ThemedScrollView from "@/components/global/ThemedScrollView";
+import { SIZES } from "@/constants/Theme";
+import EditHeader from "@/components/global/EditHeader";
 
-export default function AddPetScreen({ navigation }) {
+// Import subcomponents
+import HeaderSection from "@/components/global/pets/add_pet/HeaderSection";
+import PetNameField from "@/components/global/pets/add_pet/PetNameField";
+import BirthDateField from "@/components/global/pets/add_pet/BirthdayField";
+import WeightField from "@/components/global/pets/add_pet/WeightField";
+import PetImageField from "@/components/global/pets/add_pet/PetImageField";
+import CategorySection from "@/components/global/pets/add_pet/CategorySection";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import CustomButton from "@/components/global/CustomButton";
+import MultipleGroupPicker from "@/components/global/pets/add_pet/MultipleGroupPicker";
+
+export default function AddPetScreen({ navigation, route }) {
+  const iconColor = useThemeColor({}, "icon");
+  const fieldColor = useThemeColor({}, "field");
+  const errorColor = useThemeColor({}, "error");
+  const activeColor = useThemeColor({}, "active");
   const dispatch = useDispatch();
+
+  // State for pet details
   const [name, setName] = useState("");
+  const [nameError, setNameError] = useState("");
+  const [category, setCategory] = useState("");
   const [species, setSpecies] = useState("");
   const [morph, setMorph] = useState("");
   const [birthDate, setBirthDate] = useState("");
-  const [weight, setWeight] = useState("");
+  const [weight, setWeight] = useState(0);
+  const [weightType, setWeightType] = useState("g");
   const [imageURL, setImageURL] = useState("");
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
-  const subtleColor = useThemeColor({}, "subtle");
-  const iconColor = useThemeColor({}, "icon");
-  const fieldColor = useThemeColor({}, "field");
-  const textColor = useThemeColor({}, "text");
+  // New state for multiple group selection.
+  // This will be an array of group objects (or null for empty fields)
+  const [selectedGroups, setSelectedGroups] = useState([]);
+
+  // Fetch available groups from Redux.
+  const availableGroups = useSelector((state) => state.groups.groups || []);
+  console.log("Available Groups:", availableGroups);
+
+  // Dispatch fetchGroups so that the available groups list is populated.
+  useEffect(() => {
+    dispatch(fetchGroups());
+  }, [dispatch]);
+
+  // If a groupId was passed via route parameters (from navigation), pre-select that group.
+  const routeGroupId = route.params && route.params.groupId;
+  useEffect(() => {
+    if (routeGroupId && availableGroups.length > 0) {
+      const foundGroup = availableGroups.find((g) => g.id === routeGroupId);
+      if (foundGroup) {
+        setSelectedGroups([foundGroup]); // Pre-select that group.
+      }
+    }
+  }, [routeGroupId, availableGroups]);
 
   const handleSave = async () => {
+    // Validate pet name
+    if (!name.trim()) {
+      setNameError("Pet name is required.");
+      return;
+    } else {
+      setNameError("");
+    }
+
+    // Construct the new pet object.
+    const newPet = {
+      name,
+      category,
+      species,
+      morph,
+      birthDate,
+      weight,
+      weightType,
+      imageURL,
+      // Optionally, you might store group ids here if needed:
+      // groups: selectedGroups.filter(Boolean).map((g) => g.id),
+    };
+
     try {
-      const newPet = {
-        name,
-        species,
-        morph,
-        birthDate,
-        weight,
-        imageURL,
-      };
+      // Insert the pet into the pets table.
       const petId = await addPetToDb(newPet);
+      console.log("New pet ID:", petId);
+      if (!petId) {
+        console.error("Invalid petId returned from addPetToDb");
+        return;
+      }
+      // Update Redux state for pets.
       dispatch(addPet({ ...newPet, id: petId }));
+
+      // For each selected group, link the pet.
+      const groupsToLink = selectedGroups.filter((g) => g !== null);
+      for (const grp of groupsToLink) {
+        await dispatch(addPetToGroupAction(grp.id, petId));
+      }
+
       navigation.goBack();
     } catch (error) {
       console.error("Error adding pet:", error);
@@ -40,100 +108,73 @@ export default function AddPetScreen({ navigation }) {
   };
 
   return (
-    <ThemedView style={styles.container}>
-      <ThemedText type="title">Add New Pet</ThemedText>
-      <TextInput
-        style={[
-          styles.input,
-          {
-            color: textColor,
-            borderColor: iconColor,
-          },
-        ]}
-        placeholder="Name"
-        placeholderTextColor={iconColor} // Set placeholder text color
-        value={name}
-        onChangeText={setName}
+    <ThemedScrollView contentContainerStyle={styles.container}>
+      <HeaderSection onCancel={() => navigation.goBack()} />
+      <EditHeader
+        label="Add New Pet"
+        description="Enter the listed details and press save to add a new pet."
       />
-      <TextInput
-        style={[
-          styles.input,
-          {
-            color: textColor,
-            borderColor: iconColor,
-          },
-        ]}
-        placeholder="Species"
-        placeholderTextColor={iconColor} // Set placeholder text color
-        value={species}
-        onChangeText={setSpecies}
+      <PetImageField imageURL={imageURL} setImageURL={setImageURL} />
+      <PetNameField
+        name={name}
+        setName={(text) => {
+          setName(text);
+          if (text.trim()) {
+            setNameError("");
+          }
+        }}
+        required={true}
+        errorMessage={nameError}
       />
-      <TextInput
-        style={[
-          styles.input,
-          {
-            color: textColor,
-            borderColor: iconColor,
-          },
-        ]}
-        placeholder="Morph"
-        placeholderTextColor={iconColor} // Set placeholder text color
-        value={morph}
-        onChangeText={setMorph}
+      <BirthDateField
+        birthDate={birthDate}
+        setBirthDate={setBirthDate}
+        showDatePicker={showDatePicker}
+        setShowDatePicker={setShowDatePicker}
       />
-      <TextInput
-        style={[
-          styles.input,
-          {
-            color: textColor,
-            borderColor: iconColor,
-          },
-        ]}
-        placeholder="Birth Date"
-        placeholderTextColor={iconColor} // Set placeholder text color
-        value={birthDate}
-        onChangeText={setBirthDate}
+      <WeightField
+        weight={weight}
+        setWeight={setWeight}
+        weightType={weightType}
+        setWeightType={setWeightType}
       />
-      <TextInput
-        style={[
-          styles.input,
-          {
-            color: textColor,
-            borderColor: iconColor,
-          },
-        ]}
-        placeholder="Weight"
-        placeholderTextColor={iconColor} // Set placeholder text color
-        value={weight}
-        onChangeText={setWeight}
+
+      {/* Render the multiple group picker */}
+      <MultipleGroupPicker
+        selectedGroups={selectedGroups}
+        setSelectedGroups={setSelectedGroups}
+        availableGroups={availableGroups}
       />
-      <TextInput
-        style={[
-          styles.input,
-          {
-            color: textColor,
-            borderColor: iconColor,
-          },
-        ]}
-        placeholder="Image URL"
-        placeholderTextColor={iconColor} // Set placeholder text color
-        value={imageURL}
-        onChangeText={setImageURL}
+
+      <CategorySection
+        category={category}
+        setCategory={setCategory}
+        species={species}
+        setSpecies={setSpecies}
+        morph={morph}
+        setMorph={setMorph}
       />
-      <Button title="Save" onPress={handleSave} />
-    </ThemedView>
+
+      <CustomButton
+        title="Save"
+        textType="title"
+        onPress={handleSave}
+        style={[styles.saveButton, { backgroundColor: activeColor }]}
+      />
+      <View style={styles.spacer} />
+    </ThemedScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 16,
-  },
-  input: {
-    borderWidth: 1,
+    flexGrow: 1,
     padding: 8,
-    marginVertical: 8,
-    borderRadius: 5,
+  },
+  saveButton: {
+    marginTop: 16,
+  },
+  spacer: {
+    height: 36,
   },
 });

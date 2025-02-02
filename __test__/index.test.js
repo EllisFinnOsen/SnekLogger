@@ -14,7 +14,15 @@ jest.mock("expo-sqlite", () => ({
   })),
 }));
 
-// (Do not inline mock expo-blur here; the manual mock in __mocks__ will be used.)
+// Mock expo-image-picker so tests can run without the native module.
+jest.mock("expo-image-picker", () => ({
+  requestMediaLibraryPermissionsAsync: jest
+    .fn()
+    .mockResolvedValue({ status: "granted" }),
+  launchImageLibraryAsync: jest.fn().mockResolvedValue({ cancelled: true }),
+}));
+
+// (Do not inline mock expo-blur here; the manual mock in __mocks__ will be used if available.)
 
 // --- End of native module mocks --- //
 

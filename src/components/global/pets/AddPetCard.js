@@ -1,39 +1,34 @@
+// AddPetCard.jsx
 import React from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { ThemedView } from "@/components/global/ThemedView";
 import { ThemedText } from "@/components/global/ThemedText";
-import { useNavigation } from "@react-navigation/native";
 import { useThemeColor } from "@/hooks/useThemeColor";
 
 export default function AddPetCard() {
-  const navigation = useNavigation();
   const iconColor = useThemeColor({}, "icon");
   const subtleColor = useThemeColor({}, "subtleText");
-  const fieldColor = useThemeColor({}, "field");
 
-  const handlePress = () => {
-    navigation.navigate("AddPetScreen");
-  };
+  console.log("AddPetCard rendered");
 
   return (
-    <TouchableOpacity
-      onPress={handlePress}
+    <ThemedView
+      testID="add-pet-card"
       style={[styles.card, { borderColor: iconColor }]}
-      testID="add-pet-card" // Added testID for the card container
     >
       <ThemedView style={styles.iconContainer}>
         <Ionicons
+          testID="add-pet-icon"
           name="add-circle-outline"
           size={48}
           color={iconColor}
-          testID="add-pet-icon"
         />
       </ThemedView>
       <ThemedText style={{ color: subtleColor }} type="default">
         Add New Pet
       </ThemedText>
-    </TouchableOpacity>
+    </ThemedView>
   );
 }
 

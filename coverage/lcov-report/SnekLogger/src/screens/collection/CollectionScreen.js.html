@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">6.66% </span>
+                <span class="strong">6.25% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>1/15</span>
+                <span class='fraction'>1/16</span>
             </div>
         
             
@@ -39,14 +39,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/6</span>
+                <span class='fraction'>0/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">7.69% </span>
+                <span class="strong">6.66% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>1/13</span>
+                <span class='fraction'>1/15</span>
             </div>
         
             
@@ -126,13 +126,7 @@
 <a name='L61'></a><a href='#L61'>61</a>
 <a name='L62'></a><a href='#L62'>62</a>
 <a name='L63'></a><a href='#L63'>63</a>
-<a name='L64'></a><a href='#L64'>64</a>
-<a name='L65'></a><a href='#L65'>65</a>
-<a name='L66'></a><a href='#L66'>66</a>
-<a name='L67'></a><a href='#L67'>67</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L64'></a><a href='#L64'>64</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -145,24 +139,31 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -188,77 +189,67 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React, { useEffect } from "react";
-import { StyleSheet } from "react-native";
-import { useSelector, useDispatch } from "react-redux";
-import { fetchPets, fetchFeedingsByPet } from "@/redux/actions";
-import { initializeDatabase } from "@/database";
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// CollectionScreen.jsx
+import React, { useEffect, useState } from "react";
+import { StyleSheet, ActivityIndicator } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+import ThemedScrollView from "@/components/global/ThemedScrollView";
 import { ThemedView } from "@/components/global/ThemedView";
 import { ThemedText } from "@/components/global/ThemedText";
-import ThemedScrollView from "@/components/global/ThemedScrollView";
-import HorizontalPetsList from "@/components/global/pets/HorizontalPetsList";
-import ViewAllFeedingsList from "@/components/global/feedings/ViewAllFeedingsList";
-import { HelloWave } from "@/components/global/HelloWave";
-import { SIZES } from "@/constants/Theme";
 import CollectionPetList from "@/components/global/pets/CollectionPetList";
+import { SIZES } from "@/constants/Theme";
+import { fetchGroups } from "@/redux/actions";
 &nbsp;
-export default function <span class="fstat-no" title="function not covered" >CollectionScreen(</span>{ navigation }) {
+export default function <span class="fstat-no" title="function not covered" >CollectionScreen(</span>) {
   const dispatch = <span class="cstat-no" title="statement not covered" >useDispatch();</span>
-  const pets = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate) =&gt; <span class="cstat-no" title="statement not covered" >state.pets.pets || [])</span>;</span>
+  // Extract the groups array from the groups reducer
+  const groups = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate) =&gt; <span class="cstat-no" title="statement not covered" >state.groups.groups || [])</span>;</span>
+<span class="cstat-no" title="statement not covered" >  console.log("Groups from Redux:", groups);</span>
+&nbsp;
+  const [isLoading, setIsLoading] = <span class="cstat-no" title="statement not covered" >useState(true);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
-    const setupDatabase = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >as</span>ync () =&gt; {</span>
+    const setupData = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >as</span>ync () =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      try {</span>
-<span class="cstat-no" title="statement not covered" >        await initializeDatabase();</span>
-<span class="cstat-no" title="statement not covered" >        dispatch(fetchPets());</span>
+<span class="cstat-no" title="statement not covered" >        await dispatch(fetchGroups());</span>
       } catch (error) {
-        //feeding//console.error("Error setting up database:", error);
+<span class="cstat-no" title="statement not covered" >        console.error("Error fetching groups:", error);</span>
+      } finally {
+<span class="cstat-no" title="statement not covered" >        setIsLoading(false);</span>
       }
     };
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    setupDatabase();</span>
+<span class="cstat-no" title="statement not covered" >    setupData();</span>
   }, [dispatch]);
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    if (pets.length &gt; 0) {</span>
-<span class="cstat-no" title="statement not covered" >      pets.forEach(<span class="fstat-no" title="function not covered" >(p</span>et) =&gt; <span class="cstat-no" title="statement not covered" >dispatch(fetchFeedingsByPet(pet.id)))</span>;</span>
-    }
-  }, [dispatch, pets]);
+<span class="cstat-no" title="statement not covered" >  if (isLoading) {</span>
+<span class="cstat-no" title="statement not covered" >    return (</span>
+      &lt;ThemedView style={styles.loadingContainer}&gt;
+        &lt;ActivityIndicator size="large" color="#0000ff" /&gt;
+      &lt;/ThemedView&gt;
+    );
+  }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return (</span>
     &lt;ThemedScrollView&gt;
-      &lt;ThemedView&gt;
-        &lt;ThemedView style={styles.titleContainer}&gt;
-          &lt;ThemedText type="title"&gt;Collection&lt;/ThemedText&gt;
-        &lt;/ThemedView&gt;
-        &lt;CollectionPetList /&gt;
+      &lt;ThemedView style={styles.container}&gt;
+        &lt;ThemedText type="title" style={styles.title}&gt;
+          Collection
+        &lt;/ThemedText&gt;
+        &lt;CollectionPetList groups={groups} /&gt;
       &lt;/ThemedView&gt;
     &lt;/ThemedScrollView&gt;
   );
 }
 &nbsp;
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+  title: {
     marginBottom: SIZES.xLarge,
   },
-  container: {
-    paddingTop: 48,
+  loadingContainer: {
     flex: 1,
-    padding: 16,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 16,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 &nbsp;</pre></td></tr></table></pre>
@@ -268,7 +259,7 @@ const styles = StyleSheet.create({
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-02-01T07:48:34.642Z
+                at 2025-02-02T18:45:41.442Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

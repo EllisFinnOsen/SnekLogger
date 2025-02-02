@@ -1,5 +1,11 @@
 import React from "react";
-import { StyleSheet, ImageBackground, View } from "react-native";
+import {
+  StyleSheet,
+  ImageBackground,
+  View,
+  TouchableOpacity,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import Animated, {
   interpolate,
   useAnimatedRef,
@@ -22,6 +28,7 @@ export default function PetParallaxScrollView({
   petName,
   petBirthdate,
   petMorph,
+  onEditPress, // Add onEditPress prop
 }) {
   const colorScheme = useColorScheme() ?? "light";
   const scrollRef = useAnimatedRef();
@@ -59,6 +66,9 @@ export default function PetParallaxScrollView({
                 <ThemedText style={styles.petName}>{petName}</ThemedText>
                 <ThemedText style={styles.petDetail}>{petBirthdate}</ThemedText>
                 <ThemedText style={styles.petDetail}>{petMorph}</ThemedText>
+                <TouchableOpacity style={styles.editIcon} onPress={onEditPress}>
+                  <Ionicons name="pencil" size={24} color="#fff" />
+                </TouchableOpacity>
               </View>
             </ImageBackground>
           ) : (
@@ -74,6 +84,9 @@ export default function PetParallaxScrollView({
                 </ThemedText>
                 <ThemedText style={styles.petDetail}>{petBirthdate}</ThemedText>
                 <ThemedText style={styles.petDetail}>{petMorph}</ThemedText>
+                <TouchableOpacity style={styles.editIcon} onPress={onEditPress}>
+                  <Ionicons name="pencil" size={24} color="#fff" />
+                </TouchableOpacity>
               </View>
             </ThemedView>
           )}
@@ -115,5 +128,10 @@ const styles = StyleSheet.create({
   petDetail: {
     fontSize: 16,
     color: "#fff",
+  },
+  editIcon: {
+    position: "absolute",
+    top: 10,
+    right: 10,
   },
 });

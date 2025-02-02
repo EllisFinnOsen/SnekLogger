@@ -9,6 +9,7 @@ import { Provider } from "react-redux";
 import store from "@/redux/store";
 import StackNavigator from "@/navigation/StackNavigator";
 import useColorScheme from "@/hooks/useColorScheme";
+import { Provider as PaperProvider } from "react-native-paper";
 
 export default function App() {
   const colorScheme = useColorScheme();
@@ -23,9 +24,13 @@ export default function App() {
 
   return (
     <Provider store={store}>
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <StackNavigator />
-      </ThemeProvider>
+      <PaperProvider>
+        <ThemeProvider
+          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+        >
+          <StackNavigator />
+        </ThemeProvider>
+      </PaperProvider>
     </Provider>
   );
 }
