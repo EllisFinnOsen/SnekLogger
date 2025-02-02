@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import { Button, StyleSheet, View } from "react-native";
-import { useDispatch } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { StyleSheet, View } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 import { addPetToDb } from "@/database";
-import { addPet } from "@/redux/actions";
+import { addPet, addPetToGroupAction, fetchGroups } from "@/redux/actions";
 import ThemedScrollView from "@/components/global/ThemedScrollView";
 import { SIZES } from "@/constants/Theme";
 import EditHeader from "@/components/global/EditHeader";
@@ -10,19 +10,19 @@ import EditHeader from "@/components/global/EditHeader";
 // Import subcomponents
 import HeaderSection from "@/components/global/pets/add_pet/HeaderSection";
 import PetNameField from "@/components/global/pets/add_pet/PetNameField";
-import CategorySection from "@/components/global/pets/add_pet/CategorySection";
 import BirthDateField from "@/components/global/pets/add_pet/BirthdayField";
 import WeightField from "@/components/global/pets/add_pet/WeightField";
 import PetImageField from "@/components/global/pets/add_pet/PetImageField";
+import CategorySection from "@/components/global/pets/add_pet/CategorySection";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import CustomButton from "@/components/global/CustomButton";
+import MultipleGroupPicker from "@/components/global/pets/add_pet/MultipleGroupPicker";
 
-export default function AddPetScreen({ navigation }) {
+export default function AddPetScreen({ navigation, route }) {
   const iconColor = useThemeColor({}, "icon");
   const fieldColor = useThemeColor({}, "field");
   const errorColor = useThemeColor({}, "error");
   const activeColor = useThemeColor({}, "active");
-  const textColor = useThemeColor({}, "text");
   const dispatch = useDispatch();
 
   // State for pet details
@@ -37,6 +37,30 @@ export default function AddPetScreen({ navigation }) {
   const [imageURL, setImageURL] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
 
+  // New state for multiple group selection.
+  // This will be an array of group objects (or null for empty fields)
+  const [selectedGroups, setSelectedGroups] = useState([]);
+
+  // Fetch available groups from Redux.
+  const availableGroups = useSelector((state) => state.groups.groups || []);
+  console.log("Available Groups:", availableGroups);
+
+  // Dispatch fetchGroups so that the available groups list is populated.
+  useEffect(() => {
+    dispatch(fetchGroups());
+  }, [dispatch]);
+
+  // If a groupId was passed via route parameters (from navigation), pre-select that group.
+  const routeGroupId = route.params && route.params.groupId;
+  useEffect(() => {
+    if (routeGroupId && availableGroups.length > 0) {
+      const foundGroup = availableGroups.find((g) => g.id === routeGroupId);
+      if (foundGroup) {
+        setSelectedGroups([foundGroup]); // Pre-select that group.
+      }
+    }
+  }, [routeGroupId, availableGroups]);
+
   const handleSave = async () => {
     // Validate pet name
     if (!name.trim()) {
@@ -46,19 +70,37 @@ export default function AddPetScreen({ navigation }) {
       setNameError("");
     }
 
+    // Construct the new pet object.
+    const newPet = {
+      name,
+      category,
+      species,
+      morph,
+      birthDate,
+      weight,
+      weightType,
+      imageURL,
+      // Optionally, you might store group ids here if needed:
+      // groups: selectedGroups.filter(Boolean).map((g) => g.id),
+    };
+
     try {
-      const newPet = {
-        name,
-        category,
-        species,
-        morph,
-        birthDate,
-        weight,
-        weightType,
-        imageURL,
-      };
+      // Insert the pet into the pets table.
       const petId = await addPetToDb(newPet);
+      console.log("New pet ID:", petId);
+      if (!petId) {
+        console.error("Invalid petId returned from addPetToDb");
+        return;
+      }
+      // Update Redux state for pets.
       dispatch(addPet({ ...newPet, id: petId }));
+
+      // For each selected group, link the pet.
+      const groupsToLink = selectedGroups.filter((g) => g !== null);
+      for (const grp of groupsToLink) {
+        await dispatch(addPetToGroupAction(grp.id, petId));
+      }
+
       navigation.goBack();
     } catch (error) {
       console.error("Error adding pet:", error);
@@ -73,7 +115,6 @@ export default function AddPetScreen({ navigation }) {
         description="Enter the listed details and press save to add a new pet."
       />
       <PetImageField imageURL={imageURL} setImageURL={setImageURL} />
-
       <PetNameField
         name={name}
         setName={(text) => {
@@ -98,6 +139,13 @@ export default function AddPetScreen({ navigation }) {
         setWeightType={setWeightType}
       />
 
+      {/* Render the multiple group picker */}
+      <MultipleGroupPicker
+        selectedGroups={selectedGroups}
+        setSelectedGroups={setSelectedGroups}
+        availableGroups={availableGroups}
+      />
+
       <CategorySection
         category={category}
         setCategory={setCategory}
@@ -113,7 +161,7 @@ export default function AddPetScreen({ navigation }) {
         onPress={handleSave}
         style={[styles.saveButton, { backgroundColor: activeColor }]}
       />
-      <View style={styles.spacer}></View>
+      <View style={styles.spacer} />
     </ThemedScrollView>
   );
 }

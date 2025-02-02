@@ -264,9 +264,11 @@ export const addPetToDb = async (pet) => {
         pet.imageURL,
       ]
     );
-    return result.insertId; // Return the ID of the newly inserted pet
+    console.log("addPetToDb result:", result);
+    // Explicitly return lastInsertRowId:
+    return result.lastInsertRowId;
   } catch (error) {
-    //console.error("Error adding pet to database:", error);
+    console.error("Error adding pet to database:", error);
     throw error;
   }
 };

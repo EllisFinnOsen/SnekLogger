@@ -88,10 +88,15 @@ export const addPet = (pet) => ({
 });
 
 export const addPetToGroupAction = (groupId, petId) => async (dispatch) => {
+  if (!petId) {
+    console.error("Invalid petId:", petId);
+    return; // Stop if petId is invalid
+  }
   try {
     await addPetToGroup(groupId, petId);
-    // Re-fetch the updated pet list for this group.
+    // Optionally, refresh the pet list for this group:
     await dispatch(fetchPetsByGroupId(groupId));
+    // Dispatch an action if you want to update local redux state (optional if fetchPetsByGroupId re-fetches)
     dispatch({
       type: ADD_PET_TO_GROUP,
       payload: { groupId, petId },
