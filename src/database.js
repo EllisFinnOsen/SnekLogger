@@ -116,7 +116,7 @@ export const insertMockData = async () => {
         (3, '2025-01-10', '09:00:00', 'Rat', 2.0, 'Weekly feeding', 0),
         (2, '2025-02-02', '09:00:00', 'Pig', 2.0, 'Weekly feeding', 0),
         (5, '2025-02-03', '09:00:00', 'Dog', 2.0, 'Weekly feeding', 0),
-        (3, '2025-02-17', '09:00:00', 'Rat', 2.0, 'Regular feeding schedule', 1),
+        (4, '2025-02-17', '09:00:00', 'Rat', 2.0, 'Regular feeding schedule', 1),
         (4, '2025-04-12', '10:00:00', 'Rat', 3.5, 'Fed larger prey for growth', 0),
         (5, '2025-03-18', '08:00:00', 'Mouse', 1.2, 'Feeding after growth spurt', 0),
         (6, '2025-05-11', '09:30:00', 'Veggies', 0.4, 'Added leafy greens', 1);

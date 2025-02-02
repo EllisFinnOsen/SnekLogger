@@ -78,3 +78,28 @@ export const debugPastCompleteFeedings = (state) => {
     return bTime - aTime;
   });
 };
+
+export const selectPastCompleteFeedingsByPet = createSelector(
+  [feedingsSelector, (_, petId) => Number(petId)],
+  (feedings, petId) =>
+    feedings
+      .filter((feeding) => {
+        const feedingDateTime = new Date(
+          `${feeding.feedingDate}T${feeding.feedingTime}`
+        );
+        // Instead of comparing to new Date(), compare the feeding’s date at midnight to today’s midnight.
+        const feedingDay = new Date(`${feeding.feedingDate}T00:00:00`);
+        const today = startOfToday();
+        return (
+          Number(feeding.petId) === petId &&
+          feeding.complete === 1 &&
+          feedingDay < today
+        );
+      })
+      // Sort from newest to oldest (descending)
+      .sort((a, b) => {
+        const aTime = new Date(`${a.feedingDate}T${a.feedingTime}`).getTime();
+        const bTime = new Date(`${b.feedingDate}T${b.feedingTime}`).getTime();
+        return bTime - aTime;
+      })
+);

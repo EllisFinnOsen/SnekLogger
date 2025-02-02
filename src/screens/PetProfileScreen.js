@@ -1,26 +1,21 @@
+// PetProfileScreen.js
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-} from "react-native";
-import { useDispatch, useSelector } from "react-redux";
+import { View, Text, StyleSheet } from "react-native";
+import { useDispatch } from "react-redux";
 import { useFocusEffect } from "@react-navigation/native";
-import { fetchFeedingsByPet } from "@/redux/actions";
 import { fetchPetsFromDb } from "@/database";
-import ViewPetProfileFeedings from "@/components/global/feedings/ViewPetProfileFeedings";
 import PetParallaxScrollView from "@/components/global/pets/pet_profile/PetParallaxScrollView";
+import ViewByDateForPet from "./profile/ViewByDateForPet";
+import ViewPastCompletePet from "./profile/ViewPastCompletePet";
 
 export default function PetProfileScreen({ route, navigation }) {
+  console.log("Route params:", route.params);
+  // Make sure your route params include petId (or a pet object)
   const { petId } = route.params;
   const dispatch = useDispatch();
   const [pet, setPet] = useState(null);
-  const [selectedTab, setSelectedTab] = useState("Feedings"); // State to manage selected tab
-  const feedings = useSelector((state) => state.feedings);
 
-  // Fetch pet details
+  // Fetch pet details from the database
   const loadPetDetails = async () => {
     try {
       const pets = await fetchPetsFromDb();
@@ -31,7 +26,6 @@ export default function PetProfileScreen({ route, navigation }) {
     }
   };
 
-  // Use useFocusEffect to refresh data when the screen is focused
   useFocusEffect(
     React.useCallback(() => {
       loadPetDetails();
@@ -39,7 +33,7 @@ export default function PetProfileScreen({ route, navigation }) {
   );
 
   const handleEditPress = () => {
-    navigation.navigate("EditPetScreen", { petId: petId });
+    navigation.navigate("EditPetScreen", { petId });
   };
 
   return (
@@ -49,9 +43,18 @@ export default function PetProfileScreen({ route, navigation }) {
       petName={pet?.name}
       petBirthdate={pet?.birthDate}
       petMorph={pet?.morph}
-      onEditPress={handleEditPress} // Pass handleEditPress to PetParallaxScrollView
+      onEditPress={handleEditPress}
     >
-      <ViewPetProfileFeedings feedings={feedings} />
+      <View style={styles.container}>
+        <ViewByDateForPet petId={petId} />
+      </View>
     </PetParallaxScrollView>
   );
 }
+const styles = StyleSheet.create({
+  container: {
+    paddingTop: 48,
+    flex: 1,
+    padding: 16,
+  },
+});

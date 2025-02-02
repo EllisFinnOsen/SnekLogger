@@ -1,16 +1,13 @@
-// PetFeedingsList.js
+// ViewPetProfileFeedings.js
 import React from "react";
 import { View } from "react-native";
 import { useSelector } from "react-redux";
 import FeedingsList from "@/components/global/feedings/FeedingsList";
 import { selectFeedingsByPet } from "@/redux/selectors";
 
-export default function PetFeedingsList({ petId }) {
-  // Ensure petId is treated as a number, or let the selector convert it.
+export default function ViewPetProfileFeedings({ petId }) {
+  // Filter feedings using the selector
   const petFeedings = useSelector((state) => selectFeedingsByPet(state, petId));
-
-  console.log("Pet Feedings for petId", petId, ":", petFeedings);
-
   return (
     <View>
       <FeedingsList
