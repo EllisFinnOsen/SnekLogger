@@ -3,13 +3,13 @@ import { TouchableOpacity, Text, StyleSheet } from "react-native";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { ThemedText } from "./ThemedText";
 
-export default function CustomButton({ title, onPress, style }) {
+export default function CustomButton({ title, onPress, style, textType }) {
   const textColor = useThemeColor({}, "text");
   const activeColor = useThemeColor({}, "active");
   return (
     <TouchableOpacity onPress={onPress} style={[styles.button, style]}>
       <ThemedText
-        type="default"
+        type={textType}
         style={[styles.buttonText, { color: textColor }]}
       >
         {title}

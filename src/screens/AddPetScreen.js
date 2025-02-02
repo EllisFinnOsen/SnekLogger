@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, StyleSheet } from "react-native";
+import { Button, StyleSheet, View } from "react-native";
 import { useDispatch } from "react-redux";
 import { addPetToDb } from "@/database";
 import { addPet } from "@/redux/actions";
@@ -85,14 +85,6 @@ export default function AddPetScreen({ navigation }) {
         required={true}
         errorMessage={nameError}
       />
-      <CategorySection
-        category={category}
-        setCategory={setCategory}
-        species={species}
-        setSpecies={setSpecies}
-        morph={morph}
-        setMorph={setMorph}
-      />
       <BirthDateField
         birthDate={birthDate}
         setBirthDate={setBirthDate}
@@ -105,11 +97,23 @@ export default function AddPetScreen({ navigation }) {
         weightType={weightType}
         setWeightType={setWeightType}
       />
+
+      <CategorySection
+        category={category}
+        setCategory={setCategory}
+        species={species}
+        setSpecies={setSpecies}
+        morph={morph}
+        setMorph={setMorph}
+      />
+
       <CustomButton
         title="Save"
+        textType="title"
         onPress={handleSave}
-        style={{ backgroundColor: activeColor }}
+        style={[styles.saveButton, { backgroundColor: activeColor }]}
       />
+      <View style={styles.spacer}></View>
     </ThemedScrollView>
   );
 }
@@ -120,7 +124,9 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   saveButton: {
-    flexGrow: 1,
-    padding: 8,
+    marginTop: 16,
+  },
+  spacer: {
+    height: 36,
   },
 });

@@ -1,5 +1,5 @@
 export const MORPH_TYPES = {
-  "Ball Pythons": [
+  "Ball Python": [
     "7 Dollar Ghost",
     "Acid",
     "Albino",

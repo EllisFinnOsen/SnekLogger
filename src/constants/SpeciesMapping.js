@@ -13,7 +13,7 @@ export const PET_CATEGORIES = [
 
 // Mapping from category to species suggestions
 export const SPECIES_BY_CATEGORY = {
-  Pythons: [
+  Python: [
     "Ball Python",
     "Burmese Python",
     "Carpet Python",
@@ -22,12 +22,12 @@ export const SPECIES_BY_CATEGORY = {
     "Short-Tailed Python",
     "Other Python",
   ],
-  Boas: ["Common Boa", "Red-Tailed Boa", "Emerald Tree Boa", "Other Boas"],
-  Colubrids: ["Corn Snake", "Milk Snake", "Rat Snake", "Other Colubrid"],
-  Geckos: ["Leopard Gecko", "Tokay Gecko", "Crested Gecko", "Other Gecko"],
-  Lizards: ["Bearded Dragon", "Monitor Lizard", "Anole", "Other Lizard"],
-  Tortoises: ["Russian Tortoise", "Hermann's Tortoise", "Other Tortoise"],
-  Turtles: ["All Turtle", "Red-Eared Slider", "Box Turtle", "Other Turtle"],
-  Crocodilians: ["American Alligator", "Caiman", "Other Crocodilian"],
-  Amphibians: ["Tree Frog", "Poison Dart Frog", "Axolotl", "Other Amphibian"],
+  Boa: ["Common Boa", "Red-Tailed Boa", "Emerald Tree Boa", "Other Boas"],
+  Colubrid: ["Corn Snake", "Milk Snake", "Rat Snake", "Other Colubrid"],
+  Gecko: ["Leopard Gecko", "Tokay Gecko", "Crested Gecko", "Other Gecko"],
+  Lizard: ["Bearded Dragon", "Monitor Lizard", "Anole", "Other Lizard"],
+  Tortoise: ["Russian Tortoise", "Hermann's Tortoise", "Other Tortoise"],
+  Turtle: ["All Turtle", "Red-Eared Slider", "Box Turtle", "Other Turtle"],
+  Crocodilian: ["American Alligator", "Caiman", "Other Crocodilian"],
+  Amphibian: ["Tree Frog", "Poison Dart Frog", "Axolotl", "Other Amphibian"],
 };
