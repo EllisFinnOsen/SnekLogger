@@ -13,9 +13,17 @@ export default function AddPetCard() {
   console.log("AddPetCard rendered");
 
   return (
-    <ThemedView style={[styles.card, { borderColor: iconColor }]}>
+    <ThemedView
+      testID="add-pet-card"
+      style={[styles.card, { borderColor: iconColor }]}
+    >
       <ThemedView style={styles.iconContainer}>
-        <Ionicons name="add-circle-outline" size={48} color={iconColor} />
+        <Ionicons
+          testID="add-pet-icon"
+          name="add-circle-outline"
+          size={48}
+          color={iconColor}
+        />
       </ThemedView>
       <ThemedText style={{ color: subtleColor }} type="default">
         Add New Pet

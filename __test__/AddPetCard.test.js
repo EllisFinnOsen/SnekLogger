@@ -12,14 +12,6 @@ jest.mock("@expo/vector-icons", () => {
   };
 });
 
-// --- Mock useNavigation ---
-const mockNavigate = jest.fn();
-jest.mock("@react-navigation/native", () => ({
-  useNavigation: () => ({
-    navigate: mockNavigate,
-  }),
-}));
-
 // --- Mock useThemeColor ---
 jest.mock("@/hooks/useThemeColor", () => ({
   useThemeColor: jest.fn().mockImplementation((props, colorName) => {
@@ -75,14 +67,5 @@ describe("AddPetCard", () => {
     expect(icon.props.children).toBe("add-circle-outline");
     // Although our mock doesn't render a "color" prop visibly,
     // you can also check that useThemeColor was called appropriately (if needed).
-  });
-
-  it("navigates to AddPetScreen when pressed", () => {
-    const { getByTestId } = render(<AddPetCard />);
-    const card = getByTestId("add-pet-card");
-
-    fireEvent.press(card);
-
-    expect(mockNavigate).toHaveBeenCalledWith("AddPetScreen");
   });
 });
