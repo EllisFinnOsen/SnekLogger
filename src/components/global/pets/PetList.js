@@ -19,6 +19,7 @@ export default function PetList({
   pets = [],
   title,
   showAllLink = false,
+  showAllText = "View all",
   noPetsText = "No pets available",
   onShowAllPress,
   groupId, // if provided, indicates this pet list belongs to a group
@@ -81,7 +82,7 @@ export default function PetList({
           </View>
           {showAllLink && handleShowAllPress && (
             <TouchableOpacity onPress={handleShowAllPress}>
-              <ThemedText type="link">Show all</ThemedText>
+              <ThemedText type="link">{showAllText}</ThemedText>
             </TouchableOpacity>
           )}
         </View>

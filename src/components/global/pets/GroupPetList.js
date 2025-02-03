@@ -43,6 +43,7 @@ export default function GroupPetList({ group }) {
           loading={loading}
           noPetsText={`No pets available in ${group.name}`}
           showAllLink={true}
+          showAllText="View group"
         />
       )}
     </ThemedView>

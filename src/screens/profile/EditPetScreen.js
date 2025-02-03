@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, ActivityIndicator, View, TextInput } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchPetById,
   updatePetToDb,
   fetchGroupsForPetFromDb,
-} from "@/database"; // Make sure fetchGroupsForPetFromDb exists
+  deletePetFromDb, // <-- Make sure to implement this in your database file
+} from "@/database";
 import {
   updatePet,
   addPetToGroupAction,
   removePetFromGroupAction,
+  deletePet, // <-- Add this Redux action
 } from "@/redux/actions";
 import ThemedScrollView from "@/components/global/ThemedScrollView";
 import { SIZES } from "@/constants/Theme";
@@ -18,19 +20,17 @@ import EditHeader from "@/components/global/EditHeader";
 // Import subcomponents (reuse from AddPetScreen)
 import HeaderSection from "@/components/global/pets/add_pet/HeaderSection";
 import PetNameField from "@/components/global/pets/add_pet/PetNameField";
-import CategorySection from "@/components/global/pets/add_pet/CategorySection";
 import DatePickerField from "@/components/global/DatePickerField";
 import WeightField from "@/components/global/pets/add_pet/WeightField";
 import PetImageField from "@/components/global/pets/add_pet/PetImageField";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import CustomButton from "@/components/global/CustomButton";
 import MultipleGroupPicker from "@/components/global/pets/add_pet/MultipleGroupPicker";
+import DeleteButton from "@/components/global/DeleteButton"; // New reusable delete button
 
 export default function EditPetScreen({ route, navigation }) {
   const { petId } = route.params;
   const dispatch = useDispatch();
-
-  // Theme colors
   const activeColor = useThemeColor({}, "active");
 
   // State for pet details
@@ -46,21 +46,17 @@ export default function EditPetScreen({ route, navigation }) {
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   // State for the pet's group memberships.
-  // selectedGroups: the current selection in the picker.
-  // initialGroups: the groups that the pet was originally linked to.
   const [selectedGroups, setSelectedGroups] = useState([]);
   const [initialGroups, setInitialGroups] = useState([]);
 
   // Get available groups from Redux.
   const availableGroups = useSelector((state) => state.groups.groups || []);
-  //console.log("Available Groups:", availableGroups);
 
   // Load pet data (including current group memberships) when the screen mounts.
   useEffect(() => {
     async function loadPetData() {
       try {
         const pet = await fetchPetById(petId);
-        //console.log("Fetched pet:", pet);
         if (pet) {
           setName(pet.name || "");
           setCategory(pet.category || "");
@@ -73,11 +69,8 @@ export default function EditPetScreen({ route, navigation }) {
 
           // Fetch the groups this pet is currently in.
           const petGroups = await fetchGroupsForPetFromDb(petId);
-          //console.log("Fetched groups for pet:", petGroups);
           setSelectedGroups(petGroups || []);
           setInitialGroups(petGroups || []);
-        } else {
-          //console.warn("No pet returned for id:", petId);
         }
       } catch (error) {
         //console.error("Error loading pet details:", error);
@@ -89,7 +82,6 @@ export default function EditPetScreen({ route, navigation }) {
   }, [petId]);
 
   const handleSave = async () => {
-    // Validate pet name
     if (!name.trim()) {
       setNameError("Pet name is required.");
       return;
@@ -99,7 +91,7 @@ export default function EditPetScreen({ route, navigation }) {
 
     try {
       const updatedPet = {
-        id: petId, // include the pet's id here
+        id: petId,
         name,
         category,
         species,
@@ -110,22 +102,16 @@ export default function EditPetScreen({ route, navigation }) {
         imageURL,
       };
 
-      // Update the pet in your database.
       await updatePetToDb(updatedPet);
-
-      // Optionally dispatch an action to update your Redux store.
       dispatch(updatePet(updatedPet));
 
       // Update group links:
-      // Remove any group links that were in the initialGroups but are no longer selected.
       const groupsToRemove = initialGroups.filter(
         (grp) => !selectedGroups.some((sGrp) => sGrp && sGrp.id === grp.id)
       );
       for (const grp of groupsToRemove) {
         await dispatch(removePetFromGroupAction(grp.id, petId));
       }
-
-      // Add any new group links: (if a group is selected that wasn't originally linked)
       const groupsToAdd = selectedGroups.filter(
         (grp) => !initialGroups.some((iGrp) => iGrp && iGrp.id === grp.id)
       );
@@ -136,6 +122,19 @@ export default function EditPetScreen({ route, navigation }) {
       navigation.goBack();
     } catch (error) {
       //console.error("Error updating pet:", error);
+    }
+  };
+
+  // Handler for deleting the pet.
+  const handleDelete = async () => {
+    try {
+      // Call your database deletion function.
+      await deletePetFromDb(petId);
+      // Dispatch a Redux action to update state if needed.
+      dispatch(deletePet(petId));
+      navigation.goBack();
+    } catch (error) {
+      //console.error("Error deleting pet:", error);
     }
   };
 
@@ -151,7 +150,6 @@ export default function EditPetScreen({ route, navigation }) {
         description="Update the pet details below and press save."
       />
       <PetImageField imageURL={imageURL} setImageURL={setImageURL} />
-
       <PetNameField
         name={name}
         setName={(text) => {
@@ -175,22 +173,15 @@ export default function EditPetScreen({ route, navigation }) {
         weightType={weightType}
         setWeightType={setWeightType}
       />
-
-      {/* Render the multiple group picker */}
       <MultipleGroupPicker
         selectedGroups={selectedGroups}
         setSelectedGroups={setSelectedGroups}
         availableGroups={availableGroups}
       />
-
-      <CategorySection
-        category={category}
-        setCategory={setCategory}
-        species={species}
-        setSpecies={setSpecies}
-        morph={morph}
-        setMorph={setMorph}
-      />
+      {/* Category Section */}
+      <View style={styles.categorySection}>
+        {/* You might include CategorySection here if needed */}
+      </View>
 
       <CustomButton
         title="Save"
@@ -198,6 +189,9 @@ export default function EditPetScreen({ route, navigation }) {
         onPress={handleSave}
         style={[styles.saveButton, { backgroundColor: activeColor }]}
       />
+      {/* Delete Button */}
+      <DeleteButton onPress={handleDelete} />
+
       <View style={styles.spacer} />
     </ThemedScrollView>
   );
@@ -213,5 +207,8 @@ const styles = StyleSheet.create({
   },
   spacer: {
     height: 36,
+  },
+  categorySection: {
+    marginVertical: 8,
   },
 });

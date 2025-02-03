@@ -8,6 +8,7 @@ import {
   ADD_PET,
   ADD_FEEDING, // Add this line
   FETCH_PET,
+  DELETE_PET,
   UPDATE_PET,
   FETCH_GROUPS_FOR_PETS,
   ADD_PET_TO_GROUP,
@@ -22,6 +23,7 @@ import {
   fetchPetsByGroupIdFromDb,
   updatePetToDb,
   addPetToDb, // Add this line
+  deletePetFromDb,
   fetchPetById,
   fetchGroupsForPetFromDb,
   addPetToGroup,
@@ -157,4 +159,9 @@ export const addFeeding = (newFeeding) => async (dispatch) => {
 export const addGroup = (group) => ({
   type: ADD_GROUP,
   payload: group,
+});
+
+export const deletePet = (petId) => ({
+  type: DELETE_PET,
+  payload: petId,
 });

@@ -45,6 +45,15 @@ export default function petsReducer(state = initialState, action) {
         ...state,
         pets: [...state.pets, action.payload],
       };
+    // In petsReducer.js, inside the switch:
+    case DELETE_PET:
+      return {
+        ...state,
+        pets: state.pets.filter((pet) => pet.id !== action.payload),
+        feedings: state.feedings.filter(
+          (feeding) => feeding.petId !== action.payload
+        ),
+      };
 
     default:
       return state;
