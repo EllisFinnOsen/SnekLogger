@@ -88,7 +88,7 @@ export default function PetList({
       )}
 
       {pets.length === 0 ? (
-        // Empty state view: text centered and the add card left aligned.
+        // Empty state view: add card left aligned (with no left padding)
         <View style={styles.emptyStateContainer}>
           <View style={styles.addCardContainer}>
             <TouchableOpacity onPress={handleAddCardPress}>
@@ -100,11 +100,15 @@ export default function PetList({
         // When pets exist, display pet list along with the add pet card.
         <ScrollView horizontal style={styles.petList}>
           {pets.map((pet) => (
-            <PrimaryPetCard key={pet.id} pet={pet} />
+            <View key={pet.id} style={styles.cardContainer}>
+              <PrimaryPetCard pet={pet} />
+            </View>
           ))}
-          <TouchableOpacity onPress={handleAddCardPress}>
-            <AddPetCard />
-          </TouchableOpacity>
+          <View style={styles.cardContainer}>
+            <TouchableOpacity onPress={handleAddCardPress}>
+              <AddPetCard />
+            </TouchableOpacity>
+          </View>
         </ScrollView>
       )}
 
@@ -149,16 +153,26 @@ const styles = StyleSheet.create({
   loadingText: {
     marginLeft: 8,
   },
+  // Adjust empty state container to remove left padding
   emptyStateContainer: {
-    padding: 16,
+    paddingTop: 16,
+    paddingRight: 16,
+    paddingBottom: 16,
+    paddingLeft: 0, // Remove left padding so the add card lines up at the far left
   },
   emptyText: {
     fontSize: 16,
     textAlign: "center",
     marginBottom: 12,
   },
+  // Use cardContainer for spacing between cards in the scroll view
+  cardContainer: {
+    margin: 0,
+    // Optionally, you can add a right margin here for spacing between cards.
+    // When there's only one card in empty state, its container won't apply margin if it’s not used.
+  },
+  // If desired, you can leave addCardContainer as is, or remove margin/padding as needed.
   addCardContainer: {
-    // Aligns the AddPetCard to the left
     alignItems: "flex-start",
   },
 });
