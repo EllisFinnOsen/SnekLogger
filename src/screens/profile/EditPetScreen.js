@@ -132,7 +132,7 @@ export default function EditPetScreen({ route, navigation }) {
       await deletePetFromDb(petId);
       // Dispatch a Redux action to update state if needed.
       dispatch(deletePet(petId));
-      navigation.goBack();
+      navigation.popToTop();
     } catch (error) {
       //console.error("Error deleting pet:", error);
     }
