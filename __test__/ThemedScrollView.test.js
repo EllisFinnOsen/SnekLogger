@@ -1,7 +1,7 @@
 // themedscrollview.test.js
 import React from "react";
 import { render } from "@testing-library/react-native";
-import { Text } from "react-native";
+import { Text, StyleSheet } from "react-native";
 import SimpleScrollView from "@/components/global/ThemedScrollView";
 
 // --- Mock the hook from TabBarBackground --- //
@@ -14,6 +14,14 @@ import { useBottomTabOverflow } from "@/components/global/TabBarBackground";
 jest.mock("react-native-reanimated", () =>
   require("react-native-reanimated/mock")
 );
+
+// A helper function to flatten styles (since StyleSheet.flatten may not be available)
+const flattenStyle = (style) => {
+  if (Array.isArray(style)) {
+    return style.reduce((acc, s) => ({ ...acc, ...s }), {});
+  }
+  return style;
+};
 
 describe("SimpleScrollView", () => {
   beforeEach(() => {
@@ -34,15 +42,23 @@ describe("SimpleScrollView", () => {
     const bottomValue = 30;
     useBottomTabOverflow.mockReturnValue(bottomValue);
     const { getByTestId } = render(
-      <SimpleScrollView>
+      <SimpleScrollView testID="simple-scrollview">
         <Text>Content</Text>
       </SimpleScrollView>
     );
     const scrollView = getByTestId("simple-scrollview");
+
+    // Assert that scrollIndicatorInsets is set correctly.
     expect(scrollView.props.scrollIndicatorInsets).toEqual({
       bottom: bottomValue,
     });
-    expect(scrollView.props.contentContainerStyle).toEqual({
+
+    // Flatten the contentContainerStyle before comparing.
+    const flattenedStyle = flattenStyle(scrollView.props.contentContainerStyle);
+    expect(flattenedStyle).toEqual({
+      flexGrow: 1,
+      paddingHorizontal: 32,
+      paddingTop: 64,
       paddingBottom: bottomValue,
     });
   });

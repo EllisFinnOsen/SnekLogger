@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">13.04% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/23</span>
+                <span class='fraction'>3/23</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">12.5% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/16</span>
+                <span class='fraction'>2/16</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">20% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/5</span>
+                <span class='fraction'>1/5</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">13.04% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/23</span>
+                <span class='fraction'>3/23</span>
             </div>
         
             
@@ -179,7 +179,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -188,28 +188,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -224,6 +207,23 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -268,7 +268,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// groupsReducer.js
@@ -283,7 +283,7 @@ import {
   UPDATE_GROUP,
 } from "./actionTypes";
 &nbsp;
-const initialState = <span class="cstat-no" title="statement not covered" >{</span>
+const initialState = {
   groups: [],
   // groupPets: mapping of groupId to an array of pet objects
   groupPets: {},
@@ -291,15 +291,15 @@ const initialState = <span class="cstat-no" title="statement not covered" >{</sp
   petGroups: {},
 };
 &nbsp;
-export default function <span class="fstat-no" title="function not covered" >groupsReducer(</span>state = <span class="branch-0 cbranch-no" title="branch not covered" >initialState,</span> action) {
-<span class="cstat-no" title="statement not covered" >  switch (action.type) {</span>
-    case FETCH_GROUPS:
+export default function groupsReducer(state = initialState, action) {
+  switch (action.type) {
+<span class="branch-0 cbranch-no" title="branch not covered" >    case FETCH_GROUPS:</span>
 <span class="cstat-no" title="statement not covered" >      return {</span>
         ...state,
         groups: action.payload, // payload is an array of group objects
       };
 &nbsp;
-    case FETCH_GROUP_PETS: {
+<span class="branch-1 cbranch-no" title="branch not covered" >    case FETCH_GROUP_PETS: {</span>
       const { groupId, pets } = <span class="cstat-no" title="statement not covered" >action.payload;</span>
 <span class="cstat-no" title="statement not covered" >      return {</span>
         ...state,
@@ -310,13 +310,13 @@ export default function <span class="fstat-no" title="function not covered" >gro
       };
     }
 &nbsp;
-    case ADD_PET_TO_GROUP: {
+<span class="branch-2 cbranch-no" title="branch not covered" >    case ADD_PET_TO_GROUP: {</span>
       // This case is used when a pet is linked to a group.
       // In our updated implementation, we rely on re-fetching with FETCH_GROUP_PETS.
 <span class="cstat-no" title="statement not covered" >      return state;</span>
     }
 &nbsp;
-    case FETCH_GROUPS_FOR_PETS: {
+<span class="branch-3 cbranch-no" title="branch not covered" >    case FETCH_GROUPS_FOR_PETS: {</span>
       const { petId, groups } = <span class="cstat-no" title="statement not covered" >action.payload;</span>
 <span class="cstat-no" title="statement not covered" >      return {</span>
         ...state,
@@ -327,7 +327,7 @@ export default function <span class="fstat-no" title="function not covered" >gro
       };
     }
 &nbsp;
-    case REMOVE_PET_FROM_GROUP: {
+<span class="branch-4 cbranch-no" title="branch not covered" >    case REMOVE_PET_FROM_GROUP: {</span>
       const { groupId, petId } = <span class="cstat-no" title="statement not covered" >action.payload;</span>
       const currentGroupPets = <span class="cstat-no" title="statement not covered" >state.groupPets[groupId] || [];</span>
 <span class="cstat-no" title="statement not covered" >      return {</span>
@@ -340,14 +340,14 @@ export default function <span class="fstat-no" title="function not covered" >gro
     }
 &nbsp;
     // In groupsReducer.js, add a new case:
-    case ADD_GROUP: {
+<span class="branch-5 cbranch-no" title="branch not covered" >    case ADD_GROUP: {</span>
 <span class="cstat-no" title="statement not covered" >      return {</span>
         ...state,
         groups: [...state.groups, action.payload],
       };
     }
 &nbsp;
-    case UPDATE_GROUP: {
+<span class="branch-6 cbranch-no" title="branch not covered" >    case UPDATE_GROUP: {</span>
       const updatedGroup = <span class="cstat-no" title="statement not covered" >action.payload;</span>
 <span class="cstat-no" title="statement not covered" >      return {</span>
         ...state,
@@ -356,7 +356,7 @@ export default function <span class="fstat-no" title="function not covered" >gro
         ),
       };
     }
-    case DELETE_GROUP: {
+<span class="branch-7 cbranch-no" title="branch not covered" >    case DELETE_GROUP: {</span>
       const groupId = <span class="cstat-no" title="statement not covered" >action.payload;</span>
 <span class="cstat-no" title="statement not covered" >      return {</span>
         ...state,
@@ -372,7 +372,7 @@ export default function <span class="fstat-no" title="function not covered" >gro
     }
 &nbsp;
     default:
-<span class="cstat-no" title="statement not covered" >      return state;</span>
+      return state;
   }
 }
 &nbsp;</pre></td></tr></table></pre>
@@ -382,7 +382,7 @@ export default function <span class="fstat-no" title="function not covered" >gro
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-02-03T22:30:48.155Z
+                at 2025-02-03T23:00:18.889Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

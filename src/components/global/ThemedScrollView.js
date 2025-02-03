@@ -8,6 +8,7 @@ export default function ThemedScrollView({
   children,
   contentContainerStyle,
   style,
+  testID = "simple-scrollview", // default testID
   ...otherProps
 }) {
   const bottom = useBottomTabOverflow();
@@ -15,6 +16,8 @@ export default function ThemedScrollView({
   return (
     <ThemedView style={[styles.container, style]}>
       <ScrollView
+        testID="simple-scrollview" // default testID
+        scrollIndicatorInsets={{ bottom }} // add this line
         contentContainerStyle={[
           styles.content,
           contentContainerStyle,

@@ -209,6 +209,7 @@ export default function FeedingLogCard({
               name={isChecked ? "checkbox" : "square-outline"}
               size={24}
               color={isChecked ? activeColor : textColor}
+              testID="feeding-log-icon"
             />
           </TouchableOpacity>
         </View>
