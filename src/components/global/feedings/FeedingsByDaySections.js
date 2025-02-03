@@ -47,6 +47,12 @@ export default function FeedingsByDaySections() {
     modifiedFeedings = [{ id: "add-log-card" }, ...upcomingFeedings];
   }
 
+  // NEW: If there are absolutely no feedings, force the Upcoming section
+  if (allFeedings.length === 0) {
+    firstValidSection = "upcoming";
+    modifiedFeedings = [{ id: "add-log-card" }];
+  }
+
   return (
     <View>
       <View style={{ height: 48 }}></View>

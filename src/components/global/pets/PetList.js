@@ -35,22 +35,17 @@ export default function PetList({
 
   // Handler for tapping the add button (plus icon or add card).
   const handleAddCardPress = () => {
-    //console.log("handleAddCardPress triggered");
     if (!groupId) {
-      //console.log("No groupId provided; navigating to AddPetScreen");
       navigation.navigate("AddPetScreen");
     } else {
-      //console.log("GroupId present:", groupId, "; displaying picker");
       setPickerVisible(true);
     }
   };
 
   // When an option is selected from the picker.
   const handleSelectOption = (option) => {
-    //console.log("Picker option selected:", option);
     setPickerVisible(false);
     if (option === "new") {
-      //console.log("Navigating to AddPetScreen with groupId:", groupId);
       navigation.navigate("AddPetScreen", { groupId });
     }
     // The modal Save button for "existing" handles linking.
@@ -66,11 +61,6 @@ export default function PetList({
         </ThemedText>
       </ThemedView>
     );
-  }
-
-  // If no pets and not loading, display fallback text.
-  if (pets.length === 0) {
-    return <ThemedText type="default">{noPetsText}</ThemedText>;
   }
 
   return (
@@ -97,24 +87,33 @@ export default function PetList({
         </View>
       )}
 
-      <ScrollView horizontal style={styles.petList}>
-        {pets.map((pet) => (
-          <PrimaryPetCard key={pet.id} pet={pet} />
-        ))}
-        <TouchableOpacity onPress={handleAddCardPress}>
-          <AddPetCard />
-        </TouchableOpacity>
-      </ScrollView>
+      {pets.length === 0 ? (
+        // Empty state view: text centered and the add card left aligned.
+        <View style={styles.emptyStateContainer}>
+          <View style={styles.addCardContainer}>
+            <TouchableOpacity onPress={handleAddCardPress}>
+              <AddPetCard />
+            </TouchableOpacity>
+          </View>
+        </View>
+      ) : (
+        // When pets exist, display pet list along with the add pet card.
+        <ScrollView horizontal style={styles.petList}>
+          {pets.map((pet) => (
+            <PrimaryPetCard key={pet.id} pet={pet} />
+          ))}
+          <TouchableOpacity onPress={handleAddCardPress}>
+            <AddPetCard />
+          </TouchableOpacity>
+        </ScrollView>
+      )}
 
       {pickerVisible && (
         <AddPetPickerModal
           visible={pickerVisible}
           onSelectOption={handleSelectOption}
           groupId={groupId}
-          onClose={() => {
-            //console.log("Picker closed without selection.");
-            setPickerVisible(false);
-          }}
+          onClose={() => setPickerVisible(false)}
         />
       )}
     </ThemedView>
@@ -149,5 +148,17 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginLeft: 8,
+  },
+  emptyStateContainer: {
+    padding: 16,
+  },
+  emptyText: {
+    fontSize: 16,
+    textAlign: "center",
+    marginBottom: 12,
+  },
+  addCardContainer: {
+    // Aligns the AddPetCard to the left
+    alignItems: "flex-start",
   },
 });
