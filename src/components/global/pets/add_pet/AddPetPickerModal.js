@@ -43,7 +43,7 @@ export default function AddPetPickerModal({
   const handleSave = async () => {
     if (selectedPetId == null) return;
     if (!groupId) {
-      console.error("No groupId provided; cannot add pet to group.");
+      //console.error("No groupId provided; cannot add pet to group.");
       return;
     }
     try {
@@ -54,7 +54,7 @@ export default function AddPetPickerModal({
       setSelectedPetId(null);
       onClose();
     } catch (error) {
-      console.error("Error saving pet to group:", error);
+      //console.error("Error saving pet to group:", error);
     }
   };
 

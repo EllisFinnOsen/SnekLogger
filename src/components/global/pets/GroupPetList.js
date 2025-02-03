@@ -23,7 +23,7 @@ export default function GroupPetList({ group }) {
         // Dispatch an action that fetches pets for the group and updates Redux state.
         await dispatch(fetchPetsByGroupId(group.id));
       } catch (error) {
-        console.error(`Error fetching pets for group ${group.id}:`, error);
+        //console.error(`Error fetching pets for group ${group.id}:`, error);
       } finally {
         setLoading(false);
       }

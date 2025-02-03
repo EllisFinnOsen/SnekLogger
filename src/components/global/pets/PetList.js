@@ -35,22 +35,22 @@ export default function PetList({
 
   // Handler for tapping the add button (plus icon or add card).
   const handleAddCardPress = () => {
-    console.log("handleAddCardPress triggered");
+    //console.log("handleAddCardPress triggered");
     if (!groupId) {
-      console.log("No groupId provided; navigating to AddPetScreen");
+      //console.log("No groupId provided; navigating to AddPetScreen");
       navigation.navigate("AddPetScreen");
     } else {
-      console.log("GroupId present:", groupId, "; displaying picker");
+      //console.log("GroupId present:", groupId, "; displaying picker");
       setPickerVisible(true);
     }
   };
 
   // When an option is selected from the picker.
   const handleSelectOption = (option) => {
-    console.log("Picker option selected:", option);
+    //console.log("Picker option selected:", option);
     setPickerVisible(false);
     if (option === "new") {
-      console.log("Navigating to AddPetScreen with groupId:", groupId);
+      //console.log("Navigating to AddPetScreen with groupId:", groupId);
       navigation.navigate("AddPetScreen", { groupId });
     }
     // The modal Save button for "existing" handles linking.
@@ -112,7 +112,7 @@ export default function PetList({
           onSelectOption={handleSelectOption}
           groupId={groupId}
           onClose={() => {
-            console.log("Picker closed without selection.");
+            //console.log("Picker closed without selection.");
             setPickerVisible(false);
           }}
         />

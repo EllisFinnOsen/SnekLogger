@@ -13,7 +13,7 @@ export default function CollectionScreen() {
   const dispatch = useDispatch();
   // Extract the groups array from the groups reducer
   const groups = useSelector((state) => state.groups.groups || []);
-  console.log("Groups from Redux:", groups);
+  //console.log("Groups from Redux:", groups);
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -22,7 +22,7 @@ export default function CollectionScreen() {
       try {
         await dispatch(fetchGroups());
       } catch (error) {
-        console.error("Error fetching groups:", error);
+        //console.error("Error fetching groups:", error);
       } finally {
         setIsLoading(false);
       }

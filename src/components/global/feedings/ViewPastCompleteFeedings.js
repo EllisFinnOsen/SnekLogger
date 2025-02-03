@@ -11,8 +11,8 @@ export default function ViewPastCompleteFeedings() {
   const pastCompleteFeedings = useSelector(selectPastCompleteFeedings);
   const debugPastCompleteFeedings = useSelector(debugPastCompleteFeedings);
 
-  // Log the past complete feedings to the console
-  console.log("Past Complete Feedings:", pastCompleteFeedings);
+  // Log the past complete feedings to the //console
+  //console.log("Past Complete Feedings:", pastCompleteFeedings);
 
   return (
     <FeedingsList

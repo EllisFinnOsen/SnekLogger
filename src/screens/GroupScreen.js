@@ -41,7 +41,7 @@ export default function GroupScreen({ route, navigation }) {
 
   // When the dummy add card is pressed, show the modal.
   const handleAddCardPress = () => {
-    console.log("handleAddCardPress triggered");
+    //console.log("handleAddCardPress triggered");
     // Since we're in a group context, show the picker modal.
     setPickerVisible(true);
   };
@@ -87,7 +87,7 @@ export default function GroupScreen({ route, navigation }) {
           visible={pickerVisible}
           groupId={groupId}
           onSelectOption={(option, selectedId) => {
-            console.log("Modal callback:", option, selectedId);
+            //console.log("Modal callback:", option, selectedId);
             if (option === "new") {
               // Navigate to AddPetScreen with groupId.
               navigation.navigate("AddPetScreen", { groupId });
@@ -95,7 +95,7 @@ export default function GroupScreen({ route, navigation }) {
             // If needed, you could also handle the "existing" case here.
           }}
           onClose={() => {
-            console.log("Picker closed without selection.");
+            //console.log("Picker closed without selection.");
             setPickerVisible(false);
           }}
         />

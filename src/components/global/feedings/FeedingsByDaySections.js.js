@@ -12,11 +12,11 @@ export default function FeedingsByDaySections() {
   const incompleteFeedings = allFeedings.filter(
     (feeding) => feeding.complete === 0
   );
-  console.log("All incomplete feedings:", incompleteFeedings);
+  //console.log("All incomplete feedings:", incompleteFeedings);
 
   // Define reference date for today (at local midnight).
   const today = startOfToday();
-  console.log("Today (startOfToday):", format(today, "yyyy-MM-dd HH:mm:ss"));
+  //console.log("Today (startOfToday):", format(today, "yyyy-MM-dd HH:mm:ss"));
 
   // Helper: parse a feeding's date as a local date at midnight.
   // This ensures we compare only the day, ignoring the time.
@@ -41,9 +41,9 @@ export default function FeedingsByDaySections() {
   });
 
   // Debug logs for counts:
-  console.log("Late Feedings:", lateFeedings.length);
-  console.log("Today's Feedings:", todaysFeedings.length);
-  console.log("Upcoming Feedings:", upcomingFeedings.length);
+  //console.log("Late Feedings:", lateFeedings.length);
+  //console.log("Today's Feedings:", todaysFeedings.length);
+  //console.log("Upcoming Feedings:", upcomingFeedings.length);
 
   return (
     <View>

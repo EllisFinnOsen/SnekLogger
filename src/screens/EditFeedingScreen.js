@@ -55,10 +55,10 @@ export default function EditFeedingScreen({ route, navigation }) {
         setFeedingTime(currentFeeding.feedingTime);
         setIsComplete(currentFeeding.complete === 1); // Set the initial state of the complete field
       } else {
-        console.error("Feeding not found for ID:", feedingId);
+        //console.error("Feeding not found for ID:", feedingId);
       }
     } catch (error) {
-      console.error("Error loading feeding details:", error);
+      //console.error("Error loading feeding details:", error);
     }
   };
 
@@ -96,7 +96,7 @@ export default function EditFeedingScreen({ route, navigation }) {
       }); // Update the feeding state with new values
       setIsEditing(false); // After saving, switch to view mode
     } catch (error) {
-      console.error("Error updating feeding:", error);
+      //console.error("Error updating feeding:", error);
     }
   };
 
@@ -130,7 +130,7 @@ export default function EditFeedingScreen({ route, navigation }) {
       );
       setIsComplete(newCompleteValue);
     } catch (error) {
-      console.error("Error updating feeding complete status:", error);
+      //console.error("Error updating feeding complete status:", error);
     }
   };
 

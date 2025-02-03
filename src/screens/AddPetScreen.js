@@ -43,7 +43,7 @@ export default function AddPetScreen({ navigation, route }) {
 
   // Fetch available groups from Redux.
   const availableGroups = useSelector((state) => state.groups.groups || []);
-  console.log("Available Groups:", availableGroups);
+  //console.log("Available Groups:", availableGroups);
 
   // Dispatch fetchGroups so that the available groups list is populated.
   useEffect(() => {
@@ -87,9 +87,9 @@ export default function AddPetScreen({ navigation, route }) {
     try {
       // Insert the pet into the pets table.
       const petId = await addPetToDb(newPet);
-      console.log("New pet ID:", petId);
+      //console.log("New pet ID:", petId);
       if (!petId) {
-        console.error("Invalid petId returned from addPetToDb");
+        //console.error("Invalid petId returned from addPetToDb");
         return;
       }
       // Update Redux state for pets.
@@ -103,7 +103,7 @@ export default function AddPetScreen({ navigation, route }) {
 
       navigation.goBack();
     } catch (error) {
-      console.error("Error adding pet:", error);
+      //console.error("Error adding pet:", error);
     }
   };
 

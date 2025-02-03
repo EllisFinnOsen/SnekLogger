@@ -53,21 +53,14 @@ export default function EditPetScreen({ route, navigation }) {
 
   // Get available groups from Redux.
   const availableGroups = useSelector((state) => state.groups.groups || []);
-  console.log("Available Groups:", availableGroups);
+  //console.log("Available Groups:", availableGroups);
 
   // Load pet data (including current group memberships) when the screen mounts.
   useEffect(() => {
     async function loadPetData() {
       try {
-        console.log(
-          "Fetching pet with petId:",
-          petId,
-          " (type:",
-          typeof petId,
-          ")"
-        );
         const pet = await fetchPetById(petId);
-        console.log("Fetched pet:", pet);
+        //console.log("Fetched pet:", pet);
         if (pet) {
           setName(pet.name || "");
           setCategory(pet.category || "");
@@ -80,14 +73,14 @@ export default function EditPetScreen({ route, navigation }) {
 
           // Fetch the groups this pet is currently in.
           const petGroups = await fetchGroupsForPetFromDb(petId);
-          console.log("Fetched groups for pet:", petGroups);
+          //console.log("Fetched groups for pet:", petGroups);
           setSelectedGroups(petGroups || []);
           setInitialGroups(petGroups || []);
         } else {
-          console.warn("No pet returned for id:", petId);
+          //console.warn("No pet returned for id:", petId);
         }
       } catch (error) {
-        console.error("Error loading pet details:", error);
+        //console.error("Error loading pet details:", error);
       }
     }
     if (petId) {
@@ -142,7 +135,7 @@ export default function EditPetScreen({ route, navigation }) {
 
       navigation.goBack();
     } catch (error) {
-      console.error("Error updating pet:", error);
+      //console.error("Error updating pet:", error);
     }
   };
 

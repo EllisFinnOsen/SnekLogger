@@ -63,9 +63,9 @@ export const initializeDatabase = async () => {
       );
     `);
 
-    ////console("Database initialized");
+    //////console("Database initialized");
   } catch (error) {
-    //console.error("Error initializing database:", error);
+    ////console.error("Error initializing database:", error);
   }
 };
 
@@ -122,9 +122,9 @@ export const insertMockData = async () => {
         (6, '2025-05-11', '09:30:00', 'Veggies', 0.4, 'Added leafy greens', 1);
     `);
 
-    //console("Mock data inserted");
+    ////console("Mock data inserted");
   } catch (error) {
-    console.error("Error inserting mock data:", error);
+    //console.error("Error inserting mock data:", error);
   }
 };
 
@@ -135,10 +135,10 @@ export const fetchPetsFromDb = async () => {
   try {
     const db = await openDatabase();
     const result = await db.getAllAsync("SELECT * FROM pets");
-    ////console("Fetched pets from DB:", result);
+    //////console("Fetched pets from DB:", result);
     return result;
   } catch (error) {
-    //console.error("Error fetching pets:", error);
+    ////console.error("Error fetching pets:", error);
     throw error;
   }
 };
@@ -155,10 +155,10 @@ export const fetchFeedingsByPetFromDb = async (petId) => {
       "SELECT * FROM feedings WHERE petId = ?",
       [petId]
     );
-    console.log("Fetched feedings from DB for petId", petId, ":", result);
+    //console.log("Fetched feedings from DB for petId", petId, ":", result);
     return result;
   } catch (error) {
-    console.error("Error fetching feedings:", error);
+    //console.error("Error fetching feedings:", error);
     throw error;
   }
 };
@@ -173,7 +173,7 @@ export const fetchFeedingByIdFromDb = async (feedingId) => {
     );
     return result || null;
   } catch (error) {
-    //console.error("Error fetching feeding by ID:", error);
+    ////console.error("Error fetching feeding by ID:", error);
     throw error;
   }
 };
@@ -192,10 +192,10 @@ export const updateFeedingInDb = async (
       "UPDATE feedings SET petId = ?, feedingDate = ?, feedingTime = ?, complete = ? WHERE id = ?",
       [petId, feedingDate, feedingTime, complete, feedingId]
     );
-    ////console("Feeding updated in DB:", result);
+    //////console("Feeding updated in DB:", result);
     return result;
   } catch (error) {
-    //console.error("Error updating feeding in DB:", error);
+    ////console.error("Error updating feeding in DB:", error);
     throw error;
   }
 };
@@ -205,10 +205,10 @@ export const getGroupsFromDb = async () => {
   try {
     const db = await openDatabase();
     const result = await db.getAllAsync("SELECT * FROM groups");
-    //console("Fetched groups from DB:", result); // This will log the groups.
+    ////console("Fetched groups from DB:", result); // This will log the groups.
     return result;
   } catch (error) {
-    console.error("Error fetching groups from DB:", error);
+    //console.error("Error fetching groups from DB:", error);
     throw error;
   }
 };
@@ -223,16 +223,16 @@ export const fetchPetsByGroupIdFromDb = async (groupId) => {
       [groupId]
     );
 
-    //console(`Fetched pets for group ${groupId}:`, result);
+    ////console(`Fetched pets for group ${groupId}:`, result);
 
     if (!Array.isArray(result)) {
-      console.error(`Expected an array but got:`, result);
+      //console.error(`Expected an array but got:`, result);
       return [];
     }
 
     return result;
   } catch (error) {
-    console.error(`Error fetching pets for group ${groupId}:`, error);
+    //console.error(`Error fetching pets for group ${groupId}:`, error);
     return []; // Always return an array to avoid breaking `.map()`
   }
 };
@@ -247,7 +247,7 @@ export const fetchPetById = async (petId) => {
     ]);
     return pet || null;
   } catch (error) {
-    console.error("Error fetching pet by ID:", error);
+    //console.error("Error fetching pet by ID:", error);
     throw error;
   }
 };
@@ -270,18 +270,18 @@ export const addPetToDb = async (pet) => {
         pet.imageURL,
       ]
     );
-    console.log("addPetToDb result:", result);
+    //console.log("addPetToDb result:", result);
     // Explicitly return lastInsertRowId:
     return result.lastInsertRowId;
   } catch (error) {
-    console.error("Error adding pet to database:", error);
+    //console.error("Error adding pet to database:", error);
     throw error;
   }
 };
 
 export const updatePetToDb = async (pet) => {
   try {
-    //console("Updating pet:", pet); // Should log an object with id and other fields
+    ////console("Updating pet:", pet); // Should log an object with id and other fields
     const db = await openDatabase();
     const result = await db.runAsync(
       `UPDATE pets
@@ -307,10 +307,10 @@ export const updatePetToDb = async (pet) => {
         pet.id,
       ]
     );
-    //console("Update result:", result);
+    ////console("Update result:", result);
     return result;
   } catch (error) {
-    console.error("Error updating pet in database:", error);
+    //console.error("Error updating pet in database:", error);
     throw error;
   }
 };
@@ -324,7 +324,7 @@ export const addPetToGroup = async (groupId, petId) => {
     );
     return result;
   } catch (error) {
-    console.error("Error adding pet to group:", error);
+    //console.error("Error adding pet to group:", error);
     throw error;
   }
 };
@@ -346,7 +346,7 @@ export const fetchGroupsForPetFromDb = async (petId) => {
     );
     return groups;
   } catch (error) {
-    console.error("Error fetching groups for pet:", error);
+    //console.error("Error fetching groups for pet:", error);
     return [];
   }
 };
@@ -360,7 +360,7 @@ export const removePetFromGroup = async (groupId, petId) => {
     );
     return result;
   } catch (error) {
-    console.error("Error removing pet from group:", error);
+    //console.error("Error removing pet from group:", error);
     throw error;
   }
 };

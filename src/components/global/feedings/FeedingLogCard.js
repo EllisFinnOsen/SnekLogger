@@ -133,7 +133,7 @@ export default function FeedingLogCard({
       dispatch(updateFeeding({ ...item, complete: newCompleteValue }));
       setIsChecked(!isChecked);
     } catch (error) {
-      console.error("Error toggling complete status:", error);
+      //console.error("Error toggling complete status:", error);
     }
   };
 

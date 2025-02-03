@@ -9,7 +9,7 @@ import * as Localization from "expo-localization";
 
 export default function ViewPastCompletePet({ petId }) {
   // Log the device's time zone for debugging (if needed)
-  console.log("Device Time Zone:", Localization.timezone);
+  //console.log("Device Time Zone:", Localization.timezone);
 
   // Retrieve all feedings from Redux
   const allFeedings = useSelector((state) => state.feedings);
@@ -35,7 +35,7 @@ export default function ViewPastCompletePet({ petId }) {
       return bTime - aTime;
     });
 
-  console.log(
+  //console.log(
     "Past complete feedings for pet",
     petId,
     ":",

@@ -48,9 +48,6 @@ export const selectPastCompleteFeedings = createSelector(
     clonedFeedings.forEach((feeding) => {
       const isoString = feeding.feedingDate + "T" + feeding.feedingTime;
       const timestamp = new Date(isoString).getTime();
-      console.log(
-        `Feeding ID: ${feeding.id} | Date: ${feeding.feedingDate} | Time: ${feeding.feedingTime} | ISO: ${isoString} | Timestamp: ${timestamp}`
-      );
     });
 
     // Sort feedings from newest to oldest (descending)
@@ -68,9 +65,6 @@ export const debugPastCompleteFeedings = (state) => {
   completeFeedings.forEach((feeding) => {
     const isoString = feeding.feedingDate + "T" + feeding.feedingTime;
     const timestamp = new Date(isoString).getTime();
-    console.log(
-      `Feeding ID: ${feeding.id} | Date: ${feeding.feedingDate} | Time: ${feeding.feedingTime} | Timestamp: ${timestamp}`
-    );
   });
   return completeFeedings.sort((a, b) => {
     const aTime = new Date(a.feedingDate + "T" + a.feedingTime).getTime();

@@ -10,7 +10,7 @@ export default function AddPetCard() {
   const iconColor = useThemeColor({}, "icon");
   const subtleColor = useThemeColor({}, "subtleText");
 
-  console.log("AddPetCard rendered");
+  //console.log("AddPetCard rendered");
 
   return (
     <ThemedView

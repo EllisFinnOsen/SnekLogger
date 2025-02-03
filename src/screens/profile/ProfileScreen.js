@@ -25,7 +25,7 @@ export default function PetProfileScreen({ route, navigation }) {
       const foundPet = pets.find((p) => p.id === petId);
       setPet(foundPet);
     } catch (error) {
-      //feeding//console.error("Error loading pet details:", error);
+      //feeding////console.error("Error loading pet details:", error);
     }
   };
 

@@ -7,14 +7,14 @@ import FeedingsList from "@/components/global/feedings/FeedingsList";
 
 export default function ViewByDateForPet({ petId }) {
   // Log the incoming petId
-  console.log("ViewByDateForPet received petId:", petId);
+  //console.log("ViewByDateForPet received petId:", petId);
 
   // Get all feedings from Redux and filter for this pet
   const allFeedings = useSelector((state) => state.feedings);
   const petFeedings = allFeedings.filter(
     (feeding) => Number(feeding.petId) === Number(petId)
   );
-  console.log("Filtered petFeedings count:", petFeedings.length);
+  //console.log("Filtered petFeedings count:", petFeedings.length);
 
   // Optionally, if you only want incomplete feedings for the first three sections:
   const incompleteFeedings = petFeedings.filter(
@@ -56,10 +56,10 @@ export default function ViewByDateForPet({ petId }) {
     .sort((a, b) => parseFeedingDateForDay(b) - parseFeedingDateForDay(a));
 
   // Debug logs (optional)
-  console.log("Late Feedings:", lateFeedings.length);
-  console.log("Today's Feedings:", todaysFeedings.length);
-  console.log("Upcoming Feedings:", upcomingFeedings.length);
-  console.log("Past Complete Feedings:", pastCompleteFeedings.length);
+  //console.log("Late Feedings:", lateFeedings.length);
+  //console.log("Today's Feedings:", todaysFeedings.length);
+  //console.log("Upcoming Feedings:", upcomingFeedings.length);
+  //console.log("Past Complete Feedings:", pastCompleteFeedings.length);
 
   return (
     <View>

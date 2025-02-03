@@ -30,7 +30,7 @@ export const fetchPets = () => async (dispatch) => {
     const pets = await fetchPetsFromDb();
     dispatch({ type: FETCH_PETS, payload: pets });
   } catch (error) {
-    //feeding//console.error("Error fetching pets:", error);
+    //feeding////console.error("Error fetching pets:", error);
   }
 };
 
@@ -39,7 +39,7 @@ export const fetchPet = () => async (dispatch) => {
     const pet = await fetchPetById();
     dispatch({ type: FETCH_PETS, payload: pets });
   } catch (error) {
-    console.error("Error fetching pet", error);
+    //console.error("Error fetching pet", error);
   }
 };
 
@@ -48,7 +48,7 @@ export const fetchFeedingsByPet = (petId) => async (dispatch) => {
     const feedings = await fetchFeedingsByPetFromDb(petId);
     dispatch({ type: FETCH_FEEDINGS, payload: feedings });
   } catch (error) {
-    //feeding//console.error("Error fetching feedings:", error);
+    //feeding////console.error("Error fetching feedings:", error);
   }
 };
 
@@ -60,7 +60,7 @@ export const fetchGroups = () => async (dispatch) => {
       payload: groups,
     });
   } catch (error) {
-    console.error("Error fetching groups:", error);
+    //console.error("Error fetching groups:", error);
   }
 };
 
@@ -72,7 +72,7 @@ export const fetchPetsByGroupId = (groupId) => async (dispatch) => {
       payload: { groupId, pets },
     });
   } catch (error) {
-    console.error(`Error fetching pets for group ${groupId}:`, error);
+    //console.error(`Error fetching pets for group ${groupId}:`, error);
   }
 };
 
@@ -93,7 +93,7 @@ export const addPet = (pet) => ({
 
 export const addPetToGroupAction = (groupId, petId) => async (dispatch) => {
   if (!petId) {
-    console.error("Invalid petId:", petId);
+    //console.error("Invalid petId:", petId);
     return; // Stop if petId is invalid
   }
   try {
@@ -106,7 +106,7 @@ export const addPetToGroupAction = (groupId, petId) => async (dispatch) => {
       payload: { groupId, petId },
     });
   } catch (error) {
-    console.error("Error adding pet to group:", error);
+    //console.error("Error adding pet to group:", error);
   }
 };
 
@@ -118,7 +118,7 @@ export const fetchGroupsForPet = (petId) => async (dispatch) => {
       payload: { petId, groups },
     });
   } catch (error) {
-    console.error("Error fetching groups for pet:", error);
+    //console.error("Error fetching groups for pet:", error);
   }
 };
 
@@ -133,6 +133,6 @@ export const removePetFromGroupAction =
         payload: { groupId, petId },
       });
     } catch (error) {
-      console.error("Error removing pet from group:", error);
+      //console.error("Error removing pet from group:", error);
     }
   };

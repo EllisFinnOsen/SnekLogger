@@ -26,7 +26,7 @@ export default function HomeScreen({ navigation }) {
         await insertMockData();
         dispatch(fetchPets());
       } catch (error) {
-        console.error("Error setting up database:", error);
+        //console.error("Error setting up database:", error);
       }
     };
 
@@ -64,9 +64,9 @@ const styles = StyleSheet.create({
     marginBottom: SIZES.xLarge,
   },
   container: {
-    paddingTop: 48,
+    paddingTop: 0,
     flex: 1,
-    padding: 16,
+    padding: 0,
   },
   title: {
     fontSize: 24,
