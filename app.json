@@ -28,7 +28,8 @@
       "favicon": "./src/assets/favicon.png"
     },
     "plugins": [
-      "expo-sqlite"
+      "expo-sqlite",
+      "expo-localization"
     ],
     "extra": {
       "eas": {

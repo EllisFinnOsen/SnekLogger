@@ -12,7 +12,7 @@ export default function CategoryPicker({
   items,
   compact = false,
 }) {
-  //console.log("CategoryPicker items:", items);
+  ////console.log("CategoryPicker items:", items);
   const iconColor = useThemeColor({}, "icon");
   const bgColor = useThemeColor({}, "background");
   const textColor = useThemeColor({}, "text");

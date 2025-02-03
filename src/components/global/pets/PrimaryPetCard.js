@@ -12,7 +12,7 @@ export default function PrimaryPetCard({ pet }) {
 
   return (
     <TouchableOpacity
-      onPress={() => navigation.navigate("PetProfile", { petId: pet.id })}
+      onPress={() => navigation.navigate("PetProfileScreen", { petId: pet.id })}
       testID="primary-pet-card"
     >
       <ThemedView style={styles.container}>

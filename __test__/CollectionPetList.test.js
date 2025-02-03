@@ -35,11 +35,11 @@ jest.mock("@/components/global/ThemedText", () => {
 });
 
 describe("CollectionPetList", () => {
-  it("renders 'No groups available' when groups is empty", () => {
-    // Pass an empty groups array.
+  it("renders no GroupPetList when groups is empty", () => {
     const groups = [];
-    const { getByText } = render(<CollectionPetList groups={groups} />);
-    expect(getByText("No groups available")).toBeTruthy();
+    const { queryAllByTestId } = render(<CollectionPetList groups={groups} />);
+    // Expect that there are no GroupPetList components rendered.
+    expect(queryAllByTestId("group-pet-list")).toHaveLength(0);
   });
 
   it("renders a GroupPetList for each group when groups are present", () => {

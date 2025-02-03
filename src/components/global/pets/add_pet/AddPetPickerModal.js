@@ -27,6 +27,9 @@ export default function AddPetPickerModal({
     (pet) => !groupPets.some((gp) => gp.id === pet.id)
   );
 
+  // Determine if there are any existing pets available.
+  const hasExistingPets = availablePets.length > 0;
+
   const textColor = useThemeColor({}, "text");
   const background = useThemeColor({}, "background");
   const active = useThemeColor({}, "active");
@@ -43,7 +46,7 @@ export default function AddPetPickerModal({
   const handleSave = async () => {
     if (selectedPetId == null) return;
     if (!groupId) {
-      console.error("No groupId provided; cannot add pet to group.");
+      //console.error("No groupId provided; cannot add pet to group.");
       return;
     }
     try {
@@ -54,7 +57,7 @@ export default function AddPetPickerModal({
       setSelectedPetId(null);
       onClose();
     } catch (error) {
-      console.error("Error saving pet to group:", error);
+      //console.error("Error saving pet to group:", error);
     }
   };
 
@@ -62,22 +65,48 @@ export default function AddPetPickerModal({
     <Modal visible={visible} transparent animationType="fade">
       <View style={styles.modalBackground}>
         <View style={[styles.modalContainer, { backgroundColor: background }]}>
-          {/* Render the ExistingPetPicker with only available pets */}
-          <ExistingPetPicker
-            items={availablePets.map((pet) => ({
-              label: pet.name,
-              value: pet.id,
-              imageURL: pet.imageURL,
-            }))}
-            selectedValue={selectedPetId}
-            onValueChange={(value) => {
-              setSelectedPetId(value);
-            }}
-          />
+          {/* Conditionally render the ExistingPetPicker if there are available pets */}
+          {hasExistingPets && (
+            <ExistingPetPicker
+              items={availablePets.map((pet) => ({
+                label: pet.name,
+                value: pet.id,
+                imageURL: pet.imageURL,
+              }))}
+              selectedValue={selectedPetId}
+              onValueChange={(value) => {
+                setSelectedPetId(value);
+              }}
+            />
+          )}
 
           {/* Button Row */}
           <View style={styles.buttonRow}>
-            {selectedPetId === null ? (
+            {hasExistingPets ? (
+              // When there are available pets, show Save if a pet is selected, otherwise "Add New Pet"
+              selectedPetId === null ? (
+                <TouchableOpacity
+                  style={[
+                    styles.optionButton,
+                    { backgroundColor: active, borderColor: active },
+                  ]}
+                  onPress={() => onSelectOption("new")}
+                >
+                  <ThemedText type="default">Add New Pet</ThemedText>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  style={[
+                    styles.optionButton,
+                    { backgroundColor: active, borderColor: active },
+                  ]}
+                  onPress={handleSave}
+                >
+                  <ThemedText type="default">Save</ThemedText>
+                </TouchableOpacity>
+              )
+            ) : (
+              // If there are no available pets, show only the "Add New Pet" button.
               <TouchableOpacity
                 style={[
                   styles.optionButton,
@@ -87,17 +116,8 @@ export default function AddPetPickerModal({
               >
                 <ThemedText type="default">Add New Pet</ThemedText>
               </TouchableOpacity>
-            ) : (
-              <TouchableOpacity
-                style={[
-                  styles.optionButton,
-                  { backgroundColor: active, borderColor: active },
-                ]}
-                onPress={handleSave}
-              >
-                <ThemedText type="default">Save</ThemedText>
-              </TouchableOpacity>
             )}
+
             <TouchableOpacity
               onPress={onClose}
               style={[

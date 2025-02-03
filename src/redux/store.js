@@ -6,9 +6,9 @@ const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ serializableCheck: false }).concat(
       (store) => (next) => (action) => {
-        //feeding//console.log("Dispatching action:", action);
+        //feeding////console.log("Dispatching action:", action);
         const result = next(action);
-        //feeding//console.log("Updated state:", store.getState());
+        //feeding////console.log("Updated state:", store.getState());
         return result;
       }
     ),

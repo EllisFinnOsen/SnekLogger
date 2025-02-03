@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">5.88% </span>
+                <span class="strong">6.66% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>1/17</span>
+                <span class='fraction'>1/15</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">6.66% </span>
+                <span class="strong">7.69% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>1/15</span>
+                <span class='fraction'>1/13</span>
             </div>
         
             
@@ -140,7 +140,8 @@
 <a name='L75'></a><a href='#L75'>75</a>
 <a name='L76'></a><a href='#L76'>76</a>
 <a name='L77'></a><a href='#L77'>77</a>
-<a name='L78'></a><a href='#L78'>78</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -151,26 +152,29 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -180,8 +184,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -226,11 +228,14 @@ import { ThemedView } from "@/components/global/ThemedView";
 import { ThemedText } from "@/components/global/ThemedText";
 import ThemedScrollView from "@/components/global/ThemedScrollView";
 import HomePetList from "@/components/global/pets/HomePetList";
-import ViewAllFeedingsList from "@/components/global/feedings/ViewAllFeedingsList";
+import ViewAllUpcomingList from "@/components/global/feedings/ViewAllUpcomingList";
 import ViewAllPastFeedings from "@/components/global/feedings/ViewAllPastFeedings";
 import ViewPastCompleteFeedings from "@/components/global/feedings/ViewCompleteFeedings";
 import { HelloWave } from "@/components/global/HelloWave";
 import { SIZES } from "@/constants/Theme";
+import LateFeedingsList from "@/components/global/feedings/LateFeedingList";
+import FeedingsByDaySections from "@/components/global/feedings/FeedingsByDaySections.js";
+import AddLogCard from "@/components/global/feedings/AddLogCard";
 &nbsp;
 export default function <span class="fstat-no" title="function not covered" >HomeScreen(</span>{ navigation }) {
   const dispatch = <span class="cstat-no" title="statement not covered" >useDispatch();</span>
@@ -240,10 +245,10 @@ export default function <span class="fstat-no" title="function not covered" >Hom
     const setupDatabase = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >as</span>ync () =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      try {</span>
 <span class="cstat-no" title="statement not covered" >        await initializeDatabase();</span>
-<span class="cstat-no" title="statement not covered" >        await insertMockData();</span>
+        //await insertMockData();
 <span class="cstat-no" title="statement not covered" >        dispatch(fetchPets());</span>
       } catch (error) {
-<span class="cstat-no" title="statement not covered" >        console.error("Error setting up database:", error);</span>
+        //console.error("Error setting up database:", error);
       }
     };
 &nbsp;
@@ -266,9 +271,7 @@ export default function <span class="fstat-no" title="function not covered" >Hom
           &lt;HelloWave /&gt;
         &lt;/ThemedView&gt;
         &lt;HomePetList /&gt;
-&nbsp;
-        &lt;ViewAllFeedingsList /&gt;
-        &lt;ViewPastCompleteFeedings /&gt;
+        &lt;FeedingsByDaySections /&gt;
       &lt;/ThemedView&gt;
     &lt;/ThemedScrollView&gt;
   );
@@ -281,9 +284,9 @@ const styles = StyleSheet.create({
     marginBottom: SIZES.xLarge,
   },
   container: {
-    paddingTop: 48,
+    paddingTop: 0,
     flex: 1,
-    padding: 16,
+    padding: 0,
   },
   title: {
     fontSize: 24,
@@ -301,7 +304,7 @@ const styles = StyleSheet.create({
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-02-02T18:45:41.442Z
+                at 2025-02-03T23:00:18.889Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

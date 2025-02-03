@@ -1,24 +1,32 @@
-import { StyleSheet } from "react-native";
-import Animated, { useAnimatedRef } from "react-native-reanimated";
-
+// ThemedScrollView.jsx
+import React from "react";
+import { StyleSheet, ScrollView } from "react-native";
 import { ThemedView } from "./ThemedView";
 import { useBottomTabOverflow } from "./TabBarBackground";
 
-export default function SimpleScrollView({ children }) {
-  const scrollRef = useAnimatedRef();
+export default function ThemedScrollView({
+  children,
+  contentContainerStyle,
+  style,
+  testID = "simple-scrollview", // default testID
+  ...otherProps
+}) {
   const bottom = useBottomTabOverflow();
 
   return (
-    <ThemedView style={styles.container}>
-      <Animated.ScrollView
-        ref={scrollRef}
-        scrollEventThrottle={16}
-        scrollIndicatorInsets={{ bottom }}
-        contentContainerStyle={{ paddingBottom: bottom }}
-        testID="simple-scrollview" // <-- Added testID for testing
+    <ThemedView style={[styles.container, style]}>
+      <ScrollView
+        testID="simple-scrollview" // default testID
+        scrollIndicatorInsets={{ bottom }} // add this line
+        contentContainerStyle={[
+          styles.content,
+          contentContainerStyle,
+          { paddingBottom: bottom },
+        ]}
+        {...otherProps}
       >
-        <ThemedView style={styles.content}>{children}</ThemedView>
-      </Animated.ScrollView>
+        {children}
+      </ScrollView>
     </ThemedView>
   );
 }
@@ -28,10 +36,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    flex: 1,
+    // Default styles for the inner container:
+    flexGrow: 1,
     paddingHorizontal: 32,
-    gap: 16,
-    overflow: "hidden",
-    paddingTop: 64, // This assumes a rem is 16px, so 2rem would be 32px
+    paddingTop: 64,
+    // Remove any hardcoded values you don't want by default.
   },
 });

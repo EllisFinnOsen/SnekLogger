@@ -5,24 +5,34 @@ import {
   FETCH_GROUP_PETS,
   UPDATE_FEEDING,
   UPDATE_FEEDING_PET,
-  ADD_PET, // Add this line
+  ADD_PET,
+  ADD_FEEDING, // Add this line
   FETCH_PET,
+  DELETE_PET,
   UPDATE_PET,
   FETCH_GROUPS_FOR_PETS,
   ADD_PET_TO_GROUP,
   REMOVE_PET_FROM_GROUP,
+  ADD_GROUP,
+  UPDATE_GROUP,
+  DELETE_GROUP,
 } from "./actionTypes";
 import {
   fetchPetsFromDb,
   fetchFeedingsByPetFromDb,
+  insertFeedingInDb,
   getGroupsFromDb,
   fetchPetsByGroupIdFromDb,
   updatePetToDb,
   addPetToDb, // Add this line
+  deletePetFromDb,
   fetchPetById,
   fetchGroupsForPetFromDb,
   addPetToGroup,
   removePetFromGroup,
+  addGroupToDb,
+  updateGroupToDb,
+  deleteGroupFromDb,
 } from "@/database";
 
 export const fetchPets = () => async (dispatch) => {
@@ -30,7 +40,7 @@ export const fetchPets = () => async (dispatch) => {
     const pets = await fetchPetsFromDb();
     dispatch({ type: FETCH_PETS, payload: pets });
   } catch (error) {
-    //feeding//console.error("Error fetching pets:", error);
+    //feeding////console.error("Error fetching pets:", error);
   }
 };
 
@@ -39,7 +49,7 @@ export const fetchPet = () => async (dispatch) => {
     const pet = await fetchPetById();
     dispatch({ type: FETCH_PETS, payload: pets });
   } catch (error) {
-    console.error("Error fetching pet", error);
+    //console.error("Error fetching pet", error);
   }
 };
 
@@ -48,7 +58,7 @@ export const fetchFeedingsByPet = (petId) => async (dispatch) => {
     const feedings = await fetchFeedingsByPetFromDb(petId);
     dispatch({ type: FETCH_FEEDINGS, payload: feedings });
   } catch (error) {
-    //feeding//console.error("Error fetching feedings:", error);
+    //feeding////console.error("Error fetching feedings:", error);
   }
 };
 
@@ -60,7 +70,7 @@ export const fetchGroups = () => async (dispatch) => {
       payload: groups,
     });
   } catch (error) {
-    console.error("Error fetching groups:", error);
+    //console.error("Error fetching groups:", error);
   }
 };
 
@@ -72,7 +82,7 @@ export const fetchPetsByGroupId = (groupId) => async (dispatch) => {
       payload: { groupId, pets },
     });
   } catch (error) {
-    console.error(`Error fetching pets for group ${groupId}:`, error);
+    //console.error(`Error fetching pets for group ${groupId}:`, error);
   }
 };
 
@@ -93,7 +103,7 @@ export const addPet = (pet) => ({
 
 export const addPetToGroupAction = (groupId, petId) => async (dispatch) => {
   if (!petId) {
-    console.error("Invalid petId:", petId);
+    //console.error("Invalid petId:", petId);
     return; // Stop if petId is invalid
   }
   try {
@@ -106,7 +116,7 @@ export const addPetToGroupAction = (groupId, petId) => async (dispatch) => {
       payload: { groupId, petId },
     });
   } catch (error) {
-    console.error("Error adding pet to group:", error);
+    //console.error("Error adding pet to group:", error);
   }
 };
 
@@ -118,7 +128,7 @@ export const fetchGroupsForPet = (petId) => async (dispatch) => {
       payload: { petId, groups },
     });
   } catch (error) {
-    console.error("Error fetching groups for pet:", error);
+    //console.error("Error fetching groups for pet:", error);
   }
 };
 
@@ -133,6 +143,39 @@ export const removePetFromGroupAction =
         payload: { groupId, petId },
       });
     } catch (error) {
-      console.error("Error removing pet from group:", error);
+      //console.error("Error removing pet from group:", error);
     }
   };
+
+// Add a new feeding
+export const addFeeding = (newFeeding) => async (dispatch) => {
+  try {
+    const feedingId = await insertFeedingInDb(newFeeding);
+    dispatch({
+      type: ADD_FEEDING,
+      payload: { id: feedingId, ...newFeeding },
+    });
+  } catch (error) {
+    console.error("Error adding new feeding:", error);
+  }
+};
+
+export const addGroup = (group) => ({
+  type: ADD_GROUP,
+  payload: group,
+});
+
+export const deletePet = (petId) => ({
+  type: DELETE_PET,
+  payload: petId,
+});
+
+export const updateGroup = (group) => ({
+  type: UPDATE_GROUP,
+  payload: group,
+});
+
+export const deleteGroup = (groupId) => ({
+  type: DELETE_GROUP,
+  payload: groupId,
+});

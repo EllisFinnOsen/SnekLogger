@@ -1,19 +1,21 @@
+// ViewPetProfileFeedings.js
 import React from "react";
+import { View } from "react-native";
 import { useSelector } from "react-redux";
-
-import { selectFeedingsByPet } from "@/redux/selectors";
 import FeedingsList from "@/components/global/feedings/FeedingsList";
+import { selectFeedingsByPet } from "@/redux/selectors";
 
 export default function ViewPetProfileFeedings({ petId }) {
-  const feedings = useSelector((state) => selectFeedingsByPet(state, petId));
-
+  // Filter feedings using the selector
+  const petFeedings = useSelector((state) => selectFeedingsByPet(state, petId));
   return (
-    <FeedingsList
-      feedings={feedings}
-      noFeedingsText="No feedings available for this pet."
-      // If you want a title or a showAllLink here, you can also pass them:
-      // title="Feedings For This Pet"
-      // showAllLink={false}
-    />
+    <View>
+      <FeedingsList
+        feedings={petFeedings}
+        title="Feedings"
+        showAllLink={true}
+        noFeedingsText="No feedings available for this pet"
+      />
+    </View>
   );
 }

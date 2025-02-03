@@ -1,29 +1,26 @@
-// GroupPetList.jsx
-import React, { useEffect, useState } from "react";
-import { StyleSheet, ActivityIndicator } from "react-native";
+// GroupPetList.js
+import React, { useMemo, useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { makeSelectGroupPets } from "@/redux/selectors";
+import { ActivityIndicator, StyleSheet } from "react-native";
 import { ThemedView } from "@/components/global/ThemedView";
 import PetList from "@/components/global/pets/PetList";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchPetsByGroupId } from "@/redux/actions"; // This action should update state.groups.groupPets
+import { fetchPetsByGroupId } from "@/redux/actions";
 
 export default function GroupPetList({ group }) {
   const dispatch = useDispatch();
+  // Create a memoized selector instance for this group:
+  const selectGroupPets = useMemo(makeSelectGroupPets, []);
+  const groupPets = useSelector((state) => selectGroupPets(state, group.id));
 
-  // Select the pet list for this group from Redux.
-  const groupPets = useSelector(
-    (state) => state.groups.groupPets[group.id] || []
-  );
-
-  // Use local loading state if needed.
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        // Dispatch an action that fetches pets for the group and updates Redux state.
         await dispatch(fetchPetsByGroupId(group.id));
       } catch (error) {
-        console.error(`Error fetching pets for group ${group.id}:`, error);
+        // handle error if needed
       } finally {
         setLoading(false);
       }
@@ -43,6 +40,7 @@ export default function GroupPetList({ group }) {
           loading={loading}
           noPetsText={`No pets available in ${group.name}`}
           showAllLink={true}
+          showAllText="View group"
         />
       )}
     </ThemedView>

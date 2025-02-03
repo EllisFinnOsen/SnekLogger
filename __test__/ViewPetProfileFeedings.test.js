@@ -40,7 +40,7 @@ describe("ViewPetProfileFeedings", () => {
 
     expect(passedProps.feedings).toEqual(mockFeedings);
     expect(passedProps.noFeedingsText).toBe(
-      "No feedings available for this pet."
+      "No feedings available for this pet"
     );
   });
 
@@ -54,7 +54,7 @@ describe("ViewPetProfileFeedings", () => {
 
     expect(passedProps.feedings).toEqual([]);
     expect(passedProps.noFeedingsText).toBe(
-      "No feedings available for this pet."
+      "No feedings available for this pet"
     );
   });
 });

@@ -7,11 +7,14 @@ import { ThemedView } from "@/components/global/ThemedView";
 import { ThemedText } from "@/components/global/ThemedText";
 import ThemedScrollView from "@/components/global/ThemedScrollView";
 import HomePetList from "@/components/global/pets/HomePetList";
-import ViewAllFeedingsList from "@/components/global/feedings/ViewAllFeedingsList";
+import ViewAllUpcomingList from "@/components/global/feedings/ViewAllUpcomingList";
 import ViewAllPastFeedings from "@/components/global/feedings/ViewAllPastFeedings";
 import ViewPastCompleteFeedings from "@/components/global/feedings/ViewCompleteFeedings";
 import { HelloWave } from "@/components/global/HelloWave";
 import { SIZES } from "@/constants/Theme";
+import LateFeedingsList from "@/components/global/feedings/LateFeedingList";
+import FeedingsByDaySections from "@/components/global/feedings/FeedingsByDaySections.js";
+import AddLogCard from "@/components/global/feedings/AddLogCard";
 
 export default function HomeScreen({ navigation }) {
   const dispatch = useDispatch();
@@ -21,10 +24,10 @@ export default function HomeScreen({ navigation }) {
     const setupDatabase = async () => {
       try {
         await initializeDatabase();
-        await insertMockData();
+        //await insertMockData();
         dispatch(fetchPets());
       } catch (error) {
-        console.error("Error setting up database:", error);
+        //console.error("Error setting up database:", error);
       }
     };
 
@@ -47,9 +50,7 @@ export default function HomeScreen({ navigation }) {
           <HelloWave />
         </ThemedView>
         <HomePetList />
-
-        <ViewAllFeedingsList />
-        <ViewPastCompleteFeedings />
+        <FeedingsByDaySections />
       </ThemedView>
     </ThemedScrollView>
   );
@@ -62,9 +63,9 @@ const styles = StyleSheet.create({
     marginBottom: SIZES.xLarge,
   },
   container: {
-    paddingTop: 48,
+    paddingTop: 0,
     flex: 1,
-    padding: 16,
+    padding: 0,
   },
   title: {
     fontSize: 24,

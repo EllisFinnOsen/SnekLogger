@@ -57,15 +57,16 @@ export const initializeDatabase = async () => {
         feedingTime TEXT NOT NULL,
         preyType TEXT NOT NULL,
         preyWeight REAL,
+        preyWeightType TEXT NOT NULL,
         notes TEXT,
         complete INTEGER DEFAULT 0,
         FOREIGN KEY (petId) REFERENCES pets (id) ON DELETE CASCADE
       );
     `);
 
-    ////console("Database initialized");
+    //////console("Database initialized");
   } catch (error) {
-    //console.error("Error initializing database:", error);
+    ////console.error("Error initializing database:", error);
   }
 };
 
@@ -111,18 +112,20 @@ export const insertMockData = async () => {
 
     // --- Insert sample feedings ---
     await db.execAsync(`
-      INSERT INTO feedings (petId, feedingDate, feedingTime, preyType, preyWeight, notes, complete)
+      INSERT INTO feedings (petId, feedingDate, feedingTime, preyType, preyWeight, preyWeightType, notes, complete)
       VALUES
-        (3, '2025-01-10', '09:00:00', 'Rat', 2.0, 'Weekly feeding', 1),
-        (3, '2025-02-17', '09:00:00', 'Rat', 2.0, 'Regular feeding schedule', 1),
-        (4, '2025-04-12', '10:00:00', 'Rat', 3.5, 'Fed larger prey for growth', 0),
-        (1, '2025-03-18', '08:00:00', 'Mouse', 1.2, 'Feeding after growth spurt', 0),
-        (6, '2025-05-11', '09:30:00', 'Veggies', 0.4, 'Added leafy greens', 1);
+        (3, '2025-01-10', '09:00:00', 'Rat', 2.0, 'g', 'Weekly feeding', 0),
+        (2, '2025-02-02', '09:00:00', 'Pig', 2.0, 'g', 'Weekly feeding', 0),
+        (5, '2025-02-03', '09:00:00', 'Dog', 2.0, 'g', 'Weekly feeding', 0),
+        (4, '2025-02-17', '09:00:00', 'Rat', 2.0, 'g', 'Regular feeding schedule', 1),
+        (4, '2025-04-12', '10:00:00', 'Rat', 3.5, 'g', 'Fed larger prey for growth', 0),
+        (5, '2025-03-18', '08:00:00', 'Mouse', 1.2, 'g', 'Feeding after growth spurt', 0),
+        (6, '2025-05-11', '09:30:00', 'Veggies', 0.4, 'g', 'Added leafy greens', 1);
     `);
 
-    //console("Mock data inserted");
+    ////console("Mock data inserted");
   } catch (error) {
-    console.error("Error inserting mock data:", error);
+    //console.error("Error inserting mock data:", error);
   }
 };
 
@@ -133,23 +136,27 @@ export const fetchPetsFromDb = async () => {
   try {
     const db = await openDatabase();
     const result = await db.getAllAsync("SELECT * FROM pets");
-    ////console("Fetched pets from DB:", result);
+    //////console("Fetched pets from DB:", result);
     return result;
   } catch (error) {
-    //console.error("Error fetching pets:", error);
+    ////console.error("Error fetching pets:", error);
     throw error;
   }
 };
 
 // Fetch feedings by petId
 export const fetchFeedingsByPetFromDb = async (petId) => {
+  if (petId === undefined || petId === null) {
+    throw new Error("fetchFeedingsByPetFromDb requires a valid petId");
+  }
+
   try {
     const db = await openDatabase();
     const result = await db.getAllAsync(
       "SELECT * FROM feedings WHERE petId = ?",
       [petId]
     );
-    ////console("Fetched feedings from DB:", result);
+    //console.log("Fetched feedings from DB for petId", petId, ":", result);
     return result;
   } catch (error) {
     //console.error("Error fetching feedings:", error);
@@ -165,9 +172,20 @@ export const fetchFeedingByIdFromDb = async (feedingId) => {
       "SELECT * FROM feedings WHERE id = ?",
       [feedingId]
     );
-    return result || null;
+    return (
+      result ?? {
+        petId: null,
+        feedingDate: "",
+        feedingTime: "",
+        preyType: "",
+        preyWeight: 0, // Default to 0 if not found
+        preyWeightType: "g",
+        complete: 0,
+        notes: "",
+      }
+    );
   } catch (error) {
-    //console.error("Error fetching feeding by ID:", error);
+    console.error("Error fetching feeding by ID:", error);
     throw error;
   }
 };
@@ -178,18 +196,40 @@ export const updateFeedingInDb = async (
   petId,
   feedingDate,
   feedingTime,
+  preyType,
+  preyWeight,
+  preyWeightType,
+  notes, // Include notes
   complete
 ) => {
   try {
     const db = await openDatabase();
     const result = await db.runAsync(
-      "UPDATE feedings SET petId = ?, feedingDate = ?, feedingTime = ?, complete = ? WHERE id = ?",
-      [petId, feedingDate, feedingTime, complete, feedingId]
+      `UPDATE feedings 
+       SET petId = ?, 
+           feedingDate = ?, 
+           feedingTime = ?, 
+           preyType = ?, 
+           preyWeight = ?, 
+           preyWeightType = ?, 
+           notes = ?,
+           complete = ? 
+       WHERE id = ?`,
+      [
+        petId,
+        feedingDate,
+        feedingTime,
+        preyType,
+        preyWeight ?? 0,
+        preyWeightType ?? "g",
+        notes ?? "", // Ensure notes are never undefined
+        complete ?? 0,
+        feedingId,
+      ]
     );
-    ////console("Feeding updated in DB:", result);
     return result;
   } catch (error) {
-    //console.error("Error updating feeding in DB:", error);
+    console.error("Error updating feeding in DB:", error);
     throw error;
   }
 };
@@ -199,10 +239,10 @@ export const getGroupsFromDb = async () => {
   try {
     const db = await openDatabase();
     const result = await db.getAllAsync("SELECT * FROM groups");
-    //console("Fetched groups from DB:", result); // This will log the groups.
+    ////console("Fetched groups from DB:", result); // This will log the groups.
     return result;
   } catch (error) {
-    console.error("Error fetching groups from DB:", error);
+    //console.error("Error fetching groups from DB:", error);
     throw error;
   }
 };
@@ -217,16 +257,16 @@ export const fetchPetsByGroupIdFromDb = async (groupId) => {
       [groupId]
     );
 
-    //console(`Fetched pets for group ${groupId}:`, result);
+    ////console(`Fetched pets for group ${groupId}:`, result);
 
     if (!Array.isArray(result)) {
-      console.error(`Expected an array but got:`, result);
+      //console.error(`Expected an array but got:`, result);
       return [];
     }
 
     return result;
   } catch (error) {
-    console.error(`Error fetching pets for group ${groupId}:`, error);
+    //console.error(`Error fetching pets for group ${groupId}:`, error);
     return []; // Always return an array to avoid breaking `.map()`
   }
 };
@@ -241,7 +281,7 @@ export const fetchPetById = async (petId) => {
     ]);
     return pet || null;
   } catch (error) {
-    console.error("Error fetching pet by ID:", error);
+    //console.error("Error fetching pet by ID:", error);
     throw error;
   }
 };
@@ -264,18 +304,18 @@ export const addPetToDb = async (pet) => {
         pet.imageURL,
       ]
     );
-    console.log("addPetToDb result:", result);
+    //console.log("addPetToDb result:", result);
     // Explicitly return lastInsertRowId:
     return result.lastInsertRowId;
   } catch (error) {
-    console.error("Error adding pet to database:", error);
+    //console.error("Error adding pet to database:", error);
     throw error;
   }
 };
 
 export const updatePetToDb = async (pet) => {
   try {
-    //console("Updating pet:", pet); // Should log an object with id and other fields
+    ////console("Updating pet:", pet); // Should log an object with id and other fields
     const db = await openDatabase();
     const result = await db.runAsync(
       `UPDATE pets
@@ -301,10 +341,10 @@ export const updatePetToDb = async (pet) => {
         pet.id,
       ]
     );
-    //console("Update result:", result);
+    ////console("Update result:", result);
     return result;
   } catch (error) {
-    console.error("Error updating pet in database:", error);
+    //console.error("Error updating pet in database:", error);
     throw error;
   }
 };
@@ -318,7 +358,7 @@ export const addPetToGroup = async (groupId, petId) => {
     );
     return result;
   } catch (error) {
-    console.error("Error adding pet to group:", error);
+    //console.error("Error adding pet to group:", error);
     throw error;
   }
 };
@@ -340,7 +380,7 @@ export const fetchGroupsForPetFromDb = async (petId) => {
     );
     return groups;
   } catch (error) {
-    console.error("Error fetching groups for pet:", error);
+    //console.error("Error fetching groups for pet:", error);
     return [];
   }
 };
@@ -354,7 +394,94 @@ export const removePetFromGroup = async (groupId, petId) => {
     );
     return result;
   } catch (error) {
-    console.error("Error removing pet from group:", error);
+    //console.error("Error removing pet from group:", error);
+    throw error;
+  }
+};
+
+export const insertFeedingInDb = async ({
+  petId,
+  feedingDate,
+  feedingTime,
+  preyType,
+  preyWeight,
+  preyWeightType,
+  notes,
+  complete,
+}) => {
+  try {
+    const db = await openDatabase();
+    const result = await db.runAsync(
+      `INSERT INTO feedings 
+        (petId, feedingDate, feedingTime, preyType, preyWeight, preyWeightType, notes, complete)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        petId,
+        feedingDate,
+        feedingTime,
+        preyType,
+        preyWeight ?? 0, // Default to 0 if missing
+        preyWeightType ?? "g",
+        notes ?? "",
+        complete ? 1 : 0, // Ensure it's stored as an integer
+      ]
+    );
+
+    return result.lastInsertRowId; // Return the ID of the newly created feeding
+  } catch (error) {
+    console.error("Error inserting feeding in DB:", error);
+    throw error;
+  }
+};
+
+export const addGroupToDb = async (group) => {
+  try {
+    const db = await openDatabase();
+    const result = await db.runAsync(
+      `INSERT INTO groups (name, notes) VALUES (?, ?)`,
+      [group.name, group.notes]
+    );
+    return result.lastInsertRowId; // Return the new group's ID.
+  } catch (error) {
+    console.error("Error adding group to database:", error);
+    throw error;
+  }
+};
+
+export const deletePetFromDb = async (petId) => {
+  try {
+    const db = await openDatabase();
+    const result = await db.runAsync("DELETE FROM pets WHERE id = ?", [petId]);
+    return result;
+  } catch (error) {
+    console.error("Error deleting pet from DB:", error);
+    throw error;
+  }
+};
+
+export const updateGroupToDb = async (group) => {
+  try {
+    const db = await openDatabase();
+    const result = await db.runAsync(
+      `UPDATE groups SET name = ?, notes = ? WHERE id = ?`,
+      [group.name, group.notes, group.id]
+    );
+    return result;
+  } catch (error) {
+    console.error("Error updating group in DB:", error);
+    throw error;
+  }
+};
+
+export const deleteGroupFromDb = async (groupId) => {
+  try {
+    const db = await openDatabase();
+    const result = await db.runAsync("DELETE FROM groups WHERE id = ?", [
+      groupId,
+    ]);
+    return result;
+  } catch (error) {
+    console.error("Error deleting group from DB:", error);
     throw error;
   }
 };

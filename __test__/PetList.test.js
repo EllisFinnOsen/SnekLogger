@@ -52,14 +52,18 @@ describe("PetList", () => {
     jest.clearAllMocks();
   });
 
-  it("renders fallback text when no pets are available", () => {
-    const { getByText } = render(
+  it("renders the add pet card when no pets are available", () => {
+    // Since the new design no longer renders the fallback text,
+    // we expect the AddPetCard to be rendered instead.
+    const { getByTestId, queryByText } = render(
       <PetList pets={[]} noPetsText="No pets available" />
     );
-    expect(getByText("No pets available")).toBeTruthy();
+    expect(getByTestId("add-pet-card")).toBeTruthy();
+    // Optionally, you could assert that the fallback text is not present:
+    expect(queryByText("No pets available")).toBeNull();
   });
 
-  it("renders header with title and 'Show all' link, and renders pet cards and the AddPetCard", () => {
+  it("renders header with title and 'View all' link, and renders pet cards and the AddPetCard", () => {
     const pets = [
       { id: "1", name: "Pet 1" },
       { id: "2", name: "Pet 2" },
@@ -70,6 +74,7 @@ describe("PetList", () => {
         pets={pets}
         title="My Pets"
         showAllLink={true}
+        showAllText="View all"
         noPetsText="No pets available"
         // Provide a dummy onShowAllPress to ensure it's used.
         onShowAllPress={() => {}}
@@ -78,8 +83,8 @@ describe("PetList", () => {
 
     // Check that the header title is rendered.
     expect(getByText("My Pets")).toBeTruthy();
-    // Check that the "Show all" link is rendered.
-    expect(getByText("Show all")).toBeTruthy();
+    // Check that the "View all" link is rendered.
+    expect(getByText("View all")).toBeTruthy();
     // Check that PrimaryPetCard is rendered for each pet.
     const primaryCards = getAllByTestId("primary-pet-card");
     expect(primaryCards.length).toBe(pets.length);
@@ -87,7 +92,7 @@ describe("PetList", () => {
     expect(getByTestId("add-pet-card")).toBeTruthy();
   });
 
-  it("calls custom onShowAllPress when provided and 'Show all' is pressed", () => {
+  it("calls custom onShowAllPress when provided and 'View all' is pressed", () => {
     const onShowAllPressMock = jest.fn();
     const pets = [{ id: "1", name: "Pet 1" }];
     const { getByText } = render(
@@ -95,12 +100,13 @@ describe("PetList", () => {
         pets={pets}
         title="My Pets"
         showAllLink={true}
+        showAllText="View all"
         noPetsText="No pets available"
         onShowAllPress={onShowAllPressMock}
       />
     );
 
-    const showAllLink = getByText("Show all");
+    const showAllLink = getByText("View all");
     fireEvent.press(showAllLink);
     expect(onShowAllPressMock).toHaveBeenCalled();
   });
@@ -113,12 +119,13 @@ describe("PetList", () => {
         pets={pets}
         title="My Pets"
         showAllLink={true}
+        showAllText="View all"
         noPetsText="No pets available"
         groupId={groupId}
       />
     );
 
-    const showAllLink = getByText("Show all");
+    const showAllLink = getByText("View all");
     fireEvent.press(showAllLink);
     expect(mockNavigate).toHaveBeenCalledWith("GroupScreen", { groupId });
   });

@@ -5,6 +5,7 @@ import {
   FETCH_PET,
   UPDATE_PET,
   ADD_PET,
+  DELETE_PET,
 } from "./actionTypes";
 
 const initialState = {
@@ -44,6 +45,15 @@ export default function petsReducer(state = initialState, action) {
       return {
         ...state,
         pets: [...state.pets, action.payload],
+      };
+    // In petsReducer.js, inside the switch:
+    case DELETE_PET:
+      return {
+        ...state,
+        pets: state.pets.filter((pet) => pet.id !== action.payload),
+        feedings: state.feedings.filter(
+          (feeding) => feeding.petId !== action.payload
+        ),
       };
 
     default:

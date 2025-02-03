@@ -18,8 +18,8 @@ export default function SearchablePicker({
   selectedValue,
   onValueChange,
   placeholder = "Select an option...",
+  otherLabel = "Other (Enter custom option)", // Customizable "Other" option
 }) {
-  //console.log("SearchablePicker options:", options);
   const textColor = useThemeColor({}, "text");
   const iconColor = useThemeColor({}, "icon");
   const bgColor = useThemeColor({}, "background");
@@ -28,21 +28,17 @@ export default function SearchablePicker({
 
   const [modalVisible, setModalVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  // When customMode is true, the user is entering a custom morph
   const [customMode, setCustomMode] = useState(false);
   const [customText, setCustomText] = useState("");
 
-  // Filter the options based on the search term.
   const filteredOptions = options.filter((option) =>
     option.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Append an "Other" option so the user can opt to enter a custom value.
-  const optionsWithOther = [...filteredOptions, "Other (Enter custom morph)"];
+  const optionsWithOther = [...filteredOptions, otherLabel];
 
   const handleSelect = (option) => {
-    // If the user selects the "Other" option, switch to custom mode.
-    if (option === "Other (Enter custom morph)") {
+    if (option === otherLabel) {
       setCustomMode(true);
     } else {
       onValueChange(option);
@@ -51,7 +47,6 @@ export default function SearchablePicker({
   };
 
   const handleCustomSubmit = () => {
-    // Use the custom text as the selected value.
     if (customText.trim() !== "") {
       onValueChange(customText);
     }
@@ -72,7 +67,6 @@ export default function SearchablePicker({
           {label}
         </ThemedText>
       )}
-      {/* Picker Field with Dropdown Arrow */}
       <TouchableOpacity
         style={[
           styles.picker,
@@ -94,10 +88,9 @@ export default function SearchablePicker({
       <Modal visible={modalVisible} animationType="slide" transparent={false}>
         <View style={[styles.modalContainer, { backgroundColor: bgColor }]}>
           {customMode ? (
-            // Custom Mode: allow user to type their own value
             <View style={styles.customInputContainer}>
               <TextInput
-                placeholder="Enter custom morph..."
+                placeholder="Enter custom option..."
                 placeholderTextColor={subtleColor}
                 style={[
                   styles.customInput,
@@ -116,7 +109,6 @@ export default function SearchablePicker({
               </TouchableOpacity>
             </View>
           ) : (
-            // Standard mode: show search input and options list
             <>
               <TextInput
                 placeholder="Search..."
@@ -156,17 +148,9 @@ export default function SearchablePicker({
 }
 
 const styles = StyleSheet.create({
-  container: {
-    marginVertical: 8,
-  },
-  label: {
-    marginBottom: 4,
-  },
-  picker: {
-    borderWidth: 1,
-    borderRadius: 5,
-    padding: 10,
-  },
+  container: { marginVertical: 8 },
+  label: { marginBottom: 4 },
+  picker: { borderWidth: 1, borderRadius: 5, padding: 10 },
   pickerContent: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -185,14 +169,8 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     fontSize: SIZES.medium,
   },
-  option: {
-    padding: 12,
-    borderBottomWidth: 1,
-  },
-  cancelButton: {
-    marginTop: 16,
-    alignSelf: "center",
-  },
+  option: { padding: 12, borderBottomWidth: 1 },
+  cancelButton: { marginTop: 16, alignSelf: "center" },
   customInputContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -205,8 +183,5 @@ const styles = StyleSheet.create({
     padding: 8,
     fontSize: SIZES.small,
   },
-  submitButton: {
-    marginLeft: 8,
-    padding: 10,
-  },
+  submitButton: { marginLeft: 8, padding: 10 },
 });

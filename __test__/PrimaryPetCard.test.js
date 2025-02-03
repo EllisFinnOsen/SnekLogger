@@ -70,6 +70,8 @@ describe("PrimaryPetCard", () => {
 
     fireEvent.press(touchable);
 
-    expect(mockNavigate).toHaveBeenCalledWith("PetProfile", { petId: pet.id });
+    expect(mockNavigate).toHaveBeenCalledWith("PetProfileScreen", {
+      petId: pet.id,
+    });
   });
 });

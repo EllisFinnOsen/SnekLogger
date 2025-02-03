@@ -59,6 +59,7 @@ export default function CategorySection({
             selectedValue={morph}
             onValueChange={setMorph}
             placeholder="Select a morph..."
+            otherLabel="Other (Enter custom morph)"
           />
         </View>
       ) : null}
