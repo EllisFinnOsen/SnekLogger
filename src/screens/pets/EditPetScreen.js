@@ -144,6 +144,7 @@ export default function EditPetScreen({ route, navigation }) {
         onSave={handleSave}
         hasSave={true}
         onCancel={() => navigation.goBack()}
+        onBack={() => navigation.goBack()}
       />
       <EditHeader
         label="Edit Pet"

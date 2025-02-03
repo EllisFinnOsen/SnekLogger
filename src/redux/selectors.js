@@ -1,99 +1,82 @@
+// selectors.js
 import { createSelector } from "reselect";
 import { startOfToday } from "date-fns";
+
+// Define a constant empty array to avoid creating new arrays on each call.
+const EMPTY_ARRAY = [];
+
 // Input selector: gets the entire feedings array
 const feedingsSelector = (state) => state.feedings;
 
 // Memoized selector: filters feedings for a specific pet
 export const selectFeedingsByPet = createSelector(
   [feedingsSelector, (_, petId) => Number(petId)],
-  (feedings, petId) =>
-    feedings.filter((feeding) => Number(feeding.petId) === petId)
-);
-
-// Selector to filter upcoming and incomplete feedings, then sort them by feedingDate (soonest first)
-export const selectUpcomingFeedings = createSelector(
-  [feedingsSelector],
-  (feedings) =>
-    feedings
-      .filter(
-        (feeding) =>
-          new Date(feeding.feedingDate) > new Date() && feeding.complete === 0
-      )
-      .sort((a, b) => new Date(a.feedingDate) - new Date(b.feedingDate))
-);
-
-export const selectPastFeedings = createSelector(
-  [feedingsSelector],
-  (feedings) =>
-    feedings.filter((feeding) => new Date(feeding.feedingDate) < new Date())
-);
-
-export const selectCompleteFeedings = createSelector(
-  [feedingsSelector],
-  (feedings) => feedings.filter((feeding) => feeding.complete === 1)
-);
-
-export const selectPastCompleteFeedings = createSelector(
-  [feedingsSelector],
-  (feedings) => {
-    // Filter the feedings that are complete
-    const completeFeedings = feedings.filter(
-      (feeding) => feeding.complete === 1
+  (feedings, petId) => {
+    const result = feedings.filter(
+      (feeding) => Number(feeding.petId) === petId
     );
-
-    // Clone the array so we don't mutate the original
-    const clonedFeedings = completeFeedings.slice();
-
-    // Log each feeding's combined timestamp for debugging
-    clonedFeedings.forEach((feeding) => {
-      const isoString = feeding.feedingDate + "T" + feeding.feedingTime;
-      const timestamp = new Date(isoString).getTime();
-    });
-
-    // Sort feedings from newest to oldest (descending)
-    return clonedFeedings.sort((a, b) => {
-      const aTime = new Date(a.feedingDate + "T" + a.feedingTime).getTime();
-      const bTime = new Date(b.feedingDate + "T" + b.feedingTime).getTime();
-      return bTime - aTime;
-    });
+    console.log("selectFeedingsByPet:", { petId, result });
+    return result;
   }
 );
 
-export const debugPastCompleteFeedings = (state) => {
-  const feedings = state.feedings;
-  const completeFeedings = feedings.filter((feeding) => feeding.complete === 1);
-  completeFeedings.forEach((feeding) => {
-    const isoString = feeding.feedingDate + "T" + feeding.feedingTime;
-    const timestamp = new Date(isoString).getTime();
-  });
-  return completeFeedings.sort((a, b) => {
-    const aTime = new Date(a.feedingDate + "T" + a.feedingTime).getTime();
-    const bTime = new Date(b.feedingDate + "T" + b.feedingTime).getTime();
-    return bTime - aTime;
-  });
-};
+// Selector to filter upcoming and incomplete feedings, then sort them by feedingDate (soonest first)
+// Now we use a fixed reference date (startOfToday) so that the computed result is stable.
+export const selectUpcomingFeedings = createSelector(
+  [feedingsSelector],
+  (feedings) => {
+    const today = startOfToday();
+    const filtered = feedings.filter(
+      (feeding) =>
+        new Date(feeding.feedingDate) > today && feeding.complete === 0
+    );
+    // Clone before sorting so that we don’t mutate the filtered array.
+    const sorted = [...filtered].sort(
+      (a, b) => new Date(a.feedingDate) - new Date(b.feedingDate)
+    );
 
-export const selectPastCompleteFeedingsByPet = createSelector(
-  [feedingsSelector, (_, petId) => Number(petId)],
-  (feedings, petId) =>
-    feedings
-      .filter((feeding) => {
-        const feedingDateTime = new Date(
-          `${feeding.feedingDate}T${feeding.feedingTime}`
-        );
-        // Instead of comparing to new Date(), compare the feeding’s date at midnight to today’s midnight.
-        const feedingDay = new Date(`${feeding.feedingDate}T00:00:00`);
-        const today = startOfToday();
-        return (
-          Number(feeding.petId) === petId &&
-          feeding.complete === 1 &&
-          feedingDay < today
-        );
-      })
-      // Sort from newest to oldest (descending)
-      .sort((a, b) => {
-        const aTime = new Date(`${a.feedingDate}T${a.feedingTime}`).getTime();
-        const bTime = new Date(`${b.feedingDate}T${b.feedingTime}`).getTime();
-        return bTime - aTime;
-      })
+    // Simple caching: if lastResult exists and is shallowly equal by id, return it.
+    if (
+      selectUpcomingFeedings.lastResult &&
+      selectUpcomingFeedings.lastResult.length === sorted.length &&
+      selectUpcomingFeedings.lastResult.every(
+        (item, index) => item.id === sorted[index].id
+      )
+    ) {
+      return selectUpcomingFeedings.lastResult;
+    }
+    // Cache the new result
+    selectUpcomingFeedings.lastResult = sorted;
+    console.log("selectUpcomingFeedings:", sorted);
+    return sorted;
+  }
+);
+
+// Selector to get the groupPets slice from state.
+// Use EMPTY_ARRAY so that if state.groupPets[groupId] is undefined,
+// you always return the same empty array reference.
+const selectGroupPetsByGroupId = (state, groupId) =>
+  state.groupPets[groupId] || EMPTY_ARRAY;
+
+// Create a memoized selector for groupPets using a factory function
+export const makeSelectGroupPets = () =>
+  createSelector([selectGroupPetsByGroupId], (pets) => {
+    console.log("makeSelectGroupPets: pets reference", pets);
+    return pets;
+  });
+
+// Selector to get the groups array from state
+const selectAllGroups = (state) => state.groups.groups;
+
+// Selector to get the groupId (passed as a prop)
+const selectGroupId = (_, groupId) => groupId;
+
+// Create a memoized selector to find a group by ID
+export const selectGroupById = createSelector(
+  [selectAllGroups, selectGroupId],
+  (groups, groupId) => {
+    const result = groups.find((g) => g.id === groupId);
+    console.log("selectGroupById:", { groupId, result });
+    return result;
+  }
 );

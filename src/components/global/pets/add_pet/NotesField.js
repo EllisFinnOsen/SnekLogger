@@ -36,6 +36,7 @@ export default function NotesField({ notes, setNotes, isEditing = true }) {
           value={notes}
           onChangeText={setNotes}
           placeholder="Enter feeding notes..."
+          placeholderTextColor={iconColor}
           editable={isEditing}
           multiline={true}
         />

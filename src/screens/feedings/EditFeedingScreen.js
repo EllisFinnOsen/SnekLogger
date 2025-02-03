@@ -2,9 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Image, StyleSheet } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useFocusEffect } from "@react-navigation/native";
-import { updateFeeding, fetchPets } from "../redux/actions";
-import { fetchFeedingByIdFromDb, updateFeedingInDb } from "../database";
-import { formatDateString, formatTimeString } from "../utils/dateUtils";
+import { formatDateString, formatTimeString } from "@/utils/dateUtils";
 import ThemedScrollView from "@/components/global/ThemedScrollView";
 import { ThemedText } from "@/components/global/ThemedText";
 import EditHeader from "@/components/global/EditHeader";
@@ -17,6 +15,8 @@ import DateTimeFields from "@/components/global/feedings/DateTimeFields";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import WeightField from "@/components/global/pets/add_pet/WeightField";
 import NotesField from "@/components/global/pets/add_pet/NotesField";
+import { updateFeeding } from "@/redux/actions";
+import { updateFeedingInDb } from "@/database";
 
 export default function EditFeedingScreen({ route, navigation }) {
   const { feedingId } = route.params;

@@ -13,9 +13,7 @@ export default function FeedingsByDaySections() {
     (feeding) => feeding.complete === 0
   );
   const pastCompletedFeedings = allFeedings.filter(
-    (feeding) =>
-      feeding.complete === 1 &&
-      new Date(`${feeding.feedingDate}T00:00:00`) > startOfToday()
+    (feeding) => feeding.complete === 1
   );
 
   const today = startOfToday();

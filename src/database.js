@@ -458,3 +458,30 @@ export const deletePetFromDb = async (petId) => {
     throw error;
   }
 };
+
+export const updateGroupToDb = async (group) => {
+  try {
+    const db = await openDatabase();
+    const result = await db.runAsync(
+      `UPDATE groups SET name = ?, notes = ? WHERE id = ?`,
+      [group.name, group.notes, group.id]
+    );
+    return result;
+  } catch (error) {
+    console.error("Error updating group in DB:", error);
+    throw error;
+  }
+};
+
+export const deleteGroupFromDb = async (groupId) => {
+  try {
+    const db = await openDatabase();
+    const result = await db.runAsync("DELETE FROM groups WHERE id = ?", [
+      groupId,
+    ]);
+    return result;
+  } catch (error) {
+    console.error("Error deleting group from DB:", error);
+    throw error;
+  }
+};

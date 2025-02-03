@@ -14,6 +14,8 @@ import {
   ADD_PET_TO_GROUP,
   REMOVE_PET_FROM_GROUP,
   ADD_GROUP,
+  UPDATE_GROUP,
+  DELETE_GROUP,
 } from "./actionTypes";
 import {
   fetchPetsFromDb,
@@ -29,6 +31,8 @@ import {
   addPetToGroup,
   removePetFromGroup,
   addGroupToDb,
+  updateGroupToDb,
+  deleteGroupFromDb,
 } from "@/database";
 
 export const fetchPets = () => async (dispatch) => {
@@ -164,4 +168,14 @@ export const addGroup = (group) => ({
 export const deletePet = (petId) => ({
   type: DELETE_PET,
   payload: petId,
+});
+
+export const updateGroup = (group) => ({
+  type: UPDATE_GROUP,
+  payload: group,
+});
+
+export const deleteGroup = (groupId) => ({
+  type: DELETE_GROUP,
+  payload: groupId,
 });

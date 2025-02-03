@@ -12,7 +12,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { fetchFeedingsByPet } from "@/redux/actions";
 import { fetchPetsFromDb } from "@/database";
 // Import your new feeding component
-import ViewByDateForPet from "./profile/ViewByDateForPet";
+import ViewByDateForPet from "./ViewByDateForPet";
 import PetParallaxScrollView from "@/components/global/pets/pet_profile/PetParallaxScrollView";
 
 export default function PetProfileScreen({ route, navigation }) {

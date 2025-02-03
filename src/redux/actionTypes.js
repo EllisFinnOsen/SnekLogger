@@ -14,3 +14,5 @@ export const REMOVE_PET_FROM_GROUP = "REMOVE_PET_FROM_GROUP";
 export const ADD_FEEDING = "ADD_FEEDING"; // ✅ Add this if missing
 export const ADD_GROUP = "ADD_GROUP";
 export const DELETE_PET = "DELETE_PET";
+export const UPDATE_GROUP = "UPDATE_GROUP";
+export const DELETE_GROUP = "DELETE_GROUP";
