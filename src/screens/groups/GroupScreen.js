@@ -58,6 +58,7 @@ export default function GroupScreen({ route, navigation }) {
     );
   };
 
+  // GroupScreen.js
   return (
     <ThemedScrollView contentContainerStyle={styles.container}>
       <HeaderSection
@@ -65,25 +66,30 @@ export default function GroupScreen({ route, navigation }) {
         onEdit={() => navigation.navigate("EditGroupScreen", { groupId })}
         onCancel={() => {
           // Optional: define behavior if needed when cancelling edit mode.
-          // In this page, since editing isn't toggled here, you might not need this.
         }}
         onBack={() => navigation.goBack()}
       />
 
-      <EditHeader label={groupName} description={group.notes} />
+      <EditHeader label={groupName} description={groupNotes} />
 
       {pets.length > 0 ? (
         <FlatList
-          data={dataWithFooter}
+          data={[...pets, { id: "add-pet", type: "add" }]}
           keyExtractor={(item) => item.id.toString()}
           numColumns={2}
           contentContainerStyle={styles.listContainer}
           renderItem={renderItem}
         />
       ) : (
-        <ThemedText type="default">
-          No pets available in sssthis group
-        </ThemedText>
+        // If no pets are available, render AddPetCard above the "No pets found" text.
+        <View style={styles.noPetsContainer}>
+          <TouchableOpacity
+            onPress={handleAddCardPress}
+            style={styles.cardContainer}
+          >
+            <AddPetCard />
+          </TouchableOpacity>
+        </View>
       )}
 
       {pickerVisible && (

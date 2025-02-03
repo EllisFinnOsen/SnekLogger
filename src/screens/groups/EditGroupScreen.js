@@ -11,6 +11,7 @@ import { useThemeColor } from "@/hooks/useThemeColor";
 import NameField from "@/components/global/groups/NameField";
 import NotesField from "@/components/global/pets/add_pet/NotesField";
 import DeleteButton from "@/components/global/DeleteButton"; // Our reusable deletion component
+import HeaderSection from "@/components/global/pets/add_pet/HeaderSection";
 
 export default function EditGroupScreen({ navigation, route }) {
   const dispatch = useDispatch();
@@ -73,7 +74,7 @@ export default function EditGroupScreen({ navigation, route }) {
       // Dispatch Redux action to remove the group from state
       dispatch(deleteGroup(groupId));
       // Navigate to a safe fallback screen (e.g., CollectionScreen)
-      navigation.navigate("CollectionScreen");
+      navigation.popToTop();
     } catch (error) {
       //console.error("Error deleting group:", error);
     }
@@ -81,6 +82,13 @@ export default function EditGroupScreen({ navigation, route }) {
 
   return (
     <ThemedScrollView contentContainerStyle={styles.container}>
+      <HeaderSection
+        onSave={handleSave}
+        hasSave={true}
+        onCancel={() => navigation.goBack()}
+        onBack={() => navigation.goBack()}
+      />
+
       <EditHeader
         label="Edit Group"
         description="Update the group details below and press save."
