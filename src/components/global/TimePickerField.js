@@ -1,26 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { ThemedText } from "@/components/global/ThemedText";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { Ionicons } from "@expo/vector-icons";
-
-export default function DatePickerField({
-  label = "Select Date", // Default label
-  dateValue,
-  setDateValue,
-  showDatePicker,
-  setShowDatePicker,
-  placeholder = "Select a date", // Default placeholder text
-  icon = "chevron-forward-circle-outline",
+export default function TimePickerField({
+  label = "Select Time",
+  timeValue,
+  setTimeValue,
+  showTimePicker,
+  setShowTimePicker,
+  icon,
 }) {
   const textColor = useThemeColor({}, "text");
   const iconColor = useThemeColor({}, "icon");
   const bgColor = useThemeColor({}, "background");
 
-  const formattedDate = dateValue
-    ? new Date(dateValue).toLocaleDateString()
-    : placeholder;
+  const formattedTime = timeValue
+    ? new Date(`1970-01-01T${timeValue}`).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    : "Select time";
 
   return (
     <View style={styles.fieldContainer}>
@@ -37,27 +38,28 @@ export default function DatePickerField({
           {label}
         </ThemedText>
       </View>
-
       <TouchableOpacity
         style={[
           styles.input,
           { backgroundColor: bgColor, borderColor: iconColor },
         ]}
-        onPress={() => setShowDatePicker(true)}
+        onPress={() => setShowTimePicker(true)}
       >
         <ThemedText type="default" style={{ color: textColor }}>
-          {formattedDate}
+          {formattedTime}
         </ThemedText>
       </TouchableOpacity>
-      {showDatePicker && (
+      {showTimePicker && (
         <DateTimePicker
-          value={dateValue ? new Date(dateValue) : new Date()}
-          mode="date"
+          value={timeValue ? new Date(`1970-01-01T${timeValue}`) : new Date()}
+          mode="time"
           display="default"
-          onChange={(event, selectedDate) => {
-            setShowDatePicker(false);
-            if (selectedDate) {
-              setDateValue(selectedDate.toISOString());
+          onChange={(event, selectedTime) => {
+            setShowTimePicker(false);
+            if (selectedTime) {
+              setTimeValue(
+                selectedTime.toISOString().split("T")[1].substring(0, 5)
+              );
             }
           }}
         />
@@ -70,6 +72,14 @@ const styles = StyleSheet.create({
   fieldContainer: {
     marginVertical: 8,
   },
+  label: {
+    marginBottom: 4,
+  },
+  input: {
+    borderWidth: 1,
+    padding: 12,
+    borderRadius: 5,
+  },
   titleContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -77,11 +87,6 @@ const styles = StyleSheet.create({
   label: {
     marginBottom: 4,
     marginLeft: 8,
-  },
-  input: {
-    borderWidth: 1,
-    padding: 12,
-    borderRadius: 5,
   },
   icon: {
     marginBottom: 6,

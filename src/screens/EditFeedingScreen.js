@@ -1,31 +1,20 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  TextInput,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-} from "react-native";
+import { View, Image, StyleSheet } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useFocusEffect } from "@react-navigation/native";
 import { updateFeeding, fetchPets } from "../redux/actions";
 import { fetchFeedingByIdFromDb, updateFeedingInDb } from "../database";
-import {
-  toISODateTime,
-  formatDateString,
-  formatTimeString,
-} from "../utils/dateUtils";
+import { formatDateString, formatTimeString } from "../utils/dateUtils";
 import ThemedScrollView from "@/components/global/ThemedScrollView";
 import { ThemedText } from "@/components/global/ThemedText";
-import { Ionicons } from "@expo/vector-icons";
-import { useThemeColor } from "@/hooks/useThemeColor";
-import CustomDropdown from "@/components/global/CustomDropdown";
-import { SIZES } from "@/constants/Theme";
 import EditHeader from "@/components/global/EditHeader";
 import CustomButton from "@/components/global/CustomButton";
 import HeaderSection from "@/components/global/pets/add_pet/HeaderSection";
 import ExistingPetPicker from "@/components/global/pets/add_pet/ExistingPetPicker";
-import DatePickerField from "@/components/global/DatePickerField";
+import CompletionToggle from "@/components/global/feedings/CompletionToggle";
+import PreyTypeField from "@/components/global/feedings/PreyTypeField";
+import DateTimeFields from "@/components/global/feedings/DateTimeFields";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 export default function EditFeedingScreen({ route, navigation }) {
   const { feedingId } = route.params;
@@ -36,36 +25,34 @@ export default function EditFeedingScreen({ route, navigation }) {
   const [selectedPetId, setSelectedPetId] = useState(null);
   const [feedingDate, setFeedingDate] = useState("");
   const [feedingTime, setFeedingTime] = useState("");
+  const [preyType, setPreyType] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [showFeedingDatePicker, setShowFeedingDatePicker] = useState(false);
+  const [showFeedingTimePicker, setShowFeedingTimePicker] = useState(false);
 
-  const textColor = useThemeColor({}, "text");
-  const iconColor = useThemeColor({}, "icon");
-  const fieldColor = useThemeColor({}, "field");
-  const subtleTextColor = useThemeColor({}, "subtleText");
+  const cancelColor = useThemeColor({}, "field");
   const activeColor = useThemeColor({}, "active");
-  const bgColor = useThemeColor({}, "background");
-
-  // Load Feeding Data
-  const loadFeeding = async () => {
-    try {
-      const currentFeeding = await fetchFeedingByIdFromDb(feedingId);
-
-      if (currentFeeding) {
-        setFeeding(currentFeeding);
-        setSelectedPetId(currentFeeding.petId);
-        setFeedingDate(currentFeeding.feedingDate);
-        setFeedingTime(currentFeeding.feedingTime);
-        setIsComplete(currentFeeding.complete === 1);
-      }
-    } catch (error) {
-      console.error("Error loading feeding details:", error);
-    }
-  };
+  const fieldPadding = 12; // Standardized padding for both states
 
   useFocusEffect(
     React.useCallback(() => {
+      const loadFeeding = async () => {
+        try {
+          const currentFeeding = await fetchFeedingByIdFromDb(feedingId);
+          if (currentFeeding) {
+            setFeeding(currentFeeding);
+            setSelectedPetId(currentFeeding.petId);
+            setFeedingDate(currentFeeding.feedingDate);
+            setFeedingTime(currentFeeding.feedingTime);
+            setPreyType(currentFeeding.preyType || "");
+            setIsComplete(currentFeeding.complete === 1);
+          }
+        } catch (error) {
+          console.error("Error loading feeding details:", error);
+        }
+      };
+
       loadFeeding();
       dispatch(fetchPets());
     }, [dispatch, feedingId])
@@ -78,6 +65,7 @@ export default function EditFeedingScreen({ route, navigation }) {
         selectedPetId,
         feedingDate,
         feedingTime,
+        preyType,
         isComplete ? 1 : 0
       );
       dispatch(
@@ -86,6 +74,7 @@ export default function EditFeedingScreen({ route, navigation }) {
           petId: selectedPetId,
           feedingDate,
           feedingTime,
+          preyType,
           complete: isComplete ? 1 : 0,
         })
       );
@@ -99,6 +88,7 @@ export default function EditFeedingScreen({ route, navigation }) {
     setSelectedPetId(feeding.petId);
     setFeedingDate(feeding.feedingDate);
     setFeedingTime(feeding.feedingTime);
+    setPreyType(feeding.preyType || "");
     setIsComplete(feeding.complete === 1);
     setIsEditing(false);
   };
@@ -111,6 +101,7 @@ export default function EditFeedingScreen({ route, navigation }) {
         selectedPetId,
         feedingDate,
         feedingTime,
+        preyType,
         newCompleteValue ? 1 : 0
       );
       dispatch(
@@ -119,6 +110,7 @@ export default function EditFeedingScreen({ route, navigation }) {
           petId: selectedPetId,
           feedingDate,
           feedingTime,
+          preyType,
           complete: newCompleteValue ? 1 : 0,
         })
       );
@@ -130,124 +122,102 @@ export default function EditFeedingScreen({ route, navigation }) {
 
   if (!feeding) return <ThemedText>Loading feeding details...</ThemedText>;
 
-  const feedingDateObj = toISODateTime(
-    feeding.feedingDate,
-    feeding.feedingTime
-  );
-  const formattedDate = feedingDateObj
-    ? formatDateString(feedingDateObj, "LONG")
-    : feeding.feedingDate;
-  const formattedTime = feedingDateObj
-    ? formatTimeString(feedingDateObj)
-    : feeding.feedingTime;
+  const formattedDate = formatDateString(feedingDate, "LONG");
+  const formattedTime = formatTimeString(feedingTime);
   const selectedPet = pets.find((pet) => pet.id === selectedPetId);
+
   return (
     <ThemedScrollView contentContainerStyle={styles.container}>
       {/* Header Section */}
       <HeaderSection
         onSave={handleSave}
-        hasSave={true}
+        hasSave
         onCancel={() => navigation.goBack()}
       />
       <EditHeader
         label="Edit Feeding"
         description="Modify feeding details and press save."
       />
-      {/* Completion Toggle */}
-      <View style={styles.row}>
-        <Ionicons
-          name={isComplete ? "checkbox" : "square-outline"}
-          size={24}
-          color={activeColor}
-        />
-        <ThemedText type="subtitle">Mark as Complete</ThemedText>
-        <TouchableOpacity onPress={handleToggleCheck} style={styles.toggle}>
-          <Ionicons
-            name={isComplete ? "checkmark-circle" : "ellipse-outline"}
-            size={24}
-            color={textColor}
-          />
-        </TouchableOpacity>
-      </View>
+
+      {/* Pet Selection */}
       <View style={styles.section}>
         <Image
           source={{
             uri:
-              selectedPet && selectedPet.imageURL
-                ? selectedPet.imageURL
-                : "https://via.placeholder.com/50",
+              selectedPet?.imageURL ||
+              "https://files.oaiusercontent.com/file-DjW5L9b81xAoE1CS5dgfGf?se=2025-01-22T19%3A04%3A19Z&sp=r&sv=2024-08-04&sr=b&rscc=max-age%3D604800%2C%20immutable%2C%20private&rscd=attachment%3B%20filename%3D4bc93413-3775-4d04-bb36-d00efe395407.webp&sig=4s4GNu/F9s40L9WCGzcndpvr4bnYlv6ftC7%2BPRitiO0%3D",
           }}
           style={styles.petImage}
         />
-
-        {/* Replace Dropdown with ExistingPetPicker */}
-        {isEditing ? (
-          <ExistingPetPicker
-            items={pets.map((pet) => ({
-              label: pet.name,
-              value: pet.id,
-              imageURL: pet.imageURL,
-            }))}
-            selectedValue={selectedPetId}
-            onValueChange={setSelectedPetId}
-          />
-        ) : (
-          <ThemedText type="subtitle">
-            {selectedPet?.name || "Select a pet"}
-          </ThemedText>
-        )}
+        <View
+          style={[
+            styles.fieldWrapper,
+            !isEditing && { borderColor: cancelColor, padding: fieldPadding },
+          ]}
+        >
+          {isEditing ? (
+            <ExistingPetPicker
+              items={pets.map((pet) => ({
+                label: pet.name,
+                value: pet.id,
+                imageURL: pet.imageURL,
+              }))}
+              selectedValue={selectedPetId}
+              onValueChange={setSelectedPetId}
+            />
+          ) : (
+            <ThemedText type="default">
+              {selectedPet?.name || "Select a pet"}
+            </ThemedText>
+          )}
+        </View>
       </View>
+
+      {/* Completion Toggle */}
+      <CompletionToggle isComplete={isComplete} onToggle={handleToggleCheck} />
+
+      {/* Prey Type Selection */}
+      <PreyTypeField
+        preyType={preyType}
+        setPreyType={setPreyType}
+        isEditing={isEditing}
+      />
 
       {/* Date & Time Inputs */}
-      <View style={styles.inputGroup}>
-        <Ionicons name="calendar" size={24} color={iconColor} />
-        {isEditing ? (
-          <DatePickerField
-            label="Feeding Date"
-            dateValue={feedingDate}
-            setDateValue={setFeedingDate}
-            showDatePicker={showFeedingDatePicker}
-            setShowDatePicker={setShowFeedingDatePicker}
-            placeholder="Select feeding date"
-          />
-        ) : (
-          <ThemedText>{formattedDate}</ThemedText>
-        )}
-      </View>
-      <View style={styles.inputGroup}>
-        <Ionicons name="time" size={24} color={iconColor} />
-        {isEditing ? (
-          <TextInput
-            style={styles.input}
-            placeholder="Time"
-            value={feedingTime}
-            onChangeText={setFeedingTime}
-          />
-        ) : (
-          <ThemedText>{formattedTime}</ThemedText>
-        )}
-      </View>
+      <DateTimeFields
+        feedingDate={feedingDate}
+        setFeedingDate={setFeedingDate}
+        feedingTime={feedingTime}
+        setFeedingTime={setFeedingTime}
+        showFeedingDatePicker={showFeedingDatePicker}
+        setShowFeedingDatePicker={setShowFeedingDatePicker}
+        showFeedingTimePicker={showFeedingTimePicker}
+        setShowFeedingTimePicker={setShowFeedingTimePicker}
+        isEditing={isEditing}
+      />
+
       {/* Action Buttons */}
       {isEditing ? (
-        <>
+        <View style={styles.buttonRow}>
           <CustomButton
             title="Save"
             textType="title"
             onPress={handleSave}
-            style={styles.saveButton}
+            style={[styles.saveButton, { backgroundColor: activeColor }]}
           />
           <CustomButton
             title="Cancel"
             textType="title"
             onPress={handleCancel}
-            style={styles.cancelButton}
+            style={[styles.cancelButton, { backgroundColor: cancelColor }]}
           />
-        </>
+        </View>
       ) : (
         <CustomButton
           title="Edit"
           textType="title"
           onPress={() => setIsEditing(true)}
+          style={[styles.cancelButton, { backgroundColor: cancelColor }]}
         />
       )}
     </ThemedScrollView>
@@ -255,38 +225,18 @@ export default function EditFeedingScreen({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    padding: 16,
-  },
-  section: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  petImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 50,
-    marginRight: 16,
-  },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginVertical: 12,
-  },
-  inputGroup: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  input: {
-    borderBottomWidth: 1,
-    paddingVertical: 6,
+  container: { flexGrow: 1, padding: 16 },
+  section: { flexDirection: "row", alignItems: "center", marginBottom: 8 },
+  petImage: { width: 40, height: 40, borderRadius: 50, marginRight: 16 },
+  fieldWrapper: {
     flex: 1,
-    marginLeft: 10,
+    borderWidth: 1,
+    borderRadius: 5,
   },
-  saveButton: { marginTop: 16 },
-  cancelButton: { backgroundColor: "gray", marginTop: 8 },
+  buttonRow: {
+    flexDirection: "column",
+    marginTop: 16,
+  },
+  saveButton: { flex: 1, marginBottom: 8 },
+  cancelButton: { flex: 1 },
 });
