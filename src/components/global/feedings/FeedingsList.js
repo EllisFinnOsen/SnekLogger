@@ -4,12 +4,14 @@ import { ThemedView } from "@/components/global/ThemedView";
 import { ThemedText } from "@/components/global/ThemedText";
 import FeedingLogCard from "@/components/global/feedings/FeedingLogCard";
 import LoadingCard from "./LoadingCard";
+import AddLogCard from "./AddLogCard"; // Import AddLogCard
 
 export default function FeedingsList({
   feedings = [],
   title,
   showAllLink = false,
   noFeedingsText = "No feedings available",
+  includeAddLogCard = false, // New prop: determines if we should insert AddLogCard at the start
 }) {
   const [loading, setLoading] = useState(true);
 
@@ -41,6 +43,11 @@ export default function FeedingsList({
     );
   }
 
+  // If includeAddLogCard is true, insert AddLogCard as the first list item
+  const modifiedFeedings = includeAddLogCard
+    ? [{ id: "add-log-card" }, ...feedings] // Unique ID for AddLogCard
+    : feedings;
+
   return (
     <ThemedView>
       {/* Optional header area */}
@@ -57,9 +64,13 @@ export default function FeedingsList({
 
       {/* Render feeding logs */}
       <ThemedView style={styles.displayCardsContainer}>
-        {feedings.map((item) => (
+        {modifiedFeedings.map((item) => (
           <View key={item.id} style={styles.cardContainer}>
-            <FeedingLogCard item={item} />
+            {item.id === "add-log-card" ? (
+              <AddLogCard />
+            ) : (
+              <FeedingLogCard item={item} />
+            )}
           </View>
         ))}
       </ThemedView>
@@ -75,7 +86,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   displayCardsContainer: {
-    marginBottom: 32,
+    marginBottom: 16,
   },
   cardContainer: {
     marginBottom: 8,

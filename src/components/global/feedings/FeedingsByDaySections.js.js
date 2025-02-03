@@ -1,52 +1,56 @@
-// FeedingsByDaySections.js
 import React from "react";
 import { View } from "react-native";
 import { useSelector } from "react-redux";
-import { startOfToday, addDays, isSameDay, isAfter, format } from "date-fns";
+import { startOfToday, isSameDay, isAfter } from "date-fns";
 import FeedingsList from "@/components/global/feedings/FeedingsList";
+import AddLogCard from "@/components/global/feedings/AddLogCard";
 
 export default function FeedingsByDaySections() {
-  // Get all feedings from Redux. We assume these include both past and future.
-  // Then filter for incomplete feedings.
   const allFeedings = useSelector((state) => state.feedings);
+
+  // Separate completed and incomplete feedings
   const incompleteFeedings = allFeedings.filter(
     (feeding) => feeding.complete === 0
   );
-  //console.log("All incomplete feedings:", incompleteFeedings);
+  const pastCompletedFeedings = allFeedings.filter(
+    (feeding) =>
+      feeding.complete === 1 &&
+      new Date(`${feeding.feedingDate}T00:00:00`) > startOfToday()
+  );
 
-  // Define reference date for today (at local midnight).
   const today = startOfToday();
-  //console.log("Today (startOfToday):", format(today, "yyyy-MM-dd HH:mm:ss"));
-
-  // Helper: parse a feeding's date as a local date at midnight.
-  // This ensures we compare only the day, ignoring the time.
   const parseFeedingDateForDay = (feeding) =>
     new Date(`${feeding.feedingDate}T00:00:00`);
 
-  // Late Feedings: Feedings scheduled before today.
-  const lateFeedings = incompleteFeedings.filter((feeding) => {
-    const d = parseFeedingDateForDay(feeding);
-    return d < today;
-  });
-
-  // Today's Feedings: Feedings scheduled for today.
+  const lateFeedings = incompleteFeedings.filter(
+    (feeding) => parseFeedingDateForDay(feeding) < today
+  );
   const todaysFeedings = incompleteFeedings.filter((feeding) =>
     isSameDay(parseFeedingDateForDay(feeding), today)
   );
+  const upcomingFeedings = incompleteFeedings.filter((feeding) =>
+    isAfter(parseFeedingDateForDay(feeding), today)
+  );
 
-  // Upcoming Feedings: Feedings scheduled for after today (i.e. tomorrow or later).
-  const upcomingFeedings = incompleteFeedings.filter((feeding) => {
-    const d = parseFeedingDateForDay(feeding);
-    return isAfter(d, today);
-  });
+  // Determine if all feedings are complete
+  const allFeedingsCompleted = incompleteFeedings.length === 0;
 
-  // Debug logs for counts:
-  //console.log("Late Feedings:", lateFeedings.length);
-  //console.log("Today's Feedings:", todaysFeedings.length);
-  //console.log("Upcoming Feedings:", upcomingFeedings.length);
+  // Determine where to insert AddLogCard (first valid section excluding Late Feedings)
+  let firstValidSection = null;
+  let modifiedFeedings = [];
+
+  if (todaysFeedings.length > 0) {
+    firstValidSection = "today";
+    modifiedFeedings = [{ id: "add-log-card" }, ...todaysFeedings];
+  } else if (upcomingFeedings.length > 0) {
+    firstValidSection = "upcoming";
+    modifiedFeedings = [{ id: "add-log-card" }, ...upcomingFeedings];
+  }
 
   return (
     <View>
+      <View style={{ height: 48 }}></View>
+      {/* Render Late Feedings without AddLogCard */}
       {lateFeedings.length > 0 && (
         <FeedingsList
           feedings={lateFeedings}
@@ -56,21 +60,37 @@ export default function FeedingsByDaySections() {
         />
       )}
 
-      {todaysFeedings.length > 0 && (
+      {/* Render Today's Feedings with AddLogCard if it's the first valid section */}
+      {firstValidSection === "today" && (
         <FeedingsList
-          feedings={todaysFeedings}
+          feedings={modifiedFeedings}
           title="Today's Feedings"
           showAllLink={false}
           noFeedingsText="No feedings scheduled for today"
         />
       )}
 
-      {upcomingFeedings.length > 0 && (
+      {/* Render Upcoming Feedings with AddLogCard if it's the first valid section */}
+      {firstValidSection === "upcoming" && (
         <FeedingsList
-          feedings={upcomingFeedings}
+          feedings={modifiedFeedings}
           title="Upcoming Feedings"
           showAllLink={true}
           noFeedingsText="No upcoming feedings available"
+        />
+      )}
+
+      {/* Render Past Completed Feedings with AddLogCard if ALL feedings are completed */}
+      {pastCompletedFeedings.length > 0 && (
+        <FeedingsList
+          feedings={
+            allFeedingsCompleted
+              ? [{ id: "add-log-card" }, ...pastCompletedFeedings]
+              : pastCompletedFeedings
+          }
+          title="Completed Feedings"
+          showAllLink={false}
+          noFeedingsText="No past feedings available"
         />
       )}
     </View>

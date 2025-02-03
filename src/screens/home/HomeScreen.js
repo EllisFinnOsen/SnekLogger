@@ -14,6 +14,7 @@ import { HelloWave } from "@/components/global/HelloWave";
 import { SIZES } from "@/constants/Theme";
 import LateFeedingsList from "@/components/global/feedings/LateFeedingList";
 import FeedingsByDaySections from "@/components/global/feedings/FeedingsByDaySections.js";
+import AddLogCard from "@/components/global/feedings/AddLogCard";
 
 export default function HomeScreen({ navigation }) {
   const dispatch = useDispatch();
@@ -50,8 +51,6 @@ export default function HomeScreen({ navigation }) {
         </ThemedView>
         <HomePetList />
         <FeedingsByDaySections />
-
-        <ViewPastCompleteFeedings />
       </ThemedView>
     </ThemedScrollView>
   );
