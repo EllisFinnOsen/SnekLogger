@@ -87,6 +87,7 @@ export default function AddGroupScreen({ navigation, route }) {
         errorMessage={groupNameError}
         placeholder="Enter group name"
         label="Group Name"
+        icon="at-outline"
       />
 
       {/* Notes Field */}

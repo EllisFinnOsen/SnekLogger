@@ -97,6 +97,7 @@ export default function EditGroupScreen({ navigation, route }) {
 
       {/* Name Field */}
       <NameField
+        icon="at-outline"
         value={groupName}
         setValue={(text) => {
           setGroupName(text);
