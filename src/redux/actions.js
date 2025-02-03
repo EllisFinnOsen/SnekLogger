@@ -12,6 +12,7 @@ import {
   FETCH_GROUPS_FOR_PETS,
   ADD_PET_TO_GROUP,
   REMOVE_PET_FROM_GROUP,
+  ADD_GROUP,
 } from "./actionTypes";
 import {
   fetchPetsFromDb,
@@ -25,6 +26,7 @@ import {
   fetchGroupsForPetFromDb,
   addPetToGroup,
   removePetFromGroup,
+  addGroupToDb,
 } from "@/database";
 
 export const fetchPets = () => async (dispatch) => {
@@ -151,3 +153,8 @@ export const addFeeding = (newFeeding) => async (dispatch) => {
     console.error("Error adding new feeding:", error);
   }
 };
+
+export const addGroup = (group) => ({
+  type: ADD_GROUP,
+  payload: group,
+});

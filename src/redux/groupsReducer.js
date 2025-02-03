@@ -5,6 +5,7 @@ import {
   ADD_PET_TO_GROUP,
   FETCH_GROUPS_FOR_PETS,
   REMOVE_PET_FROM_GROUP,
+  ADD_GROUP,
 } from "./actionTypes";
 
 const initialState = {
@@ -60,6 +61,14 @@ export default function groupsReducer(state = initialState, action) {
           ...state.groupPets,
           [groupId]: currentGroupPets.filter((pet) => pet.id !== petId),
         },
+      };
+    }
+
+    // In groupsReducer.js, add a new case:
+    case ADD_GROUP: {
+      return {
+        ...state,
+        groups: [...state.groups, action.payload],
       };
     }
 

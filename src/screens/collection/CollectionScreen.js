@@ -6,6 +6,7 @@ import ThemedScrollView from "@/components/global/ThemedScrollView";
 import { ThemedView } from "@/components/global/ThemedView";
 import { ThemedText } from "@/components/global/ThemedText";
 import CollectionPetList from "@/components/global/pets/CollectionPetList";
+import AddGroupButton from "@/components/global/groups/AddGroupButton"; // import our new AddGroupButton
 import { SIZES } from "@/constants/Theme";
 import { fetchGroups } from "@/redux/actions";
 
@@ -45,6 +46,8 @@ export default function CollectionScreen() {
         <ThemedText type="title" style={styles.title}>
           Collection
         </ThemedText>
+        {/* Always show the AddGroupButton at the top */}
+        <AddGroupButton />
         <CollectionPetList groups={groups} />
       </ThemedView>
     </ThemedScrollView>
@@ -59,5 +62,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  container: {
+    padding: 16,
   },
 });

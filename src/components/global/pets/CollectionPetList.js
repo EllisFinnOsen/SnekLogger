@@ -9,7 +9,7 @@ export default function CollectionPetList({ groups }) {
   return (
     <ThemedView>
       {groups.length === 0 ? (
-        <ThemedText>No groups available</ThemedText>
+        <ThemedText></ThemedText>
       ) : (
         groups.map((group) => <GroupPetList key={group.id} group={group} />)
       )}

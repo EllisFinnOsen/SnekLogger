@@ -109,7 +109,12 @@ export default function AddPetScreen({ navigation, route }) {
 
   return (
     <ThemedScrollView contentContainerStyle={styles.container}>
-      <HeaderSection hasSave={false} onCancel={() => navigation.goBack()} />
+      <HeaderSection
+        hasSave={true}
+        onSave={handleSave}
+        onCancel={() => navigation.goBack()}
+        onBack={() => navigation.goBack()}
+      />
       <EditHeader
         label="Add New Pet"
         description="Enter the listed details and press save to add a new pet."

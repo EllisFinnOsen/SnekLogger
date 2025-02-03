@@ -5,7 +5,7 @@ import { ThemedText } from "@/components/global/ThemedText";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { FONT, SIZES } from "@/constants/Theme";
 
-export default function NotesField({ notes, setNotes, isEditing }) {
+export default function NotesField({ notes, setNotes, isEditing = true }) {
   const iconColor = useThemeColor({}, "icon");
   const borderColor = useThemeColor({}, isEditing ? "icon" : "field");
   const bgColor = useThemeColor({}, "background");

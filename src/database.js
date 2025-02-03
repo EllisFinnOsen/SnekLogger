@@ -433,3 +433,17 @@ export const insertFeedingInDb = async ({
     throw error;
   }
 };
+
+export const addGroupToDb = async (group) => {
+  try {
+    const db = await openDatabase();
+    const result = await db.runAsync(
+      `INSERT INTO groups (name, notes) VALUES (?, ?)`,
+      [group.name, group.notes]
+    );
+    return result.lastInsertRowId; // Return the new group's ID.
+  } catch (error) {
+    console.error("Error adding group to database:", error);
+    throw error;
+  }
+};

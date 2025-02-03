@@ -1,4 +1,4 @@
-// GroupPetList.jsx
+// GroupPetList.js
 import React, { useEffect, useState } from "react";
 import { StyleSheet, ActivityIndicator } from "react-native";
 import { ThemedView } from "@/components/global/ThemedView";

@@ -10,6 +10,7 @@ import AddPetScreen from "@/screens/AddPetScreen";
 import EditPetScreen from "@/screens/profile/EditPetScreen";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import AddFeedingScreen from "@/screens/AddFeedingScreen";
+import AddGroupScreen from "@/screens/AddGroupScreen";
 
 const Stack = createStackNavigator();
 
@@ -41,6 +42,11 @@ export default function StackNavigator() {
         <Stack.Screen
           name="AddPetScreen"
           component={AddPetScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="AddGroupScreen"
+          component={AddGroupScreen}
           options={{ headerShown: false }}
         />
         <Stack.Screen

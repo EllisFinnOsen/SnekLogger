@@ -12,3 +12,4 @@ export const ADD_PET_TO_GROUP = "ADD_PET_TO_GROUP";
 export const FETCH_GROUPS_FOR_PETS = "FETCH_GROUPS_FOR_PETS";
 export const REMOVE_PET_FROM_GROUP = "REMOVE_PET_FROM_GROUP";
 export const ADD_FEEDING = "ADD_FEEDING"; // ✅ Add this if missing
+export const ADD_GROUP = "ADD_GROUP";
