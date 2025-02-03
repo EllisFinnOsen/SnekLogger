@@ -1,4 +1,3 @@
-// selectors.js
 import { createSelector } from "reselect";
 import { startOfToday } from "date-fns";
 
@@ -58,11 +57,12 @@ export const selectUpcomingFeedings = createSelector(
 const selectGroupPetsByGroupId = (state, groupId) =>
   state.groupPets[groupId] || EMPTY_ARRAY;
 
-// Create a memoized selector for groupPets using a factory function
+// Create a memoized selector for groupPets using a factory function.
+// Note: Instead of returning the input reference directly, we return a shallow copy.
 export const makeSelectGroupPets = () =>
   createSelector([selectGroupPetsByGroupId], (pets) => {
     console.log("makeSelectGroupPets: pets reference", pets);
-    return pets;
+    return pets.slice(); // Return a shallow copy to avoid returning the same reference.
   });
 
 // Selector to get the groups array from state

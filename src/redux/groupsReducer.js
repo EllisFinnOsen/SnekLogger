@@ -1,4 +1,3 @@
-// groupsReducer.js
 import {
   FETCH_GROUPS,
   FETCH_GROUP_PETS,
