@@ -4,24 +4,26 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { ThemedText } from "@/components/global/ThemedText";
 import { useThemeColor } from "@/hooks/useThemeColor";
 
-export default function BirthDateField({
-  birthDate,
-  setBirthDate,
+export default function DatePickerField({
+  label = "Select Date", // Default label
+  dateValue,
+  setDateValue,
   showDatePicker,
   setShowDatePicker,
+  placeholder = "Select a date", // Default placeholder text
 }) {
   const textColor = useThemeColor({}, "text");
   const iconColor = useThemeColor({}, "icon");
   const bgColor = useThemeColor({}, "background");
 
-  const formattedBirthDate = birthDate
-    ? new Date(birthDate).toLocaleDateString()
-    : "Select approximate date";
+  const formattedDate = dateValue
+    ? new Date(dateValue).toLocaleDateString()
+    : placeholder;
 
   return (
     <View style={styles.fieldContainer}>
       <ThemedText type="default" style={styles.label}>
-        Birth Date
+        {label}
       </ThemedText>
       <TouchableOpacity
         style={[
@@ -31,18 +33,18 @@ export default function BirthDateField({
         onPress={() => setShowDatePicker(true)}
       >
         <ThemedText type="default" style={{ color: textColor }}>
-          {formattedBirthDate}
+          {formattedDate}
         </ThemedText>
       </TouchableOpacity>
       {showDatePicker && (
         <DateTimePicker
-          value={birthDate ? new Date(birthDate) : new Date()}
+          value={dateValue ? new Date(dateValue) : new Date()}
           mode="date"
           display="default"
           onChange={(event, selectedDate) => {
             setShowDatePicker(false);
             if (selectedDate) {
-              setBirthDate(selectedDate.toISOString());
+              setDateValue(selectedDate.toISOString());
             }
           }}
         />

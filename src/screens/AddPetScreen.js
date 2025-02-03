@@ -10,7 +10,7 @@ import EditHeader from "@/components/global/EditHeader";
 // Import subcomponents
 import HeaderSection from "@/components/global/pets/add_pet/HeaderSection";
 import PetNameField from "@/components/global/pets/add_pet/PetNameField";
-import BirthDateField from "@/components/global/pets/add_pet/BirthdayField";
+import DatePickerField from "@/components/global/DatePickerField";
 import WeightField from "@/components/global/pets/add_pet/WeightField";
 import PetImageField from "@/components/global/pets/add_pet/PetImageField";
 import CategorySection from "@/components/global/pets/add_pet/CategorySection";
@@ -126,7 +126,7 @@ export default function AddPetScreen({ navigation, route }) {
         required={true}
         errorMessage={nameError}
       />
-      <BirthDateField
+      <DatePickerField
         birthDate={birthDate}
         setBirthDate={setBirthDate}
         showDatePicker={showDatePicker}

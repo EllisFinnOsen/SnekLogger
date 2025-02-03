@@ -19,7 +19,7 @@ import EditHeader from "@/components/global/EditHeader";
 import HeaderSection from "@/components/global/pets/add_pet/HeaderSection";
 import PetNameField from "@/components/global/pets/add_pet/PetNameField";
 import CategorySection from "@/components/global/pets/add_pet/CategorySection";
-import BirthDateField from "@/components/global/pets/add_pet/BirthdayField";
+import DatePickerField from "@/components/global/DatePickerField";
 import WeightField from "@/components/global/pets/add_pet/WeightField";
 import PetImageField from "@/components/global/pets/add_pet/PetImageField";
 import { useThemeColor } from "@/hooks/useThemeColor";
@@ -163,7 +163,7 @@ export default function EditPetScreen({ route, navigation }) {
         required={true}
         errorMessage={nameError}
       />
-      <BirthDateField
+      <DatePickerField
         birthDate={birthDate}
         setBirthDate={setBirthDate}
         showDatePicker={showDatePicker}
