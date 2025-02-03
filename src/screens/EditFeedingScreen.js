@@ -15,6 +15,8 @@ import CompletionToggle from "@/components/global/feedings/CompletionToggle";
 import PreyTypeField from "@/components/global/feedings/PreyTypeField";
 import DateTimeFields from "@/components/global/feedings/DateTimeFields";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import WeightField from "@/components/global/pets/add_pet/WeightField";
+import NotesField from "@/components/global/pets/add_pet/NotesField";
 
 export default function EditFeedingScreen({ route, navigation }) {
   const { feedingId } = route.params;
@@ -26,10 +28,15 @@ export default function EditFeedingScreen({ route, navigation }) {
   const [feedingDate, setFeedingDate] = useState("");
   const [feedingTime, setFeedingTime] = useState("");
   const [preyType, setPreyType] = useState("");
+  const [preyWeight, setPreyWeight] = useState(0);
+  const [preyWeightType, setPreyWeightType] = useState("g");
+  const [notes, setNotes] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [showFeedingDatePicker, setShowFeedingDatePicker] = useState(false);
-  const [showFeedingTimePicker, setShowFeedingTimePicker] = useState(false);
+  const [showFeedingTimePicker, setShowFeedingTimePicker] = useState(false); // ✅ Ensure this is defined
+
+  const [initialFeeding, setInitialFeeding] = useState(null);
 
   const cancelColor = useThemeColor({}, "field");
   const activeColor = useThemeColor({}, "active");
@@ -42,10 +49,14 @@ export default function EditFeedingScreen({ route, navigation }) {
           const currentFeeding = await fetchFeedingByIdFromDb(feedingId);
           if (currentFeeding) {
             setFeeding(currentFeeding);
+            setInitialFeeding(currentFeeding); // Store a copy for reset
             setSelectedPetId(currentFeeding.petId);
             setFeedingDate(currentFeeding.feedingDate);
             setFeedingTime(currentFeeding.feedingTime);
             setPreyType(currentFeeding.preyType || "");
+            setPreyWeightType(currentFeeding.preyWeightType || "");
+            setPreyWeight(currentFeeding.preyWeight || 0);
+            setNotes(currentFeeding.notes || "");
             setIsComplete(currentFeeding.complete === 1);
           }
         } catch (error) {
@@ -59,6 +70,11 @@ export default function EditFeedingScreen({ route, navigation }) {
   );
 
   const handleSave = async () => {
+    if (!selectedPetId) {
+      console.error("Error: No pet selected for feeding update.");
+      return;
+    }
+
     try {
       await updateFeedingInDb(
         feedingId,
@@ -66,8 +82,12 @@ export default function EditFeedingScreen({ route, navigation }) {
         feedingDate,
         feedingTime,
         preyType,
+        preyWeight ?? 0,
+        preyWeightType,
+        notes,
         isComplete ? 1 : 0
       );
+
       dispatch(
         updateFeeding({
           id: feedingId,
@@ -75,9 +95,25 @@ export default function EditFeedingScreen({ route, navigation }) {
           feedingDate,
           feedingTime,
           preyType,
+          preyWeight,
+          preyWeightType,
+          notes,
           complete: isComplete ? 1 : 0,
         })
       );
+
+      setInitialFeeding({
+        // Save the new state for future resets
+        petId: selectedPetId,
+        feedingDate,
+        feedingTime,
+        preyType,
+        preyWeight,
+        preyWeightType,
+        notes,
+        complete: isComplete ? 1 : 0,
+      });
+
       setIsEditing(false);
     } catch (error) {
       console.error("Error updating feeding:", error);
@@ -85,11 +121,16 @@ export default function EditFeedingScreen({ route, navigation }) {
   };
 
   const handleCancel = () => {
-    setSelectedPetId(feeding.petId);
-    setFeedingDate(feeding.feedingDate);
-    setFeedingTime(feeding.feedingTime);
-    setPreyType(feeding.preyType || "");
-    setIsComplete(feeding.complete === 1);
+    if (initialFeeding) {
+      setSelectedPetId(initialFeeding.petId);
+      setFeedingDate(initialFeeding.feedingDate || "");
+      setFeedingTime(initialFeeding.feedingTime || "");
+      setPreyType(initialFeeding.preyType || "");
+      setPreyWeight(initialFeeding.preyWeight ?? 0);
+      setPreyWeightType(initialFeeding.preyWeightType || "g");
+      setNotes(initialFeeding.notes || "");
+      setIsComplete(initialFeeding.complete === 1);
+    }
     setIsEditing(false);
   };
 
@@ -102,6 +143,9 @@ export default function EditFeedingScreen({ route, navigation }) {
         feedingDate,
         feedingTime,
         preyType,
+        preyWeight ?? 0,
+        preyWeightType ?? "g",
+        notes, // Moved here instead of being after a comma
         newCompleteValue ? 1 : 0
       );
       dispatch(
@@ -111,6 +155,9 @@ export default function EditFeedingScreen({ route, navigation }) {
           feedingDate,
           feedingTime,
           preyType,
+          preyWeight: preyWeight ?? 0,
+          preyWeightType: preyWeightType ?? "g",
+          notes,
           complete: newCompleteValue ? 1 : 0,
         })
       );
@@ -121,19 +168,19 @@ export default function EditFeedingScreen({ route, navigation }) {
   };
 
   if (!feeding) return <ThemedText>Loading feeding details...</ThemedText>;
-
-  const formattedDate = formatDateString(feedingDate, "LONG");
-  const formattedTime = formatTimeString(feedingTime);
-  const selectedPet = pets.find((pet) => pet.id === selectedPetId);
+  const selectedPet = pets.find((pet) => pet.id === selectedPetId) || {}; // Ensure it's at least an empty object
 
   return (
     <ThemedScrollView contentContainerStyle={styles.container}>
       {/* Header Section */}
       <HeaderSection
+        isEditing={isEditing}
+        onEdit={() => setIsEditing(true)}
         onSave={handleSave}
-        hasSave
-        onCancel={() => navigation.goBack()}
+        onCancel={() => setIsEditing(false)} // Stop editing, but don't navigate
+        onBack={() => navigation.goBack()} // Navigate only if not editing
       />
+
       <EditHeader
         label="Edit Feeding"
         description="Modify feeding details and press save."
@@ -176,12 +223,23 @@ export default function EditFeedingScreen({ route, navigation }) {
       {/* Completion Toggle */}
       <CompletionToggle isComplete={isComplete} onToggle={handleToggleCheck} />
 
-      {/* Prey Type Selection */}
-      <PreyTypeField
-        preyType={preyType}
-        setPreyType={setPreyType}
-        isEditing={isEditing}
-      />
+      {/* Prey Type & Weight Selection */}
+      <View style={styles.preyRow}>
+        <PreyTypeField
+          preyType={preyType}
+          setPreyType={setPreyType}
+          isEditing={isEditing}
+        />
+        <View style={styles.weight}>
+          <WeightField
+            weight={preyWeight}
+            setWeight={setPreyWeight}
+            weightType={preyWeightType}
+            setWeightType={setPreyWeightType}
+            isEditing={isEditing}
+          />
+        </View>
+      </View>
 
       {/* Date & Time Inputs */}
       <DateTimeFields
@@ -191,11 +249,13 @@ export default function EditFeedingScreen({ route, navigation }) {
         setFeedingTime={setFeedingTime}
         showFeedingDatePicker={showFeedingDatePicker}
         setShowFeedingDatePicker={setShowFeedingDatePicker}
-        showFeedingTimePicker={showFeedingTimePicker}
-        setShowFeedingTimePicker={setShowFeedingTimePicker}
+        showFeedingTimePicker={showFeedingTimePicker} // ✅ Ensure this is passed correctly
+        setShowFeedingTimePicker={setShowFeedingTimePicker} // ✅ Ensure the function is passed correctly
         isEditing={isEditing}
       />
 
+      {/* Notes Field */}
+      <NotesField notes={notes} setNotes={setNotes} isEditing={isEditing} />
       {/* Action Buttons */}
       {isEditing ? (
         <View style={styles.buttonRow}>
@@ -226,17 +286,10 @@ export default function EditFeedingScreen({ route, navigation }) {
 
 const styles = StyleSheet.create({
   container: { flexGrow: 1, padding: 16 },
-  section: { flexDirection: "row", alignItems: "center", marginBottom: 8 },
+  preyRow: { flexDirection: "row", justifyContent: "flex-start" },
+  weight: { paddingLeft: 48 },
   petImage: { width: 40, height: 40, borderRadius: 50, marginRight: 16 },
-  fieldWrapper: {
-    flex: 1,
-    borderWidth: 1,
-    borderRadius: 5,
-  },
-  buttonRow: {
-    flexDirection: "column",
-    marginTop: 16,
-  },
+  section: { flexDirection: "row", alignItems: "center", marginBottom: 8 },
   saveButton: { flex: 1, marginBottom: 8 },
   cancelButton: { flex: 1 },
 });

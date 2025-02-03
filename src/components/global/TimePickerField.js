@@ -8,8 +8,8 @@ export default function TimePickerField({
   label = "Select Time",
   timeValue,
   setTimeValue,
-  showTimePicker,
-  setShowTimePicker,
+  showFeedingTimePicker,
+  setShowFeedingTimePicker,
   icon,
 }) {
   const textColor = useThemeColor({}, "text");
@@ -43,19 +43,19 @@ export default function TimePickerField({
           styles.input,
           { backgroundColor: bgColor, borderColor: iconColor },
         ]}
-        onPress={() => setShowTimePicker(true)}
+        onPress={() => setShowFeedingTimePicker(true)}
       >
         <ThemedText type="default" style={{ color: textColor }}>
           {formattedTime}
         </ThemedText>
       </TouchableOpacity>
-      {showTimePicker && (
+      {showFeedingTimePicker && (
         <DateTimePicker
           value={timeValue ? new Date(`1970-01-01T${timeValue}`) : new Date()}
           mode="time"
           display="default"
           onChange={(event, selectedTime) => {
-            setShowTimePicker(false);
+            setShowFeedingTimePicker(false);
             if (selectedTime) {
               setTimeValue(
                 selectedTime.toISOString().split("T")[1].substring(0, 5)

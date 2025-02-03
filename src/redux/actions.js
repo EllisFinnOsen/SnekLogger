@@ -5,7 +5,8 @@ import {
   FETCH_GROUP_PETS,
   UPDATE_FEEDING,
   UPDATE_FEEDING_PET,
-  ADD_PET, // Add this line
+  ADD_PET,
+  ADD_FEEDING, // Add this line
   FETCH_PET,
   UPDATE_PET,
   FETCH_GROUPS_FOR_PETS,
@@ -15,6 +16,7 @@ import {
 import {
   fetchPetsFromDb,
   fetchFeedingsByPetFromDb,
+  insertFeedingInDb,
   getGroupsFromDb,
   fetchPetsByGroupIdFromDb,
   updatePetToDb,
@@ -136,3 +138,16 @@ export const removePetFromGroupAction =
       //console.error("Error removing pet from group:", error);
     }
   };
+
+// Add a new feeding
+export const addFeeding = (newFeeding) => async (dispatch) => {
+  try {
+    const feedingId = await insertFeedingInDb(newFeeding);
+    dispatch({
+      type: ADD_FEEDING,
+      payload: { id: feedingId, ...newFeeding },
+    });
+  } catch (error) {
+    console.error("Error adding new feeding:", error);
+  }
+};

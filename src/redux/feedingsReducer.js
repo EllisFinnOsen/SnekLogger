@@ -1,4 +1,4 @@
-import { FETCH_FEEDINGS, UPDATE_FEEDING } from "./actionTypes";
+import { FETCH_FEEDINGS, UPDATE_FEEDING, ADD_FEEDING } from "./actionTypes";
 
 const initialState = [];
 
@@ -22,6 +22,9 @@ export default function feedingsReducer(state = initialState, action) {
       return state.map((feeding) =>
         feeding.id === action.payload.id ? action.payload : feeding
       );
+
+    case ADD_FEEDING: // ✅ Handle adding new feedings
+      return [...state, action.payload];
     default:
       return state;
   }

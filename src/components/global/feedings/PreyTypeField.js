@@ -25,7 +25,7 @@ export default function PreyTypeField({ preyType, setPreyType, isEditing }) {
             options={PREY_TYPES}
             selectedValue={preyType}
             onValueChange={setPreyType}
-            placeholder="Select or enter prey type..."
+            placeholder="Select..."
             otherLabel="Other (Enter custom prey type)"
           />
         ) : (
@@ -41,6 +41,7 @@ export default function PreyTypeField({ preyType, setPreyType, isEditing }) {
 const styles = StyleSheet.create({
   fieldContainer: {
     marginVertical: 8,
+    width: "30%",
   },
   titleContainer: {
     flexDirection: "row",

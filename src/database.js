@@ -57,6 +57,7 @@ export const initializeDatabase = async () => {
         feedingTime TEXT NOT NULL,
         preyType TEXT NOT NULL,
         preyWeight REAL,
+        preyWeightType TEXT NOT NULL,
         notes TEXT,
         complete INTEGER DEFAULT 0,
         FOREIGN KEY (petId) REFERENCES pets (id) ON DELETE CASCADE
@@ -111,15 +112,15 @@ export const insertMockData = async () => {
 
     // --- Insert sample feedings ---
     await db.execAsync(`
-      INSERT INTO feedings (petId, feedingDate, feedingTime, preyType, preyWeight, notes, complete)
+      INSERT INTO feedings (petId, feedingDate, feedingTime, preyType, preyWeight, preyWeightType, notes, complete)
       VALUES
-        (3, '2025-01-10', '09:00:00', 'Rat', 2.0, 'Weekly feeding', 0),
-        (2, '2025-02-02', '09:00:00', 'Pig', 2.0, 'Weekly feeding', 0),
-        (5, '2025-02-03', '09:00:00', 'Dog', 2.0, 'Weekly feeding', 0),
-        (4, '2025-02-17', '09:00:00', 'Rat', 2.0, 'Regular feeding schedule', 1),
-        (4, '2025-04-12', '10:00:00', 'Rat', 3.5, 'Fed larger prey for growth', 0),
-        (5, '2025-03-18', '08:00:00', 'Mouse', 1.2, 'Feeding after growth spurt', 0),
-        (6, '2025-05-11', '09:30:00', 'Veggies', 0.4, 'Added leafy greens', 1);
+        (3, '2025-01-10', '09:00:00', 'Rat', 2.0, 'g', 'Weekly feeding', 0),
+        (2, '2025-02-02', '09:00:00', 'Pig', 2.0, 'g', 'Weekly feeding', 0),
+        (5, '2025-02-03', '09:00:00', 'Dog', 2.0, 'g', 'Weekly feeding', 0),
+        (4, '2025-02-17', '09:00:00', 'Rat', 2.0, 'g', 'Regular feeding schedule', 1),
+        (4, '2025-04-12', '10:00:00', 'Rat', 3.5, 'g', 'Fed larger prey for growth', 0),
+        (5, '2025-03-18', '08:00:00', 'Mouse', 1.2, 'g', 'Feeding after growth spurt', 0),
+        (6, '2025-05-11', '09:30:00', 'Veggies', 0.4, 'g', 'Added leafy greens', 1);
     `);
 
     ////console("Mock data inserted");
@@ -171,9 +172,20 @@ export const fetchFeedingByIdFromDb = async (feedingId) => {
       "SELECT * FROM feedings WHERE id = ?",
       [feedingId]
     );
-    return result || null;
+    return (
+      result ?? {
+        petId: null,
+        feedingDate: "",
+        feedingTime: "",
+        preyType: "",
+        preyWeight: 0, // Default to 0 if not found
+        preyWeightType: "g",
+        complete: 0,
+        notes: "",
+      }
+    );
   } catch (error) {
-    ////console.error("Error fetching feeding by ID:", error);
+    console.error("Error fetching feeding by ID:", error);
     throw error;
   }
 };
@@ -184,18 +196,40 @@ export const updateFeedingInDb = async (
   petId,
   feedingDate,
   feedingTime,
+  preyType,
+  preyWeight,
+  preyWeightType,
+  notes, // Include notes
   complete
 ) => {
   try {
     const db = await openDatabase();
     const result = await db.runAsync(
-      "UPDATE feedings SET petId = ?, feedingDate = ?, feedingTime = ?, complete = ? WHERE id = ?",
-      [petId, feedingDate, feedingTime, complete, feedingId]
+      `UPDATE feedings 
+       SET petId = ?, 
+           feedingDate = ?, 
+           feedingTime = ?, 
+           preyType = ?, 
+           preyWeight = ?, 
+           preyWeightType = ?, 
+           notes = ?,
+           complete = ? 
+       WHERE id = ?`,
+      [
+        petId,
+        feedingDate,
+        feedingTime,
+        preyType,
+        preyWeight ?? 0,
+        preyWeightType ?? "g",
+        notes ?? "", // Ensure notes are never undefined
+        complete ?? 0,
+        feedingId,
+      ]
     );
-    //////console("Feeding updated in DB:", result);
     return result;
   } catch (error) {
-    ////console.error("Error updating feeding in DB:", error);
+    console.error("Error updating feeding in DB:", error);
     throw error;
   }
 };
@@ -361,6 +395,41 @@ export const removePetFromGroup = async (groupId, petId) => {
     return result;
   } catch (error) {
     //console.error("Error removing pet from group:", error);
+    throw error;
+  }
+};
+
+export const insertFeedingInDb = async ({
+  petId,
+  feedingDate,
+  feedingTime,
+  preyType,
+  preyWeight,
+  preyWeightType,
+  notes,
+  complete,
+}) => {
+  try {
+    const db = await openDatabase();
+    const result = await db.runAsync(
+      `INSERT INTO feedings 
+        (petId, feedingDate, feedingTime, preyType, preyWeight, preyWeightType, notes, complete)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        petId,
+        feedingDate,
+        feedingTime,
+        preyType,
+        preyWeight ?? 0, // Default to 0 if missing
+        preyWeightType ?? "g",
+        notes ?? "",
+        complete ? 1 : 0, // Ensure it's stored as an integer
+      ]
+    );
+
+    return result.lastInsertRowId; // Return the ID of the newly created feeding
+  } catch (error) {
+    console.error("Error inserting feeding in DB:", error);
     throw error;
   }
 };

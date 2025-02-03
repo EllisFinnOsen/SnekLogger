@@ -16,7 +16,7 @@ export default function AddLogCard({ petId }) {
   const textColor = useThemeColor({}, "text");
 
   const handlePress = () => {
-    navigation.navigate("AddFeeding", petId ? { petId } : {});
+    navigation.navigate("AddFeedingScreen", petId ? { petId } : {});
   };
 
   return (

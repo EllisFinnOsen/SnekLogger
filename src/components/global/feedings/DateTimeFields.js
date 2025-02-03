@@ -12,9 +12,9 @@ export default function DateTimeFields({
   feedingTime,
   setFeedingTime,
   showFeedingDatePicker,
-  setShowFeedingDatePicker,
   showFeedingTimePicker,
-  setShowTimePicker,
+  setShowFeedingDatePicker,
+  setShowFeedingTimePicker,
   isEditing,
 }) {
   const iconColor = useThemeColor({}, "icon");
@@ -61,8 +61,8 @@ export default function DateTimeFields({
             <TimePickerField
               timeValue={feedingTime}
               setTimeValue={setFeedingTime}
-              showTimePicker={showFeedingTimePicker}
-              setShowTimePicker={setShowTimePicker}
+              showFeedingTimePicker={showFeedingTimePicker}
+              setShowFeedingTimePicker={setShowFeedingTimePicker}
               icon="time"
               label="Time"
             />
