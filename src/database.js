@@ -75,12 +75,12 @@ export const initializeDatabase = async () => {
         preyType TEXT,
         preyWeight REAL,
         notes TEXT,
-        frequency TEXT NOT NULL,         -- e.g. 'daily', 'weekly', 'monthly', 'yearly', 'custom'
-        interval INTEGER DEFAULT 1,        -- e.g. every 2 weeks (when frequency is 'weekly' and interval = 2)
-        customUnit TEXT,                   -- used if frequency is custom (e.g. 'day', 'week', etc.)
-        endType TEXT DEFAULT 'never',      -- 'never', 'on', or 'after'
-        endDate TEXT,                      -- if endType is 'on'
-        occurrenceCount INTEGER,           -- if endType is 'after'
+        frequency TEXT NOT NULL,        
+        interval INTEGER DEFAULT 1,        
+        customUnit TEXT,                   
+        endType TEXT DEFAULT 'never',      
+        endDate TEXT,                      
+        occurrenceCount INTEGER,           
         active INTEGER DEFAULT 1
       );
     `);
@@ -164,7 +164,7 @@ export const insertMockData = async () => {
         (2, '2025-02-05', '10:00:00', 'Mouse', 1.2, 'g', 'Generated from recurring schedule', 0, 1, 2);
     `);
 
-    //console.log("Mock data inserted");
+    console.log("Mock data inserted");
   } catch (error) {
     console.error("Error inserting mock data:", error);
   }

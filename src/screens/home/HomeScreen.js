@@ -24,10 +24,10 @@ export default function HomeScreen({ navigation }) {
     const setupDatabase = async () => {
       try {
         await initializeDatabase();
-        //await insertMockData();
+        await insertMockData();
         dispatch(fetchPets());
       } catch (error) {
-        //console.error("Error setting up database:", error);
+        console.error("Error setting up database:", error);
       }
     };
 
