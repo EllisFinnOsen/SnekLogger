@@ -5,14 +5,19 @@ export const UPDATE_FEEDING = "UPDATE_FEEDING";
 export const UPDATE_FEEDING_PET = "UPDATE_FEEDING_PET";
 export const FETCH_GROUPS = "FETCH_GROUPS";
 export const FETCH_GROUP_PETS = "FETCH_GROUP_PETS";
-export const ADD_PET = "ADD_PET"; // Add this line
+export const ADD_PET = "ADD_PET";
 export const UPDATE_PET = "UPDATE_PET";
-// actionTypes.js
 export const ADD_PET_TO_GROUP = "ADD_PET_TO_GROUP";
 export const FETCH_GROUPS_FOR_PETS = "FETCH_GROUPS_FOR_PETS";
 export const REMOVE_PET_FROM_GROUP = "REMOVE_PET_FROM_GROUP";
-export const ADD_FEEDING = "ADD_FEEDING"; // ✅ Add this if missing
+export const ADD_FEEDING = "ADD_FEEDING";
 export const ADD_GROUP = "ADD_GROUP";
 export const DELETE_PET = "DELETE_PET";
 export const UPDATE_GROUP = "UPDATE_GROUP";
 export const DELETE_GROUP = "DELETE_GROUP";
+
+// New action types for recurring feeding schedules:
+export const FETCH_FEEDING_SCHEDULES = "FETCH_FEEDING_SCHEDULES";
+export const ADD_FEEDING_SCHEDULE = "ADD_FEEDING_SCHEDULE";
+export const UPDATE_FEEDING_SCHEDULE = "UPDATE_FEEDING_SCHEDULE";
+export const DELETE_FEEDING_SCHEDULE = "DELETE_FEEDING_SCHEDULE";

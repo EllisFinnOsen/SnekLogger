@@ -1,12 +1,26 @@
 import React from "react";
 import { View } from "react-native";
-import { useSelector } from "react-redux";
-import { startOfToday, isSameDay, isAfter } from "date-fns";
+import { useDispatch, useSelector } from "react-redux";
+import { startOfToday, isSameDay, isAfter, startOfDay } from "date-fns";
+import { useFocusEffect } from "@react-navigation/native";
 import FeedingsList from "@/components/global/feedings/FeedingsList";
 import AddLogCard from "@/components/global/feedings/AddLogCard";
+import { fetchFeedings } from "@/redux/actions";
 
 export default function FeedingsByDaySections() {
   const allFeedings = useSelector((state) => state.feedings);
+  console.log(
+    "FeedingsByDaySections re-render, feedings count:",
+    allFeedings.length
+  );
+  const dispatch = useDispatch();
+
+  useFocusEffect(
+    React.useCallback(() => {
+      // Refetch feedings when this screen is focused
+      dispatch(fetchFeedings());
+    }, [dispatch])
+  );
 
   // Separate completed and incomplete feedings
   const incompleteFeedings = allFeedings.filter(
@@ -17,8 +31,13 @@ export default function FeedingsByDaySections() {
   );
 
   const today = startOfToday();
-  const parseFeedingDateForDay = (feeding) =>
-    new Date(`${feeding.feedingDate}T00:00:00`);
+
+  // Updated parsing function that uses the stored ISO date directly
+  const parseFeedingDateForDay = (feeding) => {
+    const d = new Date(feeding.feedingDate);
+    console.log("Parsed feeding date:", feeding.feedingDate, "=>", d);
+    return startOfDay(d);
+  };
 
   const lateFeedings = incompleteFeedings.filter(
     (feeding) => parseFeedingDateForDay(feeding) < today

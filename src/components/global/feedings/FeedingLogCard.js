@@ -22,21 +22,8 @@ import { updateFeedingInDb } from "@/database";
 import { updateFeeding } from "@/redux/actions";
 import { Ionicons } from "@expo/vector-icons";
 import { startOfToday } from "date-fns";
-import { checkImageURL } from "@/utils/checkImage"; // Ensure this path is correct
+import { checkImageURL } from "@/utils/checkImage";
 
-/**
- * FeedingLogCard now accepts:
- * - animateOnChange (boolean): if true, the card will animate changes.
- * - isVisible (boolean): indicates if the card currently meets the list’s condition.
- *
- * When isVisible becomes true, the card slides in from the right (starting slightly to the right and with zero opacity)
- * and fades in. When isVisible becomes false, it slides to the left and fades out.
- *
- * Additionally, if the feeding is not complete and its scheduled date (ignoring time) is in the past (i.e. before today),
- * the card's border is outlined with the "error" color and its background is set to the "errorSubtle" color from the theme.
- *
- * If the pet image URL is not valid (using the checkImageURL hook), a sample image URL is used instead.
- */
 export default function FeedingLogCard({
   item,
   animateOnChange = true,
@@ -44,12 +31,9 @@ export default function FeedingLogCard({
 }) {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-
-  // Get the pets list from Redux state
   const pets = useSelector((state) => state.pets.pets || []);
   const pet = pets.find((pet) => pet.id === item.petId);
   const petName = pet ? pet.name : "Unknown Pet";
-  // Use pet.imageURL if valid; otherwise, use a fallback sample image URL.
   const petImageURL =
     pet && checkImageURL(pet.imageURL)
       ? pet.imageURL
@@ -58,30 +42,25 @@ export default function FeedingLogCard({
 
   const [isChecked, setIsChecked] = useState(item.complete === 1);
 
-  // Retrieve theme colors using useThemeColor hook.
   const textColor = useThemeColor({}, "text");
   const fieldColor = useThemeColor({}, "field");
   const fieldAccent = useThemeColor({}, "fieldAccent");
   const activeColor = useThemeColor({}, "active");
   const iconColor = useThemeColor({}, "icon");
-  const errorColor = useThemeColor({}, "error"); // For border if feeding is late
-  const errorSubtle = useThemeColor({}, "errorSubtle"); // For background if feeding is late
+  const errorColor = useThemeColor({}, "error");
+  const errorSubtle = useThemeColor({}, "errorSubtle");
 
-  // Determine if the feeding is "late" (i.e. incomplete and scheduled before today).
   const today = startOfToday();
   const feedingDay = new Date(`${item.feedingDate}T00:00:00`);
   const isLate = !isChecked && feedingDay < today;
 
-  // Create animated values for horizontal slide (X axis) and fade (opacity)
   const slideAnim = useRef(new Animated.Value(isVisible ? 0 : -20)).current;
   const fadeAnim = useRef(new Animated.Value(isVisible ? 1 : 0)).current;
 
-  // Update local state when feeding's completion status changes.
   useEffect(() => {
     setIsChecked(item.complete === 1);
   }, [item.complete]);
 
-  // Run animations when isVisible changes.
   useEffect(() => {
     if (!animateOnChange) return;
 
@@ -132,9 +111,7 @@ export default function FeedingLogCard({
       );
       dispatch(updateFeeding({ ...item, complete: newCompleteValue }));
       setIsChecked(!isChecked);
-    } catch (error) {
-      //console.error("Error toggling complete status:", error);
-    }
+    } catch (error) {}
   };
 
   return (
@@ -169,6 +146,15 @@ export default function FeedingLogCard({
               style={{ color: isChecked ? iconColor : textColor }}
             >
               {petName}
+              {item.isRecurring && (
+                // Show a repeat icon if the feeding is part of a recurring schedule
+                <Ionicons
+                  name="repeat"
+                  size={16}
+                  color={iconColor}
+                  style={{ marginLeft: 4 }}
+                />
+              )}
             </ThemedText>
             <ThemedText
               type="default"

@@ -15,15 +15,14 @@ export const initializeDatabase = async () => {
   try {
     const db = await openDatabase();
 
-    // Create tables if they don't exist (adding the new 'category' column to pets)
-
+    // Create tables if they don't exist (dropping any old versions for testing)
     await db.execAsync(`
       PRAGMA journal_mode = WAL;
       DROP TABLE IF EXISTS pets;
       DROP TABLE IF EXISTS groups;
       DROP TABLE IF EXISTS group_pets;
       DROP TABLE IF EXISTS feedings;
-      
+      DROP TABLE IF EXISTS feeding_schedules;
 
       CREATE TABLE IF NOT EXISTS pets (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -50,6 +49,7 @@ export const initializeDatabase = async () => {
         FOREIGN KEY (petId) REFERENCES pets (id) ON DELETE CASCADE
       );
 
+      -- Updated feedings table now has isRecurring and scheduleId columns
       CREATE TABLE IF NOT EXISTS feedings (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         petId INTEGER NOT NULL,
@@ -60,13 +60,34 @@ export const initializeDatabase = async () => {
         preyWeightType TEXT NOT NULL,
         notes TEXT,
         complete INTEGER DEFAULT 0,
-        FOREIGN KEY (petId) REFERENCES pets (id) ON DELETE CASCADE
+        isRecurring INTEGER DEFAULT 0,
+        scheduleId INTEGER,
+        FOREIGN KEY (petId) REFERENCES pets (id) ON DELETE CASCADE,
+        FOREIGN KEY (scheduleId) REFERENCES feeding_schedules (id)
+      );
+
+      -- Updated feeding_schedules table with individual recurrence fields
+      CREATE TABLE IF NOT EXISTS feeding_schedules (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        petId INTEGER NOT NULL,
+        startDate TEXT NOT NULL,
+        feedingTime TEXT NOT NULL,
+        preyType TEXT,
+        preyWeight REAL,
+        notes TEXT,
+        frequency TEXT NOT NULL,         -- e.g. 'daily', 'weekly', 'monthly', 'yearly', 'custom'
+        interval INTEGER DEFAULT 1,        -- e.g. every 2 weeks (when frequency is 'weekly' and interval = 2)
+        customUnit TEXT,                   -- used if frequency is custom (e.g. 'day', 'week', etc.)
+        endType TEXT DEFAULT 'never',      -- 'never', 'on', or 'after'
+        endDate TEXT,                      -- if endType is 'on'
+        occurrenceCount INTEGER,           -- if endType is 'after'
+        active INTEGER DEFAULT 1
       );
     `);
 
-    //////console("Database initialized");
+    //console.log("Database initialized");
   } catch (error) {
-    ////console.error("Error initializing database:", error);
+    console.error("Error initializing database:", error);
   }
 };
 
@@ -110,22 +131,42 @@ export const insertMockData = async () => {
         (5, 2), (5, 7), (5, 6);
     `);
 
-    // --- Insert sample feedings ---
+    // --- Insert sample (one-off) feedings ---
     await db.execAsync(`
-      INSERT INTO feedings (petId, feedingDate, feedingTime, preyType, preyWeight, preyWeightType, notes, complete)
+      INSERT INTO feedings (petId, feedingDate, feedingTime, preyType, preyWeight, preyWeightType, notes, complete, isRecurring)
       VALUES
-        (3, '2025-01-10', '09:00:00', 'Rat', 2.0, 'g', 'Weekly feeding', 0),
-        (2, '2025-02-02', '09:00:00', 'Pig', 2.0, 'g', 'Weekly feeding', 0),
-        (5, '2025-02-03', '09:00:00', 'Dog', 2.0, 'g', 'Weekly feeding', 0),
-        (4, '2025-02-17', '09:00:00', 'Rat', 2.0, 'g', 'Regular feeding schedule', 1),
-        (4, '2025-04-12', '10:00:00', 'Rat', 3.5, 'g', 'Fed larger prey for growth', 0),
-        (5, '2025-03-18', '08:00:00', 'Mouse', 1.2, 'g', 'Feeding after growth spurt', 0),
-        (6, '2025-05-11', '09:30:00', 'Veggies', 0.4, 'g', 'Added leafy greens', 1);
+        (3, '2025-01-10', '09:00:00', 'Rat', 2.0, 'g', 'Weekly feeding', 0, 0),
+        (2, '2025-02-02', '09:00:00', 'Pig', 2.0, 'g', 'Weekly feeding', 0, 0),
+        (5, '2025-02-03', '09:00:00', 'Dog', 2.0, 'g', 'Weekly feeding', 0, 0),
+        (4, '2025-02-17', '09:00:00', 'Rat', 2.0, 'g', 'Regular feeding schedule', 1, 0),
+        (4, '2025-04-12', '10:00:00', 'Rat', 3.5, 'g', 'Fed larger prey for growth', 0, 0),
+        (5, '2025-03-18', '08:00:00', 'Mouse', 1.2, 'g', 'Feeding after growth spurt', 0, 0),
+        (6, '2025-05-11', '09:30:00', 'Veggies', 0.4, 'g', 'Added leafy greens', 1, 0);
     `);
 
-    ////console("Mock data inserted");
+    // --- Insert sample recurring feeding schedules ---
+    // (For testing purposes, we assume these are the first two schedule rows,
+    // so their IDs will be 1 and 2 respectively.)
+    await db.execAsync(`
+      INSERT INTO feeding_schedules 
+        (petId, startDate, feedingTime, preyType, preyWeight, notes, frequency, interval, customUnit, endType, endDate, occurrenceCount)
+      VALUES
+        (3, '2025-01-15', '09:00:00', 'Rat', 2.0, 'Recurring weekly feeding', 'weekly', 1, NULL, 'never', NULL, NULL),
+        (2, '2025-02-05', '10:00:00', 'Mouse', 1.2, 'Recurring daily feeding', 'daily', 1, NULL, 'after', NULL, 5);
+    `);
+
+    // --- Insert sample feedings that are generated from recurring schedules ---
+    // (These rows include the isRecurring flag and a scheduleId reference.)
+    await db.execAsync(`
+      INSERT INTO feedings (petId, feedingDate, feedingTime, preyType, preyWeight, preyWeightType, notes, complete, isRecurring, scheduleId)
+      VALUES
+        (3, '2025-01-15', '09:00:00', 'Rat', 2.0, 'g', 'Generated from recurring schedule', 0, 1, 1),
+        (2, '2025-02-05', '10:00:00', 'Mouse', 1.2, 'g', 'Generated from recurring schedule', 0, 1, 2);
+    `);
+
+    //console.log("Mock data inserted");
   } catch (error) {
-    //console.error("Error inserting mock data:", error);
+    console.error("Error inserting mock data:", error);
   }
 };
 
@@ -180,8 +221,10 @@ export const fetchFeedingByIdFromDb = async (feedingId) => {
         preyType: "",
         preyWeight: 0, // Default to 0 if not found
         preyWeightType: "g",
-        complete: 0,
         notes: "",
+        complete: 0,
+        isRecurring: 0, // Default as one-off feeding
+        scheduleId: null, // No schedule reference for one-off feedings
       }
     );
   } catch (error) {
@@ -200,7 +243,9 @@ export const updateFeedingInDb = async (
   preyWeight,
   preyWeightType,
   notes, // Include notes
-  complete
+  complete,
+  isRecurring, // New: 0 for one-off, 1 for recurring
+  scheduleId // New: reference to a feeding_schedules row (or null)
 ) => {
   try {
     const db = await openDatabase();
@@ -213,7 +258,9 @@ export const updateFeedingInDb = async (
            preyWeight = ?, 
            preyWeightType = ?, 
            notes = ?,
-           complete = ? 
+           complete = ?,
+           isRecurring = ?,
+           scheduleId = ?
        WHERE id = ?`,
       [
         petId,
@@ -224,9 +271,12 @@ export const updateFeedingInDb = async (
         preyWeightType ?? "g",
         notes ?? "", // Ensure notes are never undefined
         complete ?? 0,
+        isRecurring ?? 0,
+        scheduleId ?? null,
         feedingId,
       ]
     );
+    console.log("updateFeedingInDb: result =", result);
     return result;
   } catch (error) {
     console.error("Error updating feeding in DB:", error);
@@ -426,7 +476,7 @@ export const insertFeedingInDb = async ({
         complete ? 1 : 0, // Ensure it's stored as an integer
       ]
     );
-
+    console.log("insertFeedingInDb: result =", result);
     return result.lastInsertRowId; // Return the ID of the newly created feeding
   } catch (error) {
     console.error("Error inserting feeding in DB:", error);
@@ -482,6 +532,151 @@ export const deleteGroupFromDb = async (groupId) => {
     return result;
   } catch (error) {
     console.error("Error deleting group from DB:", error);
+    throw error;
+  }
+};
+
+// Insert a new feeding schedule into the database
+export const insertFeedingScheduleInDb = async (schedule) => {
+  try {
+    const db = await openDatabase();
+    const result = await db.runAsync(
+      `INSERT INTO feeding_schedules 
+         (petId, startDate, feedingTime, preyType, preyWeight, notes, frequency, interval, customUnit, endType, endDate, occurrenceCount)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        schedule.petId,
+        schedule.startDate,
+        schedule.feedingTime,
+        schedule.preyType ?? "",
+        schedule.preyWeight ?? 0,
+        schedule.notes ?? "",
+        schedule.frequency,
+        schedule.interval ?? 1,
+        schedule.customUnit ?? null,
+        schedule.endType ?? "never",
+        schedule.endDate ?? null,
+        schedule.occurrenceCount ?? null,
+      ]
+    );
+    console.log("insertFeedingScheduleInDb result:", result);
+    return result.lastInsertRowId; // Make sure this is returned
+  } catch (error) {
+    console.error("Error inserting feeding schedule in DB:", error);
+    throw error;
+  }
+};
+
+// Fetch all feeding schedules for a specific pet
+export const fetchFeedingSchedulesByPetIdFromDb = async (petId) => {
+  try {
+    const db = await openDatabase();
+    const result = await db.getAllAsync(
+      "SELECT * FROM feeding_schedules WHERE petId = ?",
+      [petId]
+    );
+    return result;
+  } catch (error) {
+    console.error("Error fetching feeding schedules for petId:", petId, error);
+    throw error;
+  }
+};
+
+// Fetch a single feeding schedule by its ID
+export const fetchFeedingScheduleByIdFromDb = async (scheduleId) => {
+  try {
+    const db = await openDatabase();
+    const result = await db.getFirstAsync(
+      "SELECT * FROM feeding_schedules WHERE id = ?",
+      [scheduleId]
+    );
+    return result;
+  } catch (error) {
+    console.error("Error fetching feeding schedule by ID:", error);
+    throw error;
+  }
+};
+
+// Update an existing feeding schedule in the database
+export const updateFeedingScheduleInDb = async (
+  scheduleId,
+  {
+    petId,
+    startDate,
+    feedingTime,
+    preyType,
+    preyWeight,
+    notes,
+    frequency,
+    interval,
+    customUnit,
+    endType,
+    endDate,
+    occurrenceCount,
+  }
+) => {
+  try {
+    const db = await openDatabase();
+    const result = await db.runAsync(
+      `UPDATE feeding_schedules
+         SET petId = ?,
+             startDate = ?,
+             feedingTime = ?,
+             preyType = ?,
+             preyWeight = ?,
+             notes = ?,
+             frequency = ?,
+             interval = ?,
+             customUnit = ?,
+             endType = ?,
+             endDate = ?,
+             occurrenceCount = ?
+         WHERE id = ?`,
+      [
+        petId,
+        startDate,
+        feedingTime,
+        preyType ?? "",
+        preyWeight ?? 0,
+        notes ?? "",
+        frequency,
+        interval ?? 1,
+        customUnit ?? null,
+        endType ?? "never",
+        endDate ?? null,
+        occurrenceCount ?? null,
+        scheduleId,
+      ]
+    );
+    return result;
+  } catch (error) {
+    console.error("Error updating feeding schedule in DB:", error);
+    throw error;
+  }
+};
+
+// Delete a feeding schedule from the database
+export const deleteFeedingScheduleFromDb = async (scheduleId) => {
+  try {
+    const db = await openDatabase();
+    const result = await db.runAsync(
+      "DELETE FROM feeding_schedules WHERE id = ?",
+      [scheduleId]
+    );
+    return result;
+  } catch (error) {
+    console.error("Error deleting feeding schedule from DB:", error);
+    throw error;
+  }
+};
+
+export const fetchAllFeedingsFromDb = async () => {
+  try {
+    const db = await openDatabase();
+    const result = await db.getAllAsync("SELECT * FROM feedings");
+    return result;
+  } catch (error) {
+    console.error("Error fetching all feedings from DB:", error);
     throw error;
   }
 };

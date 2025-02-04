@@ -80,3 +80,13 @@ export const selectGroupById = createSelector(
     return result;
   }
 );
+
+// Basic input selector for schedules from state
+const feedingSchedulesSelector = (state) => state.feedingSchedules.schedules;
+
+// Selector to get schedules for a specific pet
+export const selectFeedingSchedulesByPet = createSelector(
+  [feedingSchedulesSelector, (_, petId) => Number(petId)],
+  (schedules, petId) =>
+    schedules.filter((sched) => Number(sched.petId) === petId)
+);

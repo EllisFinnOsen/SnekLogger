@@ -16,6 +16,10 @@ import {
   ADD_GROUP,
   UPDATE_GROUP,
   DELETE_GROUP,
+  FETCH_FEEDING_SCHEDULES,
+  ADD_FEEDING_SCHEDULE,
+  UPDATE_FEEDING_SCHEDULE,
+  DELETE_FEEDING_SCHEDULE,
 } from "./actionTypes";
 import {
   fetchPetsFromDb,
@@ -33,9 +37,67 @@ import {
   addGroupToDb,
   updateGroupToDb,
   deleteGroupFromDb,
+  insertFeedingScheduleInDb,
+  fetchFeedingSchedulesByPetIdFromDb,
+  updateFeedingScheduleInDb,
+  deleteFeedingScheduleFromDb,
+  fetchAllFeedingsFromDb,
 } from "@/database";
 
-export const fetchPets = () => async (dispatch) => {
+// Fetch all feeding schedules for a specific pet
+export const fetchFeedingSchedulesByPet = (petId) => async (dispatch) => {
+  try {
+    const schedules = await fetchFeedingSchedulesByPetIdFromDb(petId);
+    dispatch({ type: FETCH_FEEDING_SCHEDULES, payload: { petId, schedules } });
+  } catch (error) {
+    console.error("Error fetching feeding schedules for pet", petId, error);
+  }
+};
+
+export const addFeedingSchedule = (newSchedule) => async (dispatch) => {
+  try {
+    console.log("addFeedingSchedule: Inserting schedule:", newSchedule);
+    const scheduleId = await insertFeedingScheduleInDb(newSchedule);
+    console.log("addFeedingSchedule: Inserted schedule with ID:", scheduleId);
+    dispatch({
+      type: ADD_FEEDING_SCHEDULE,
+      payload: { id: scheduleId, ...newSchedule },
+    });
+    return scheduleId; // Return the new schedule ID
+  } catch (error) {
+    console.error("Error adding feeding schedule:", error);
+    throw error;
+  }
+};
+
+// Update an existing feeding schedule
+export const updateFeedingSchedule =
+  (scheduleId, updatedSchedule) => async (dispatch) => {
+    try {
+      await updateFeedingScheduleInDb(scheduleId, updatedSchedule);
+      dispatch({
+        type: UPDATE_FEEDING_SCHEDULE,
+        payload: { id: scheduleId, ...updatedSchedule },
+      });
+    } catch (error) {
+      console.error("Error updating feeding schedule:", error);
+    }
+  };
+
+// Delete a feeding schedule
+export const deleteFeedingSchedule = (scheduleId) => async (dispatch) => {
+  try {
+    await deleteFeedingScheduleFromDb(scheduleId);
+    dispatch({
+      type: DELETE_FEEDING_SCHEDULE,
+      payload: scheduleId,
+    });
+  } catch (error) {
+    console.error("Error deleting feeding schedule:", error);
+  }
+};
+
+export const fetchAllPets = () => async (dispatch) => {
   try {
     const pets = await fetchPetsFromDb();
     dispatch({ type: FETCH_PETS, payload: pets });
@@ -44,7 +106,7 @@ export const fetchPets = () => async (dispatch) => {
   }
 };
 
-export const fetchPet = () => async (dispatch) => {
+export const fetchPets = () => async (dispatch) => {
   try {
     const pet = await fetchPetById();
     dispatch({ type: FETCH_PETS, payload: pets });
@@ -52,6 +114,21 @@ export const fetchPet = () => async (dispatch) => {
     //console.error("Error fetching pet", error);
   }
 };
+
+export const fetchFeedings = () => async (dispatch) => {
+  try {
+    const feedings = await fetchAllFeedingsFromDb();
+    console.log("fetchFeedings: Fetched feedings:", feedings);
+    dispatch({ type: FETCH_FEEDINGS, payload: feedings });
+  } catch (error) {
+    console.error("Error fetching feedings:", error);
+  }
+};
+
+export const updateFeeding = (updatedFeeding) => ({
+  type: UPDATE_FEEDING,
+  payload: updatedFeeding,
+});
 
 export const fetchFeedingsByPet = (petId) => async (dispatch) => {
   try {
@@ -85,11 +162,6 @@ export const fetchPetsByGroupId = (groupId) => async (dispatch) => {
     //console.error(`Error fetching pets for group ${groupId}:`, error);
   }
 };
-
-export const updateFeeding = (updatedFeeding) => ({
-  type: UPDATE_FEEDING,
-  payload: updatedFeeding,
-});
 
 export const updatePet = (updatedPet) => ({
   type: UPDATE_PET,
@@ -147,16 +219,19 @@ export const removePetFromGroupAction =
     }
   };
 
-// Add a new feeding
 export const addFeeding = (newFeeding) => async (dispatch) => {
   try {
+    console.log("addFeeding: Inserting feeding:", newFeeding);
     const feedingId = await insertFeedingInDb(newFeeding);
+    console.log("addFeeding: Inserted feeding with ID:", feedingId);
     dispatch({
       type: ADD_FEEDING,
       payload: { id: feedingId, ...newFeeding },
     });
+    return feedingId;
   } catch (error) {
     console.error("Error adding new feeding:", error);
+    throw error;
   }
 };
 
