@@ -1,4 +1,8 @@
-import { FETCH_FEEDINGS, UPDATE_FEEDING, ADD_FEEDING } from "./actionTypes";
+import {
+  FETCH_FEEDINGS,
+  UPDATE_FEEDING,
+  ADD_FEEDING,
+} from "../actions/actionTypes";
 
 const initialState = [];
 

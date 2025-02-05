@@ -1,7 +1,7 @@
 import {
   LINK_FEEDING_TO_FREEZER,
   FETCH_FEEDING_FREEZER_LINKS,
-} from "./actionTypes";
+} from "../actions/actionTypes";
 
 const initialState = {};
 

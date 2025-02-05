@@ -18,25 +18,12 @@ import {
 } from "@/utils/dateUtils";
 import { SIZES } from "@/constants/Theme";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { updateFeedingInDb } from "@/database";
-import { updateFeeding } from "@/redux/actions";
 import { Ionicons } from "@expo/vector-icons";
 import { startOfToday } from "date-fns";
 import { checkImageURL } from "@/utils/checkImage"; // Ensure this path is correct
+import { updateFeeding } from "@/redux/actions/feedingActions";
+import { updateFeedingInDb } from "@/database/feedings";
 
-/**
- * FeedingLogCard now accepts:
- * - animateOnChange (boolean): if true, the card will animate changes.
- * - isVisible (boolean): indicates if the card currently meets the list’s condition.
- *
- * When isVisible becomes true, the card slides in from the right (starting slightly to the right and with zero opacity)
- * and fades in. When isVisible becomes false, it slides to the left and fades out.
- *
- * Additionally, if the feeding is not complete and its scheduled date (ignoring time) is in the past (i.e. before today),
- * the card's border is outlined with the "error" color and its background is set to the "errorSubtle" color from the theme.
- *
- * If the pet image URL is not valid (using the checkImageURL hook), a sample image URL is used instead.
- */
 export default function FeedingLogCard({
   item,
   animateOnChange = true,

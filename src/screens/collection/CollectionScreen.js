@@ -8,7 +8,7 @@ import { ThemedText } from "@/components/global/ThemedText";
 import CollectionPetList from "@/components/global/pets/CollectionPetList";
 import AddGroupButton from "@/components/global/groups/AddGroupButton"; // import our new AddGroupButton
 import { SIZES } from "@/constants/Theme";
-import { fetchGroups } from "@/redux/actions";
+import { fetchGroups } from "@/redux/actions/groupActions";
 
 export default function CollectionScreen() {
   const dispatch = useDispatch();

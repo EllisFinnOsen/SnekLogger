@@ -1,7 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 
-import { selectPastFeedings } from "@/redux/selectors";
+import { selectPastFeedings } from "@/redux/selectors/selectors";
 import FeedingsList from "@/components/global/feedings/FeedingsList";
 
 export default function ViewAllPastFeedings() {

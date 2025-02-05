@@ -1,5 +1,5 @@
 // File: userReducer.js
-import { FETCH_USER, UPDATE_USER } from "./actionTypes";
+import { FETCH_USER, UPDATE_USER } from "../actions/actionTypes";
 
 const initialState = {
   profile: null, // Holds user profile details

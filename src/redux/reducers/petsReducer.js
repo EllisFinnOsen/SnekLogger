@@ -6,7 +6,7 @@ import {
   UPDATE_PET,
   ADD_PET,
   DELETE_PET,
-} from "./actionTypes";
+} from "../actions/actionTypes";
 
 const initialState = {
   pets: [],

@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { addGroupToDb } from "@/database"; // Ensure this is implemented in your database file.
-import { addGroup, fetchGroups } from "@/redux/actions"; // Ensure these actions are defined.
 import ThemedScrollView from "@/components/global/ThemedScrollView";
 import { SIZES } from "@/constants/Theme";
 import EditHeader from "@/components/global/EditHeader";
@@ -12,6 +10,8 @@ import { useThemeColor } from "@/hooks/useThemeColor";
 import NameField from "@/components/global/groups/NameField";
 import NotesField from "@/components/global/pets/add_pet/NotesField";
 import HeaderSection from "@/components/global/pets/add_pet/HeaderSection";
+import { addGroup, fetchGroups } from "@/redux/actions/groupActions";
+import { addGroupToDb } from "@/database/groups";
 
 export default function AddGroupScreen({ navigation, route }) {
   const dispatch = useDispatch();

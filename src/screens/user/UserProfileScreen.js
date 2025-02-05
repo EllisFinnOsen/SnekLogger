@@ -7,11 +7,10 @@ import EditHeader from "@/components/global/EditHeader";
 import CustomButton from "@/components/global/CustomButton";
 import { ThemedText } from "@/components/global/ThemedText";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { fetchUserProfileFromDb } from "@/database";
 import { checkImageURL } from "@/utils/checkImage";
 import { Ionicons } from "@expo/vector-icons";
 import HeaderSection from "@/components/global/pets/add_pet/HeaderSection";
-import { updateUserProfile } from "@/redux/actions"; // Import Redux action
+import { fetchUserProfileFromDb } from "@/database/users";
 
 export default function UserProfileScreen() {
   const navigation = useNavigation();
