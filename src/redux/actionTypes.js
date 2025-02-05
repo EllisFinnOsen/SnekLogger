@@ -16,3 +16,6 @@ export const ADD_GROUP = "ADD_GROUP";
 export const DELETE_PET = "DELETE_PET";
 export const UPDATE_GROUP = "UPDATE_GROUP";
 export const DELETE_GROUP = "DELETE_GROUP";
+
+export const FETCH_USER = "FETCH_USER";
+export const UPDATE_USER = "UPDATE_USER";

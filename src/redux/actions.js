@@ -16,6 +16,8 @@ import {
   ADD_GROUP,
   UPDATE_GROUP,
   DELETE_GROUP,
+  FETCH_USER,
+  UPDATE_USER,
 } from "./actionTypes";
 import {
   fetchPetsFromDb,
@@ -33,6 +35,8 @@ import {
   addGroupToDb,
   updateGroupToDb,
   deleteGroupFromDb,
+  fetchUserProfileFromDb,
+  updateUserProfileInDb,
 } from "@/database";
 
 export const fetchPets = () => async (dispatch) => {
@@ -179,3 +183,23 @@ export const deleteGroup = (groupId) => ({
   type: DELETE_GROUP,
   payload: groupId,
 });
+
+// Fetch user profile from database
+export const fetchUserProfile = () => async (dispatch) => {
+  try {
+    const userProfile = await fetchUserProfileFromDb();
+    dispatch({ type: FETCH_USER, payload: userProfile });
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+  }
+};
+
+// Update user profile in Redux and Database
+export const updateUserProfile = (updatedUser) => async (dispatch) => {
+  try {
+    await updateUserProfileInDb(updatedUser);
+    dispatch({ type: UPDATE_USER, payload: updatedUser });
+  } catch (error) {
+    console.error("Error updating user profile:", error);
+  }
+};

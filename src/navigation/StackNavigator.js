@@ -13,6 +13,7 @@ import AddGroupScreen from "@/screens/groups/AddGroupScreen";
 import GroupScreen from "@/screens/groups/GroupScreen";
 import EditGroupScreen from "@/screens/groups/EditGroupScreen";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import EditUserProfileScreen from "@/screens/user/EditUserProfileScreen";
 
 const Stack = createStackNavigator();
 
@@ -75,6 +76,11 @@ export default function StackNavigator() {
         <Stack.Screen
           name="EditFeedingScreen"
           component={EditFeedingScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="EditUserProfileScreen"
+          component={EditUserProfileScreen}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

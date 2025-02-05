@@ -7,6 +7,7 @@ import ProfileScreen from "@/screens/pets/UserProfileScreen";
 import { Ionicons } from "@expo/vector-icons"; // Or any other icon library
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { COLORS } from "@/constants/Theme";
+import UserProfileScreen from "@/screens/user/UserProfileScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -60,7 +61,7 @@ export default function TabNavigator() {
       />
       <Tab.Screen
         name="Profile"
-        component={ProfileScreen}
+        component={UserProfileScreen}
         options={{ headerShown: false }}
       />
     </Tab.Navigator>
