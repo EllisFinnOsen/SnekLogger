@@ -13,8 +13,8 @@ import CategorySection from "@/components/global/pets/add_pet/CategorySection";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import CustomButton from "@/components/global/CustomButton";
 import MultipleGroupPicker from "@/components/global/pets/add_pet/MultipleGroupPicker";
-import { addPet } from "@/redux/actions/petActions";
-import { addPetToGroupAction, fetchGroups } from "@/redux/actions/groupActions";
+import { addPet } from "@/redux/actions";
+import { addPetToGroupAction, fetchGroups } from "@/redux/actions";
 import { addPetToDb } from "@/database/pets";
 
 export default function AddPetScreen({ navigation, route }) {

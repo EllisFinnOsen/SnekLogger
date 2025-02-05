@@ -1,11 +1,11 @@
 // GroupPetList.js
 import React, { useMemo, useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { makeSelectGroupPets } from "@/redux/selectors/selectors";
+import { makeSelectGroupPets } from "@/redux/selectors";
 import { ActivityIndicator, StyleSheet } from "react-native";
 import { ThemedView } from "@/components/global/ThemedView";
 import PetList from "@/components/global/pets/PetList";
-import { fetchPetsByGroupId } from "@/redux/actions/groupActions";
+import { fetchPetsByGroupId } from "@/redux/actions";
 
 export default function GroupPetList({ group }) {
   const dispatch = useDispatch();

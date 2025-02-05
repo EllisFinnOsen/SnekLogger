@@ -11,7 +11,7 @@ import { checkImageURL } from "@/utils/checkImage";
 import { Ionicons } from "@expo/vector-icons";
 import HeaderSection from "@/components/global/pets/add_pet/HeaderSection";
 import { fetchUserProfileFromDb } from "@/database/users";
-import { updateUserProfile } from "@/redux/actions/userActions";
+import { updateUserProfile } from "@/redux/actions";
 
 export default function UserProfileScreen() {
   const navigation = useNavigation();

@@ -3,7 +3,7 @@ import React from "react";
 import { View } from "react-native";
 import { useSelector } from "react-redux";
 import FeedingsList from "@/components/global/feedings/FeedingsList";
-import { selectFeedingsByPet } from "@/redux/selectors/selectors";
+import { selectFeedingsByPet } from "@/redux/selectors";
 
 export default function ViewPetProfileFeedings({ petId }) {
   // Filter feedings using the selector

@@ -15,7 +15,7 @@ import {
   fetchUserProfileFromDb,
   updateUserProfileInDb,
 } from "@/database/users";
-import { updateUserProfile } from "@/redux/actions/userActions";
+import { updateUserProfile } from "@/redux/actions";
 
 export default function EditUserProfileScreen() {
   const navigation = useNavigation();

@@ -15,11 +15,8 @@ import MultipleGroupPicker from "@/components/global/pets/add_pet/MultipleGroupP
 import DeleteButton from "@/components/global/DeleteButton";
 import { deletePetFromDb, fetchPetById, updatePetToDb } from "@/database/pets";
 import { fetchGroupsForPetFromDb } from "@/database/groups";
-import { deletePet, updatePet } from "@/redux/actions/petActions";
-import {
-  addPetToGroupAction,
-  removePetFromGroupAction,
-} from "@/redux/actions/groupActions";
+import { deletePet, updatePet } from "@/redux/actions";
+import { addPetToGroupAction, removePetFromGroupAction } from "@/redux/actions";
 
 export default function EditPetScreen({ route, navigation }) {
   const { petId } = route.params;

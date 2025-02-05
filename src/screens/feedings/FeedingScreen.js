@@ -19,7 +19,7 @@ import NotesField from "@/components/global/pets/add_pet/NotesField";
 import WeightField from "@/components/global/pets/add_pet/WeightField";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { checkImageURL } from "@/utils/checkImage";
-import { updateFeeding } from "@/redux/actions/feedingActions";
+import { updateFeeding } from "@/redux/actions";
 import { fetchFeedingByIdFromDb, updateFeedingInDb } from "@/database/feedings";
 
 export default function FeedingScreen() {

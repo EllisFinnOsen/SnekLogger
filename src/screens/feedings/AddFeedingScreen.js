@@ -16,7 +16,7 @@ import WeightField from "@/components/global/pets/add_pet/WeightField";
 import NotesField from "@/components/global/pets/add_pet/NotesField";
 import { checkImageURL } from "@/utils/checkImage";
 import { insertFeedingInDb } from "@/database/feedings";
-import { addFeeding } from "@/redux/actions/feedingActions";
+import { addFeeding } from "@/redux/actions";
 
 export default function AddFeedingScreen() {
   const dispatch = useDispatch();

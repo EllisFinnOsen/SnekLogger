@@ -10,11 +10,7 @@ import NameField from "@/components/global/groups/NameField";
 import NotesField from "@/components/global/pets/add_pet/NotesField";
 import DeleteButton from "@/components/global/DeleteButton";
 import HeaderSection from "@/components/global/pets/add_pet/HeaderSection";
-import {
-  deleteGroup,
-  fetchGroups,
-  updateGroup,
-} from "@/redux/actions/groupActions";
+import { deleteGroup, fetchGroups, updateGroup } from "@/redux/actions";
 import { deleteGroupFromDb, updateGroupToDb } from "@/database/groups";
 
 export default function EditGroupScreen({ navigation, route }) {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { selectFreezerItems } from "@/redux/selectors/selectors";
+import { selectFreezerItems } from "@/redux/selectors";
 import FreezerCard from "@/components/global/freezer/FreezerCard";
 import ThemedScrollView from "@/components/global/ThemedScrollView";
 import { ThemedView } from "@/components/global/ThemedView";
@@ -10,10 +10,7 @@ import EditHeader from "@/components/global/EditHeader";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import CustomButton from "@/components/global/CustomButton";
 import AddFreezerModal from "@/components/freezer/AddFreezerModal";
-import {
-  addFreezerItem,
-  fetchFreezerItemsWithWarnings,
-} from "@/redux/actions/freezerActions";
+import { addFreezerItem, fetchFreezerItemsWithWarnings } from "@/redux/actions";
 
 const FreezerScreen = () => {
   const dispatch = useDispatch();

@@ -8,14 +8,11 @@ import PrimaryPetCard from "@/components/global/pets/PrimaryPetCard";
 import AddPetCard from "@/components/global/pets/AddPetCard";
 import AddPetPickerModal from "@/components/global/pets/add_pet/AddPetPickerModal";
 // Import your memoized selectors
-import {
-  makeSelectGroupPets,
-  selectGroupById,
-} from "@/redux/selectors/selectors";
+import { makeSelectGroupPets, selectGroupById } from "@/redux/selectors";
 import ThemedScrollView from "@/components/global/ThemedScrollView";
 import EditHeader from "@/components/global/EditHeader";
 import HeaderSection from "@/components/global/pets/add_pet/HeaderSection";
-import { fetchPetsByGroupId } from "@/redux/actions/groupActions";
+import { fetchPetsByGroupId } from "@/redux/actions";
 
 export default function GroupScreen({ route, navigation }) {
   const { groupId } = route.params;

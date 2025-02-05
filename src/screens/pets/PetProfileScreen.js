@@ -14,7 +14,7 @@ import PetParallaxScrollView from "@/components/global/pets/pet_profile/PetParal
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { ThemedText } from "@/components/global/ThemedText";
 import { fetchPetsFromDb } from "@/database/feedings";
-import { fetchFeedingsByPet } from "@/redux/actions/feedingActions";
+import { fetchFeedingsByPet } from "@/redux/actions";
 
 export default function PetProfileScreen({ route, navigation }) {
   const { petId } = route.params;

@@ -10,9 +10,9 @@ import HomePetList from "@/components/global/pets/HomePetList";
 import FeedingsByDaySections from "@/components/global/feedings/FeedingsByDaySections.js";
 import { HelloWave } from "@/components/global/HelloWave";
 import { SIZES } from "@/constants/Theme";
-import { fetchPets } from "@/redux/actions/petActions";
-import { fetchFeedingsByPet } from "@/redux/actions/feedingActions";
-import { fetchUserProfile } from "@/redux/actions/userActions";
+import { fetchPets } from "@/redux/actions";
+import { fetchFeedingsByPet } from "@/redux/actions";
+import { fetchUserProfile } from "@/redux/actions";
 import { resetDatabase } from "@/database/reset";
 
 export default function HomeScreen({ navigation }) {

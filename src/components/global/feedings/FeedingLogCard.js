@@ -21,7 +21,7 @@ import { useThemeColor } from "@/hooks/useThemeColor";
 import { Ionicons } from "@expo/vector-icons";
 import { startOfToday } from "date-fns";
 import { checkImageURL } from "@/utils/checkImage"; // Ensure this path is correct
-import { updateFeeding } from "@/redux/actions/feedingActions";
+import { updateFeeding } from "@/redux/actions";
 import { updateFeedingInDb } from "@/database/feedings";
 
 export default function FeedingLogCard({

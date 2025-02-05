@@ -7,10 +7,7 @@ import WeightField from "@/components/global/pets/add_pet/WeightField";
 import QuantityField from "@/components/QuantityField";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useDispatch } from "react-redux";
-import {
-  deleteFreezerItem,
-  updateFreezerItem,
-} from "@/redux/actions/freezerActions";
+import { deleteFreezerItem, updateFreezerItem } from "@/redux/actions";
 
 export default function EditFreezerModal({ visible, prey, onClose }) {
   const dispatch = useDispatch();

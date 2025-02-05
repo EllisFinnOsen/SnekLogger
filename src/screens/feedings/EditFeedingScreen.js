@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { View, StyleSheet } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useRoute, useNavigation } from "@react-navigation/native";
-import { selectFeedingById } from "@/redux/selectors/selectors";
+import { selectFeedingById } from "@/redux/selectors";
 import ThemedScrollView from "@/components/global/ThemedScrollView";
 import EditHeader from "@/components/global/EditHeader";
 import CustomButton from "@/components/global/CustomButton";
@@ -19,7 +19,7 @@ import { Image } from "react-native";
 import { checkImageURL } from "@/utils/checkImage";
 import ExistingPetPicker from "@/components/global/pets/add_pet/ExistingPetPicker";
 import { fetchFeedingByIdFromDb, updateFeedingInDb } from "@/database/feedings";
-import { updateFeeding } from "@/redux/actions/feedingActions";
+import { updateFeeding } from "@/redux/actions";
 
 export default function EditFeedingScreen() {
   const route = useRoute();
