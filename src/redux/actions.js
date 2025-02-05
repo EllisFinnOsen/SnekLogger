@@ -49,6 +49,7 @@ import {
   deletePreyFromFreezer,
   linkFeedingToFreezer,
   fetchFeedingFreezerUsage,
+  updateFreezerItemInDB,
 } from "@/database";
 
 const LOW_STOCK_THRESHOLD = 5;
@@ -316,11 +317,21 @@ export const fetchFreezerItemsWithWarnings = () => async (dispatch) => {
   }
 };
 
-export const updateFreezerItem = (id, quantity) => async (dispatch) => {
-  try {
-    await updateFreezerItem(id, quantity);
-    dispatch({ type: UPDATE_FREEZER_ITEM, payload: { id, quantity } });
-  } catch (error) {
-    console.error("Error updating freezer item:", error);
-  }
-};
+export const updateFreezerItem =
+  (id, preyType, quantity, preyWeight, preyWeightType) => async (dispatch) => {
+    try {
+      const updatedItem = await updateFreezerItemInDB(id, {
+        preyType,
+        quantity,
+        preyWeight,
+        preyWeightType,
+      });
+
+      dispatch({
+        type: UPDATE_FREEZER_ITEM,
+        payload: updatedItem, // Dispatch full updated object
+      });
+    } catch (error) {
+      console.error("Error updating freezer item:", error);
+    }
+  };

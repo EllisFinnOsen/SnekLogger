@@ -1,39 +1,28 @@
-// File: FreezerCard.js
 import React, { useState } from "react";
-import { View, Text, Button, TouchableOpacity, Modal } from "react-native";
+import { View, TouchableOpacity } from "react-native";
 import { useDispatch } from "react-redux";
-import { deleteFreezerItem, updateFreezerItem } from "@/redux/actions";
-import NumberPicker from "../NumberPIcker";
+import { updateFreezerItem, deleteFreezerItem } from "@/redux/actions";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { ThemedText } from "../ThemedText";
+import { ThemedText } from "@/components/global/ThemedText";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { Ionicons } from "@expo/vector-icons";
-import { LuWorm } from "react-icons/lu";
-import { GiCricket } from "react-icons/gi";
+import EditFreezerModal from "@/components/freezer/EditFreezerModal";
 
 const FreezerCard = ({ prey }) => {
   const dispatch = useDispatch();
   const [modalVisible, setModalVisible] = useState(false);
-  const [pickerVisible, setPickerVisible] = useState(false);
-  const [selectedQuantity, setSelectedQuantity] = useState(prey.quantity);
 
   const textColor = useThemeColor({}, "text");
   const fieldColor = useThemeColor({}, "field");
   const fieldAccent = useThemeColor({}, "fieldAccent");
-  const activeColor = useThemeColor({}, "active");
   const iconColor = useThemeColor({}, "icon");
-  const errorColor = useThemeColor({}, "error"); // For border if feeding is late
-  const errorSubtle = useThemeColor({}, "errorSubtle"); // For background if feeding is late
 
-  const handleDelete = () => {
-    dispatch(deleteFreezerItem(prey.id));
-    setModalVisible(false);
-  };
-
-  const handleUpdateQuantity = () => {
-    dispatch(updateFreezerItem(prey.id, selectedQuantity));
-    setPickerVisible(false);
-  };
+  // ✅ Ensure correct data types for rendering
+  const preyTypeText = String(prey?.preyType ?? "Unknown");
+  const quantityText = Number(prey?.quantity ?? 0);
+  const weightText =
+    prey?.weight !== undefined && prey?.weight !== null
+      ? `${prey.weight} ${prey.weightType ?? ""}`
+      : "N/A";
 
   return (
     <View
@@ -50,12 +39,9 @@ const FreezerCard = ({ prey }) => {
         <MaterialCommunityIcons name="rodent" size={36} color={iconColor} />
         <View style={{ flexDirection: "column", paddingLeft: 15 }}>
           <ThemedText style={{ fontSize: 18, fontWeight: "bold" }}>
-            {prey.preyType}: {prey.quantity}
+            {`${preyTypeText}: ${quantityText}`}
           </ThemedText>
-
-          <ThemedText>
-            Weight: ~{prey.weight} {prey.weightType}
-          </ThemedText>
+          <ThemedText>Weight: ~{weightText}</ThemedText>
         </View>
       </View>
 
@@ -71,83 +57,17 @@ const FreezerCard = ({ prey }) => {
           marginTop: 5,
         }}
       >
-        <ThemedText style={{ color: "white", textAlign: "center" }}>
+        <ThemedText style={{ color: textColor, textAlign: "center" }}>
           Manage
         </ThemedText>
       </TouchableOpacity>
 
-      {/* Manage Options Modal */}
-      <Modal visible={modalVisible} transparent={true} animationType="slide">
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "rgba(0,0,0,0.5)",
-          }}
-        >
-          <View
-            style={{
-              backgroundColor: "white",
-              padding: 20,
-              borderRadius: 10,
-              width: 300,
-            }}
-          >
-            <ThemedText style={{ fontSize: 18, marginBottom: 10 }}>
-              Manage {prey.preyType}
-            </ThemedText>
-
-            <Button
-              title="Change Quantity"
-              onPress={() => {
-                setPickerVisible(true);
-                setModalVisible(false);
-              }}
-            />
-            <Button
-              title="Remove From Freezer"
-              color="red"
-              onPress={handleDelete}
-            />
-            <Button title="Cancel" onPress={() => setModalVisible(false)} />
-          </View>
-        </View>
-      </Modal>
-
-      {/* Number Picker Modal */}
-      <Modal visible={pickerVisible} transparent={true} animationType="slide">
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "rgba(0,0,0,0.5)",
-          }}
-        >
-          <View
-            style={{
-              backgroundColor: fieldColor,
-              padding: 20,
-              borderRadius: 10,
-              width: 300,
-            }}
-          >
-            <ThemedText style={{ fontSize: 18, marginBottom: 10 }}>
-              Change Quantity
-            </ThemedText>
-
-            {/* Number Picker */}
-            <NumberPicker
-              value={selectedQuantity}
-              onValueChange={setSelectedQuantity}
-            />
-
-            <Button title="Update" onPress={handleUpdateQuantity} />
-            <Button title="Cancel" onPress={() => setPickerVisible(false)} />
-          </View>
-        </View>
-      </Modal>
+      {/* Edit Modal */}
+      <EditFreezerModal
+        visible={modalVisible}
+        prey={prey}
+        onClose={() => setModalVisible(false)}
+      />
     </View>
   );
 };

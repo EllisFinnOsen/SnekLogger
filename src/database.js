@@ -608,13 +608,27 @@ export const fetchFreezerItems = async () => {
   }
 };
 
-export const updateFreezerItem = async (id, quantity) => {
+export const updateFreezerItemInDB = async (id, updatedData) => {
   try {
     const db = await openDatabase();
-    await db.runAsync(`UPDATE freezer SET quantity = ? WHERE id = ?`, [
-      quantity,
-      id,
-    ]);
+    await db.runAsync(
+      `UPDATE freezer SET preyType = ?, quantity = ?, weight = ?, weightType = ? WHERE id = ?`,
+      [
+        updatedData.preyType,
+        updatedData.quantity,
+        updatedData.weight,
+        updatedData.weightType,
+        id,
+      ]
+    );
+
+    // Fetch and return the updated item
+    const result = await db.getFirstAsync(
+      `SELECT * FROM freezer WHERE id = ?`,
+      [id]
+    );
+
+    return result; // Return updated object
   } catch (error) {
     console.error("Error updating freezer item:", error);
     throw error;

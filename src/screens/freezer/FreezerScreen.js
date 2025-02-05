@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Modal, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchFreezerItemsWithWarnings, addFreezerItem } from "@/redux/actions";
 import { selectFreezerItems } from "@/redux/selectors";
@@ -7,56 +7,31 @@ import FreezerCard from "@/components/global/freezer/FreezerCard";
 import ThemedScrollView from "@/components/global/ThemedScrollView";
 import { ThemedView } from "@/components/global/ThemedView";
 import { ThemedText } from "@/components/global/ThemedText";
-import { SIZES } from "@/constants/Theme";
 import EditHeader from "@/components/global/EditHeader";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import CustomButton from "@/components/global/CustomButton";
-import PreyTypeField from "@/components/global/feedings/PreyTypeField";
-import NumberPicker from "@/components/global/NumberPIcker";
-import { Ionicons } from "@expo/vector-icons";
-import WeightField from "@/components/global/pets/add_pet/WeightField";
-import NumericPickerModal from "@/components/global/NumericPickerModal";
+import AddFreezerModal from "@/components/freezer/AddFreezerModal";
 
 const FreezerScreen = () => {
   const dispatch = useDispatch();
   const freezerItems = useSelector(selectFreezerItems);
-
   const [modalVisible, setModalVisible] = useState(false);
-  const [preyType, setPreyType] = useState("");
-  const [quantity, setQuantity] = useState("");
-  const [preyWeight, setPreyWeight] = useState("");
-  const [preyWeightType, setPreyWeightType] = useState("g");
-  const [pickerVisible, setPickerVisible] = useState(false);
 
-  const iconColor = useThemeColor({}, "icon");
-  const fieldColor = useThemeColor({}, "field");
   const activeColor = useThemeColor({}, "active");
-  const errorColor = useThemeColor({}, "error");
-  const backgroundColor = useThemeColor({}, "background");
 
   useEffect(() => {
     dispatch(fetchFreezerItemsWithWarnings());
   }, [dispatch]);
 
-  const handleAddPrey = () => {
-    if (!preyType || !quantity || !preyWeight) {
-      Alert.alert("Missing Fields", "Please fill all fields.");
-      return;
-    }
-
+  const handleAddPrey = (newPrey) => {
     dispatch(
       addFreezerItem(
-        preyType,
-        parseInt(quantity),
-        parseFloat(preyWeight),
-        preyWeightType
+        newPrey.preyType,
+        newPrey.quantity,
+        newPrey.preyWeight,
+        newPrey.preyWeightType
       )
     );
-    setModalVisible(false);
-    setPreyType("");
-    setQuantity("");
-    setPreyWeight("");
-    setPreyWeightType("g");
   };
 
   return (
@@ -76,9 +51,10 @@ const FreezerScreen = () => {
             onPress={() => setModalVisible(true)}
             style={[styles.saveButton, { backgroundColor: activeColor }]}
           />
+
           <View style={{ paddingBottom: 32 }} />
 
-          {freezerItems && freezerItems.length > 0 ? (
+          {freezerItems.length > 0 ? (
             freezerItems.map((item) => (
               <FreezerCard
                 key={item?.id?.toString() || Math.random().toString()}
@@ -92,105 +68,11 @@ const FreezerScreen = () => {
           )}
 
           {/* Add Prey Modal */}
-          <Modal
+          <AddFreezerModal
             visible={modalVisible}
-            animationType="slide"
-            transparent={true}
-          >
-            <View style={styles.modalOverlay}>
-              <View
-                style={[
-                  styles.modalContainer,
-                  { backgroundColor: backgroundColor },
-                ]}
-              >
-                <ThemedText type="subtitle">Add Prey to Freezer</ThemedText>
-
-                {/* Prey Type & Weight Field */}
-                <View style={styles.preyRow}>
-                  <View style={styles.preyWrap}>
-                    <PreyTypeField
-                      value={preyType}
-                      preyType={preyType}
-                      setPreyType={setPreyType}
-                      isEditing={true}
-                    />
-                  </View>
-                  <View style={styles.weightWrap}>
-                    <WeightField
-                      weight={preyWeight}
-                      setWeight={setPreyWeight}
-                      weightType={preyWeightType}
-                      setWeightType={setPreyWeightType}
-                      isEditing={true}
-                    />
-                  </View>
-                </View>
-
-                {/* Quantity Field (Opens Number Picker) */}
-                <View style={styles.fieldContainer}>
-                  <TouchableOpacity
-                    onPress={() => setPickerVisible(true)}
-                    style={styles.inputWrapper}
-                  >
-                    <View style={styles.titleContainer}>
-                      <Ionicons
-                        name="chevron-expand-outline"
-                        size={18}
-                        color={iconColor}
-                        style={styles.icon}
-                      />
-                      <ThemedText
-                        type="default"
-                        style={[styles.label, { color: iconColor }]}
-                      >
-                        Quantity
-                      </ThemedText>
-                    </View>
-                    <View
-                      style={[
-                        styles.answer,
-                        { backgroundColor, borderColor: iconColor },
-                      ]}
-                    >
-                      <ThemedText type="default">
-                        {quantity || "Select quantity"}
-                      </ThemedText>
-                    </View>
-                  </TouchableOpacity>
-                </View>
-
-                {/* Buttons */}
-                <View style={styles.buttonWrap}>
-                  <CustomButton
-                    title="Cancel"
-                    onPress={() => setModalVisible(false)}
-                    style={[
-                      styles.cancelButton,
-                      { backgroundColor: fieldColor },
-                    ]}
-                  />
-                  <CustomButton
-                    title="Add"
-                    onPress={handleAddPrey}
-                    style={[styles.addButton, { backgroundColor: activeColor }]}
-                  />
-                </View>
-              </View>
-            </View>
-
-            {/* Number Picker Modal */}
-            <NumericPickerModal
-              visible={pickerVisible}
-              title="Select Quantity"
-              value={quantity}
-              onValueChange={setQuantity}
-              onClose={() => setPickerVisible(false)}
-              min={1}
-              max={100}
-              step={1}
-            />
-          </Modal>
+            onClose={() => setModalVisible(false)}
+            onAddPrey={handleAddPrey}
+          />
         </View>
       </ThemedView>
     </ThemedScrollView>
@@ -211,51 +93,18 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     width: 320,
   },
-  fieldContainer: {},
   preyRow: {
-    flexDirection: "row",
+    flexDirection: "column",
     alignItems: "flex-start",
     justifyContent: "space-between",
-    gap: 12, // Ensures spacing between elements is uniform
+    gap: 12,
     borderRadius: 5,
-    padding: 8,
+    paddingVertical: 4,
   },
-
-  preyWrap: {
-    flex: 1,
-    justifyContent: "center", // Ensures alignment consistency
-  },
-
-  weightWrap: {
-    flex: 1,
-    justifyContent: "center", // Ensures alignment consistency
-    flexDirection: "row", // Aligns weight input and unit picker horizontally
-    alignItems: "center",
-  },
-  titleContainer: {
+  buttonWrap: {
+    paddingTop: 32,
     flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 6,
-  },
-  label: {
-    marginLeft: 8,
-  },
-  icon: {
-    marginRight: 4,
-  },
-  inputWrapper: {
-    borderRadius: 5,
-    paddingHorizontal: 12,
-
-    alignItems: "flex-start",
-  },
-  answer: {
-    paddingVertical: 12,
-    paddingHorizontal: 12,
-    borderRadius: 5,
-    borderWidth: 1,
-    width: "100%",
-    textAlign: "center",
+    justifyContent: "space-between",
   },
   cancelButton: {
     width: "46%",
@@ -263,17 +112,5 @@ const styles = StyleSheet.create({
   addButton: {
     width: "46%",
     marginLeft: 8,
-  },
-  numberPickerContainer: {
-    backgroundColor: "white",
-    padding: 20,
-    borderRadius: 10,
-    width: 300,
-    alignItems: "center",
-  },
-  buttonWrap: {
-    paddingTop: 32,
-    flexDirection: "row",
-    justifyContent: "space-between",
   },
 });

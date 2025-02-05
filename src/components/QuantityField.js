@@ -2,61 +2,43 @@ import React, { useState } from "react";
 import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { ThemedText } from "@/components/global/ThemedText";
-import CategoryPicker from "@/components/global/CategoryPicker";
-import { WEIGHT_TYPES } from "@/constants/WeightTypes";
-import { useThemeColor } from "@/hooks/useThemeColor";
 import NumericPickerModal from "@/components/global/NumericPickerModal";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
-export default function WeightField({
-  weight,
-  setWeight,
-  weightType,
-  setWeightType,
-  label = "Prey Weight",
+export default function QuantityField({
+  quantity,
+  setQuantity,
   isEditing,
   errorMessage,
 }) {
+  const [pickerVisible, setPickerVisible] = useState(false);
   const iconColor = useThemeColor({}, "icon");
   const textColor = useThemeColor({}, "text");
   const errorColor = useThemeColor({}, "error");
-  const [pickerVisible, setPickerVisible] = useState(false);
 
   return (
     <View style={styles.fieldContainer}>
-      {/* Label Row */}
       <View style={styles.titleContainer}>
         <Ionicons
           style={styles.icon}
-          name="scale"
+          name="calculator"
           size={18}
           color={iconColor}
         />
         <ThemedText type="default" style={[styles.label, { color: iconColor }]}>
-          {label}
+          Quantity
         </ThemedText>
       </View>
 
-      {/* Editable Mode */}
-      <View style={styles.weightRow}>
-        <TouchableOpacity
-          onPress={() => setPickerVisible(true)}
-          style={[
-            styles.weightInputWrapper,
-            { borderColor: errorMessage ? errorColor : iconColor },
-          ]}
-        >
-          <ThemedText type="default">{weight ? `${weight}` : "-"}</ThemedText>
-        </TouchableOpacity>
-
-        <View style={styles.weightTypeContainer}>
-          <CategoryPicker
-            compact={true}
-            selectedValue={weightType}
-            onValueChange={setWeightType}
-            items={WEIGHT_TYPES}
-          />
-        </View>
-      </View>
+      <TouchableOpacity
+        onPress={() => setPickerVisible(true)}
+        style={[
+          styles.inputWrapper,
+          { borderColor: errorMessage ? errorColor : iconColor },
+        ]}
+      >
+        <ThemedText type="default">{quantity || "Select"}</ThemedText>
+      </TouchableOpacity>
 
       {errorMessage ? (
         <Text style={[styles.errorText, { color: errorColor }]}>
@@ -68,12 +50,12 @@ export default function WeightField({
       {isEditing && (
         <NumericPickerModal
           visible={pickerVisible}
-          title="Select Weight"
-          value={weight}
-          onValueChange={setWeight}
+          title="Select Quantity"
+          value={quantity}
+          onValueChange={setQuantity}
           onClose={() => setPickerVisible(false)}
-          min={0}
-          max={1000}
+          min={1}
+          max={100}
           step={1}
         />
       )}
@@ -96,26 +78,11 @@ const styles = StyleSheet.create({
   icon: {
     marginRight: 6,
   },
-  weightRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    width: "100%",
-  },
-  weightInputWrapper: {
-    flexDirection: "row",
-    alignItems: "center",
-    flex: 1,
+  inputWrapper: {
     borderWidth: 1,
     borderRadius: 5,
     paddingVertical: 10,
     paddingHorizontal: 12,
-  },
-  weightTypeContainer: {
-    marginLeft: 0,
-    width: 70,
-    justifyContent: "center",
-    alignItems: "center",
   },
   errorText: {
     marginTop: 4,
