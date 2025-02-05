@@ -7,6 +7,12 @@ const EMPTY_ARRAY = [];
 
 // Input selector: gets the entire feedings array
 const feedingsSelector = (state) => state.feedings;
+const userProfileSelector = (state) => state.user.profile;
+
+export const selectUserProfile = createSelector(
+  [userProfileSelector],
+  (profile) => profile || { name: "", photo: "", birthdate: "" }
+);
 
 // Memoized selector: filters feedings for a specific pet
 export const selectFeedingsByPet = createSelector(

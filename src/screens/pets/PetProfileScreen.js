@@ -14,6 +14,8 @@ import { fetchPetsFromDb } from "@/database";
 // Import your new feeding component
 import ViewByDateForPet from "./ViewByDateForPet";
 import PetParallaxScrollView from "@/components/global/pets/pet_profile/PetParallaxScrollView";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import { ThemedText } from "@/components/global/ThemedText";
 
 export default function PetProfileScreen({ route, navigation }) {
   const { petId } = route.params;
@@ -90,14 +92,23 @@ export default function PetProfileScreen({ route, navigation }) {
 }
 
 // Reusable TabButton component
-const TabButton = ({ title, isSelected, onPress }) => (
-  <TouchableOpacity
-    style={[styles.tabButton, isSelected && styles.selectedTabButton]}
-    onPress={onPress}
-  >
-    <Text style={styles.tabButtonText}>{title}</Text>
-  </TouchableOpacity>
-);
+const TabButton = ({ title, isSelected, onPress }) => {
+  const activeColor = useThemeColor({}, "active"); // Move inside component
+  const fieldColor = useThemeColor({}, "field"); // Move inside component
+  return (
+    <TouchableOpacity
+      style={[
+        styles.tabButton,
+        { backgroundColor: isSelected ? activeColor : fieldColor }, // Apply active color dynamically
+      ]}
+      onPress={onPress}
+    >
+      <ThemedText type="default" style={styles.tabButtonText}>
+        {title}
+      </ThemedText>
+    </TouchableOpacity>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -106,18 +117,12 @@ const styles = StyleSheet.create({
   },
   tabContainer: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    marginVertical: 10,
+    justifyContent: "flext-start",
   },
   tabButton: {
     padding: 10,
     borderRadius: 5,
     backgroundColor: "#ccc",
-  },
-  selectedTabButton: {
-    backgroundColor: "#0a7ea4",
-  },
-  tabButtonText: {
-    color: "#fff",
+    marginRight: 16,
   },
 });

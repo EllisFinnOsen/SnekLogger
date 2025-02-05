@@ -18,8 +18,12 @@ export default function DatePickerField({
   const iconColor = useThemeColor({}, "icon");
   const bgColor = useThemeColor({}, "background");
 
+  // Convert stored date string to Date object
+  const parsedDate = dateValue ? new Date(dateValue) : new Date();
+
+  // Format date display
   const formattedDate = dateValue
-    ? new Date(dateValue).toLocaleDateString()
+    ? parsedDate.toLocaleDateString()
     : placeholder;
 
   return (
@@ -49,15 +53,16 @@ export default function DatePickerField({
           {formattedDate}
         </ThemedText>
       </TouchableOpacity>
+
       {showDatePicker && (
         <DateTimePicker
-          value={dateValue ? new Date(dateValue) : new Date()}
+          value={parsedDate} // ✅ Ensure it always receives a Date object
           mode="date"
           display="default"
           onChange={(event, selectedDate) => {
             setShowDatePicker(false);
             if (selectedDate) {
-              setDateValue(selectedDate.toISOString());
+              setDateValue(selectedDate.toISOString()); // ✅ Store as ISO format
             }
           }}
         />

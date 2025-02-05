@@ -1,24 +1,27 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchPets, fetchFeedingsByPet } from "@/redux/actions";
+import {
+  fetchPets,
+  fetchFeedingsByPet,
+  fetchUserProfile,
+} from "@/redux/actions"; // Ensure action exists
 import { initializeDatabase, insertMockData } from "@/database";
 import { ThemedView } from "@/components/global/ThemedView";
 import { ThemedText } from "@/components/global/ThemedText";
 import ThemedScrollView from "@/components/global/ThemedScrollView";
 import HomePetList from "@/components/global/pets/HomePetList";
-import ViewAllUpcomingList from "@/components/global/feedings/ViewAllUpcomingList";
-import ViewAllPastFeedings from "@/components/global/feedings/ViewAllPastFeedings";
-import ViewPastCompleteFeedings from "@/components/global/feedings/ViewCompleteFeedings";
+import FeedingsByDaySections from "@/components/global/feedings/FeedingsByDaySections.js";
 import { HelloWave } from "@/components/global/HelloWave";
 import { SIZES } from "@/constants/Theme";
-import LateFeedingsList from "@/components/global/feedings/LateFeedingList";
-import FeedingsByDaySections from "@/components/global/feedings/FeedingsByDaySections.js";
-import AddLogCard from "@/components/global/feedings/AddLogCard";
 
 export default function HomeScreen({ navigation }) {
   const dispatch = useDispatch();
   const pets = useSelector((state) => state.pets.pets || []);
+  const userProfileFromRedux = useSelector((state) => state.user.profile);
+
+  // Local state to update when Redux state is fetched
+  const [userProfile, setUserProfile] = useState(userProfileFromRedux);
 
   useEffect(() => {
     const setupDatabase = async () => {
@@ -26,8 +29,9 @@ export default function HomeScreen({ navigation }) {
         await initializeDatabase();
         await insertMockData();
         dispatch(fetchPets());
+        dispatch(fetchUserProfile()); // Fetch user profile on load
       } catch (error) {
-        //console.error("Error setting up database:", error);
+        console.error("Error setting up database:", error);
       }
     };
 
@@ -40,12 +44,19 @@ export default function HomeScreen({ navigation }) {
     }
   }, [dispatch, pets]);
 
+  // Update local state when Redux state updates
+  useEffect(() => {
+    if (userProfileFromRedux) {
+      setUserProfile(userProfileFromRedux);
+    }
+  }, [userProfileFromRedux]);
+
   return (
     <ThemedScrollView>
       <ThemedView>
         <ThemedView style={styles.titleContainer}>
           <ThemedText style={styles.wave} type="title">
-            Hello, Ellis
+            Hello, {userProfile?.name || "User"}
           </ThemedText>
           <HelloWave />
         </ThemedView>
@@ -61,16 +72,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: SIZES.xLarge,
-  },
-  container: {
-    paddingTop: 0,
-    flex: 1,
-    padding: 0,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 16,
   },
   wave: {
     marginRight: 16,
