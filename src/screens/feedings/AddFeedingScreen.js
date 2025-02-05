@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { View, Image, StyleSheet } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
-import { insertFeedingInDb } from "@/database/database"; // Ensure database writes correctly
 import ThemedScrollView from "@/components/global/ThemedScrollView";
 import EditHeader from "@/components/global/EditHeader";
 import CustomButton from "@/components/global/CustomButton";
@@ -16,6 +15,7 @@ import { useThemeColor } from "@/hooks/useThemeColor";
 import WeightField from "@/components/global/pets/add_pet/WeightField";
 import NotesField from "@/components/global/pets/add_pet/NotesField";
 import { checkImageURL } from "@/utils/checkImage";
+import { insertFeedingInDb } from "@/database/feedings";
 import { addFeeding } from "@/redux/actions/feedingActions";
 
 export default function AddFeedingScreen() {

@@ -28,7 +28,6 @@ export default function HomeScreen({ navigation }) {
       try {
         await resetDatabase();
         await initializeDatabase();
-
         await insertMockData();
         dispatch(fetchPets());
         dispatch(fetchUserProfile()); // Fetch user profile on load

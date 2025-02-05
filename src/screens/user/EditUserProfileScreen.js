@@ -11,11 +11,11 @@ import DatePickerField from "@/components/global/DatePickerField";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import UserImageField from "@/components/UserImageField";
 import UserNameField from "@/components/UserNameField";
-import { updateUserProfile } from "@/redux/actions/userActions";
 import {
   fetchUserProfileFromDb,
   updateUserProfileInDb,
 } from "@/database/users";
+import { updateUserProfile } from "@/redux/actions/userActions";
 
 export default function EditUserProfileScreen() {
   const navigation = useNavigation();

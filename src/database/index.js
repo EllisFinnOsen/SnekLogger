@@ -4,7 +4,7 @@ let db;
 
 export const openDatabase = async () => {
   if (!db) {
-    db = await SQLite.openDatabaseAsync("mockData_1.db");
+    db = await SQLite.openDatabaseAsync("mockData_2.db");
   }
   return db;
 };

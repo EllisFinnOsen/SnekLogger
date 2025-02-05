@@ -81,9 +81,6 @@ export const resetDatabase = async () => {
 
     console.log("Tables reset successfully. Now inserting mock data...");
 
-    // Insert mock data after resetting tables
-    await insertMockData();
-
     console.log("Database reset complete with fresh mock data.");
   } catch (error) {
     console.error("Error resetting database:", error);
