@@ -148,7 +148,7 @@ describe("FeedingLogCard", () => {
     expect(icon.props.children).toBe("checkbox");
   });
 
-  it("navigates to the EditFeeding screen on main card press", () => {
+  it("navigates to the FeedingScreen screen on main card press", () => {
     const { getByTestId } = render(
       <FeedingLogCard
         item={sampleItemIncomplete}
@@ -160,7 +160,7 @@ describe("FeedingLogCard", () => {
     act(() => {
       fireEvent.press(cardTouchable);
     });
-    expect(mockNavigate).toHaveBeenCalledWith("EditFeeding", {
+    expect(mockNavigate).toHaveBeenCalledWith("FeedingScreen", {
       feedingId: sampleItemIncomplete.id,
     });
   });
