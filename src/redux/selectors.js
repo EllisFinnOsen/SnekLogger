@@ -8,6 +8,9 @@ const EMPTY_ARRAY = [];
 // Input selector: gets the entire feedings array
 const feedingsSelector = (state) => state.feedings;
 const userProfileSelector = (state) => state.user.profile;
+// Freezer inventory selector
+const freezerSelector = (state) =>
+  state.freezer || { items: [], lowStockWarnings: [] };
 
 export const selectUserProfile = createSelector(
   [userProfileSelector],
@@ -97,4 +100,28 @@ export const selectGroupById = createSelector(
     console.log("selectGroupById:", { groupId, result });
     return result;
   }
+);
+
+// Selector to find a freezer item by ID
+export const selectFreezerItemById = createSelector(
+  [freezerSelector, (_, freezerId) => freezerId],
+  (freezer, freezerId) => freezer.find((item) => item.id === freezerId) || null
+);
+
+// Selector to get all feeding-freezer links
+const feedingFreezerSelector = (state) => state.feedingFreezer || {};
+
+// Selector to get linked freezer items for a feeding
+export const selectFeedingFreezerLinks = createSelector(
+  [feedingFreezerSelector, (_, feedingId) => feedingId],
+  (feedingFreezer, feedingId) => feedingFreezer[feedingId] || []
+);
+
+// Selector to get all freezer items
+export const selectFreezerItems = (state) => state.freezer.items || []; // ✅ Ensure array
+
+// Selector to get low stock warnings
+export const selectLowStockWarnings = createSelector(
+  [freezerSelector],
+  (freezer) => freezer.lowStockWarnings
 );

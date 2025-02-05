@@ -72,6 +72,24 @@ export const initializeDatabase = async () => {
         birthdate TEXT
       );
 
+      CREATE TABLE IF NOT EXISTS freezer (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        preyType TEXT NOT NULL,
+        quantity INTEGER NOT NULL DEFAULT 0,
+        weight REAL,
+        weightType TEXT
+      );
+
+      CREATE TABLE IF NOT EXISTS feeding_freezer (
+        feedingId INTEGER NOT NULL,
+        freezerId INTEGER NOT NULL,
+        quantityUsed INTEGER NOT NULL DEFAULT 1,
+        FOREIGN KEY (feedingId) REFERENCES feedings (id) ON DELETE CASCADE,
+        FOREIGN KEY (freezerId) REFERENCES freezer (id) ON DELETE CASCADE
+      );
+
+
+
     `);
 
     console.log("Database initialized");
@@ -129,6 +147,33 @@ export const insertMockData = async () => {
          photo = excluded.photo,
          birthdate = excluded.birthdate
       `
+    );
+
+    // --- Insert sample freezer items ---
+    await db.runAsync(
+      `INSERT INTO freezer (preyType, quantity, weight, weightType)
+       VALUES
+        ('Rat', 10, 2.0, 'g'),
+        ('Mouse', 15, 1.5, 'g'),
+        ('Chick', 8, 3.0, 'g')
+      `
+    );
+
+    // --- Link feedings to freezer items and reduce stock ---
+    await db.runAsync(
+      `INSERT INTO feeding_freezer (feedingId, freezerId, quantityUsed)
+       VALUES
+        (1, 1, 1),  -- Alby ate 1 Rat
+        (2, 2, 2)   -- Max ate 2 Mice
+      `
+    );
+
+    // --- Reduce stock in freezer ---
+    await db.runAsync(
+      `UPDATE freezer SET quantity = quantity - 1 WHERE id = 1`
+    );
+    await db.runAsync(
+      `UPDATE freezer SET quantity = quantity - 2 WHERE id = 2`
     );
 
     console.log("Mock data inserted successfully.");
@@ -521,6 +566,121 @@ export const deleteGroupFromDb = async (groupId) => {
     return result;
   } catch (error) {
     console.error("Error deleting group from DB:", error);
+    throw error;
+  }
+};
+
+export const addPreyToFreezer = async (
+  preyType,
+  quantity,
+  weight,
+  weightType
+) => {
+  try {
+    if (!preyType || quantity == null || weight == null || !weightType) {
+      throw new Error("Missing required fields in addPreyToFreezer");
+    }
+
+    console.log("Adding prey to DB:", {
+      preyType,
+      quantity,
+      weight,
+      weightType,
+    }); // 🛠 Log before DB call
+
+    const db = await openDatabase();
+    const result = await db.runAsync(
+      `INSERT INTO freezer (preyType, quantity, weight, weightType)
+       VALUES (?, ?, ?, ?)`,
+      [preyType, quantity, weight, weightType]
+    );
+
+    console.log("Inserted prey, result:", result); // 🛠 Log DB result
+
+    return result.lastInsertRowId;
+  } catch (error) {
+    console.error("Error adding prey to freezer:", error);
+    throw error;
+  }
+};
+
+export const fetchFreezerItems = async () => {
+  try {
+    const db = await openDatabase();
+    return await db.getAllAsync("SELECT * FROM freezer WHERE quantity > 0");
+  } catch (error) {
+    console.error("Error fetching freezer items:", error);
+    throw error;
+  }
+};
+
+export const updateFreezerItem = async (id, quantity) => {
+  try {
+    const db = await openDatabase();
+    await db.runAsync(`UPDATE freezer SET quantity = ? WHERE id = ?`, [
+      quantity,
+      id,
+    ]);
+  } catch (error) {
+    console.error("Error updating freezer item:", error);
+    throw error;
+  }
+};
+
+export const linkFeedingToFreezer = async (
+  feedingId,
+  freezerId,
+  quantityUsed
+) => {
+  try {
+    const db = await openDatabase();
+    await db.runAsync(
+      `INSERT INTO feeding_freezer (feedingId, freezerId, quantityUsed)
+       VALUES (?, ?, ?)`,
+      [feedingId, freezerId, quantityUsed]
+    );
+
+    // Reduce the quantity in the freezer
+    const freezerItem = await db.getFirstAsync(
+      "SELECT quantity FROM freezer WHERE id = ?",
+      [freezerId]
+    );
+    if (freezerItem && freezerItem.quantity >= quantityUsed) {
+      const newQuantity = freezerItem.quantity - quantityUsed;
+      await updateFreezerItem(freezerId, newQuantity);
+    } else {
+      console.warn("Not enough prey in freezer!");
+    }
+  } catch (error) {
+    console.error("Error linking feeding to freezer:", error);
+    throw error;
+  }
+};
+
+export const fetchFeedingFreezerUsage = async (feedingId) => {
+  try {
+    const db = await openDatabase();
+    const result = await db.getAllAsync(
+      `SELECT ffl.*, fr.preyType, fr.preyWeight, fr.preyWeightType 
+       FROM feeding_freezer_link ffl
+       INNER JOIN freezer fr ON ffl.freezerId = fr.id
+       WHERE ffl.feedingId = ?`,
+      [feedingId]
+    );
+    return result;
+  } catch (error) {
+    console.error("Error fetching feeding freezer usage:", error);
+    throw error;
+  }
+};
+
+export const deletePreyFromFreezer = async (freezerId) => {
+  try {
+    const db = await openDatabase();
+    await db.runAsync("DELETE FROM freezer WHERE id = ?", [freezerId]);
+    console.log("Prey item deleted from freezer");
+  } catch (error) {
+    console.error("Error deleting prey from freezer:", error);
     throw error;
   }
 };

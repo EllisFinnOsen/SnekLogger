@@ -14,6 +14,7 @@ import GroupScreen from "@/screens/groups/GroupScreen";
 import EditGroupScreen from "@/screens/groups/EditGroupScreen";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import EditUserProfileScreen from "@/screens/user/EditUserProfileScreen";
+import FreezerScreen from "@/screens/freezer/FreezerScreen";
 
 const Stack = createStackNavigator();
 
@@ -78,6 +79,12 @@ export default function StackNavigator() {
           component={EditFeedingScreen}
           options={{ headerShown: false }}
         />
+        <Stack.Screen
+          name="Freezer"
+          component={FreezerScreen}
+          options={{ headerShown: false }}
+        />
+
         <Stack.Screen
           name="EditUserProfileScreen"
           component={EditUserProfileScreen}
