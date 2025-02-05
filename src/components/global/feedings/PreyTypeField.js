@@ -46,16 +46,19 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 6,
+    alignSelf: "flex-start", // Ensures alignment consistency
   },
   label: {
-    marginLeft: 8,
+    marginLeft: 6, // Standardized spacing
   },
   icon: {
-    marginRight: 4,
+    marginRight: 6, // Standardized spacing
   },
   inputWrapper: {
     borderWidth: 1,
     borderRadius: 5,
+    paddingRight: 10,
+    paddingVertical: 10, // Standardized padding
   },
   answer: {
     paddingVertical: 16,

@@ -1,15 +1,5 @@
-// File: FreezerScreen.js
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  FlatList,
-  Button,
-  TextInput,
-  Alert,
-  Modal,
-  StyleSheet,
-} from "react-native";
+import { View, Text, Modal, StyleSheet, TouchableOpacity } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchFreezerItemsWithWarnings, addFreezerItem } from "@/redux/actions";
 import { selectFreezerItems } from "@/redux/selectors";
@@ -21,6 +11,11 @@ import { SIZES } from "@/constants/Theme";
 import EditHeader from "@/components/global/EditHeader";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import CustomButton from "@/components/global/CustomButton";
+import PreyTypeField from "@/components/global/feedings/PreyTypeField";
+import NumberPicker from "@/components/global/NumberPIcker";
+import { Ionicons } from "@expo/vector-icons";
+import WeightField from "@/components/global/pets/add_pet/WeightField";
+import NumericPickerModal from "@/components/global/NumericPickerModal";
 
 const FreezerScreen = () => {
   const dispatch = useDispatch();
@@ -31,15 +26,16 @@ const FreezerScreen = () => {
   const [quantity, setQuantity] = useState("");
   const [preyWeight, setPreyWeight] = useState("");
   const [preyWeightType, setPreyWeightType] = useState("g");
+  const [pickerVisible, setPickerVisible] = useState(false);
 
   const iconColor = useThemeColor({}, "icon");
   const fieldColor = useThemeColor({}, "field");
-  const errorColor = useThemeColor({}, "error");
   const activeColor = useThemeColor({}, "active");
-  const textColor = useThemeColor({}, "text");
+  const errorColor = useThemeColor({}, "error");
+  const backgroundColor = useThemeColor({}, "background");
 
   useEffect(() => {
-    dispatch(fetchFreezerItemsWithWarnings()); // ✅ Corrected function call
+    dispatch(fetchFreezerItemsWithWarnings());
   }, [dispatch]);
 
   const handleAddPrey = () => {
@@ -71,15 +67,16 @@ const FreezerScreen = () => {
         </ThemedText>
         <EditHeader
           label="Track your stock"
-          description="Add prey and quantites below and then track your stock by attaching them to feeding logs."
+          description="Add prey and quantities below and then track your stock by attaching them to feeding logs."
         />
 
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, paddingTop: 32 }}>
           <CustomButton
             title="+ Add to Freezer"
             onPress={() => setModalVisible(true)}
             style={[styles.saveButton, { backgroundColor: activeColor }]}
           />
+          <View style={{ paddingBottom: 32 }} />
 
           {freezerItems && freezerItems.length > 0 ? (
             freezerItems.map((item) => (
@@ -100,58 +97,99 @@ const FreezerScreen = () => {
             animationType="slide"
             transparent={true}
           >
-            <View
-              style={{
-                flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
-                backgroundColor: "rgba(0,0,0,0.5)",
-              }}
-            >
+            <View style={styles.modalOverlay}>
               <View
-                style={{
-                  backgroundColor: "white",
-                  padding: 20,
-                  borderRadius: 10,
-                  width: 300,
-                }}
+                style={[
+                  styles.modalContainer,
+                  { backgroundColor: backgroundColor },
+                ]}
               >
-                <Text>Add Prey to Freezer</Text>
-                <TextInput
-                  placeholder="Prey Type"
-                  value={preyType}
-                  onChangeText={setPreyType}
-                  style={{ borderBottomWidth: 1 }}
-                />
-                <TextInput
-                  placeholder="Quantity"
-                  keyboardType="numeric"
-                  value={quantity}
-                  onChangeText={setQuantity}
-                  style={{ borderBottomWidth: 1 }}
-                />
-                <TextInput
-                  placeholder="Prey Weight"
-                  keyboardType="numeric"
-                  value={preyWeight}
-                  onChangeText={setPreyWeight}
-                  style={{ borderBottomWidth: 1 }}
-                />
-                <TextInput
-                  placeholder="Weight Type (g/kg)"
-                  value={preyWeightType}
-                  onChangeText={setPreyWeightType}
-                  style={{ borderBottomWidth: 1 }}
-                />
+                <ThemedText type="subtitle">Add Prey to Freezer</ThemedText>
 
-                <Button title="Add" onPress={handleAddPrey} />
-                <Button
-                  title="Cancel"
-                  color="red"
-                  onPress={() => setModalVisible(false)}
-                />
+                {/* Prey Type & Weight Field */}
+                <View style={styles.preyRow}>
+                  <View style={styles.preyWrap}>
+                    <PreyTypeField
+                      value={preyType}
+                      preyType={preyType}
+                      setPreyType={setPreyType}
+                      isEditing={true}
+                    />
+                  </View>
+                  <View style={styles.weightWrap}>
+                    <WeightField
+                      weight={preyWeight}
+                      setWeight={setPreyWeight}
+                      weightType={preyWeightType}
+                      setWeightType={setPreyWeightType}
+                      isEditing={true}
+                    />
+                  </View>
+                </View>
+
+                {/* Quantity Field (Opens Number Picker) */}
+                <View style={styles.fieldContainer}>
+                  <TouchableOpacity
+                    onPress={() => setPickerVisible(true)}
+                    style={styles.inputWrapper}
+                  >
+                    <View style={styles.titleContainer}>
+                      <Ionicons
+                        name="chevron-expand-outline"
+                        size={18}
+                        color={iconColor}
+                        style={styles.icon}
+                      />
+                      <ThemedText
+                        type="default"
+                        style={[styles.label, { color: iconColor }]}
+                      >
+                        Quantity
+                      </ThemedText>
+                    </View>
+                    <View
+                      style={[
+                        styles.answer,
+                        { backgroundColor, borderColor: iconColor },
+                      ]}
+                    >
+                      <ThemedText type="default">
+                        {quantity || "Select quantity"}
+                      </ThemedText>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+
+                {/* Buttons */}
+                <View style={styles.buttonWrap}>
+                  <CustomButton
+                    title="Cancel"
+                    onPress={() => setModalVisible(false)}
+                    style={[
+                      styles.cancelButton,
+                      { backgroundColor: fieldColor },
+                    ]}
+                  />
+                  <CustomButton
+                    title="Add"
+                    onPress={handleAddPrey}
+                    style={[styles.addButton, { backgroundColor: activeColor }]}
+                  />
+                </View>
               </View>
             </View>
+
+            {/* Number Picker Modal */}
+            <NumericPickerModal
+              visible={pickerVisible}
+              title="Select Quantity"
+              value={quantity}
+              onValueChange={setQuantity}
+              onClose={() => setPickerVisible(false)}
+              min={1}
+              max={100}
+              step={1}
+            />
           </Modal>
         </View>
       </ThemedView>
@@ -162,12 +200,80 @@ const FreezerScreen = () => {
 export default FreezerScreen;
 
 const styles = StyleSheet.create({
-  title: {
-    marginBottom: SIZES.xLarge,
-  },
-  loadingContainer: {
+  modalOverlay: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  modalContainer: {
+    padding: 20,
+    borderRadius: 10,
+    width: 320,
+  },
+  fieldContainer: {},
+  preyRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    gap: 12, // Ensures spacing between elements is uniform
+    borderRadius: 5,
+    padding: 8,
+  },
+
+  preyWrap: {
+    flex: 1,
+    justifyContent: "center", // Ensures alignment consistency
+  },
+
+  weightWrap: {
+    flex: 1,
+    justifyContent: "center", // Ensures alignment consistency
+    flexDirection: "row", // Aligns weight input and unit picker horizontally
+    alignItems: "center",
+  },
+  titleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 6,
+  },
+  label: {
+    marginLeft: 8,
+  },
+  icon: {
+    marginRight: 4,
+  },
+  inputWrapper: {
+    borderRadius: 5,
+    paddingHorizontal: 12,
+
+    alignItems: "flex-start",
+  },
+  answer: {
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderRadius: 5,
+    borderWidth: 1,
+    width: "100%",
+    textAlign: "center",
+  },
+  cancelButton: {
+    width: "46%",
+  },
+  addButton: {
+    width: "46%",
+    marginLeft: 8,
+  },
+  numberPickerContainer: {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+    width: 300,
+    alignItems: "center",
+  },
+  buttonWrap: {
+    paddingTop: 32,
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
 });

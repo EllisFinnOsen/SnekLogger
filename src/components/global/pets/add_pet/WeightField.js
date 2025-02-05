@@ -1,11 +1,12 @@
-import React from "react";
-import { View, StyleSheet } from "react-native";
+// File: WeightField.js
+import React, { useState } from "react";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { ThemedText } from "@/components/global/ThemedText";
-import WeightSelector from "@/components/global/WeightSelector";
 import CategoryPicker from "@/components/global/CategoryPicker";
 import { WEIGHT_TYPES } from "@/constants/WeightTypes";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import NumericPickerModal from "@/components/global/NumericPickerModal";
 
 export default function WeightField({
   weight,
@@ -16,11 +17,12 @@ export default function WeightField({
   isEditing,
 }) {
   const iconColor = useThemeColor({}, "icon");
-  const cancelColor = useThemeColor({}, "field");
+  const textColor = useThemeColor({}, "text");
+  const [pickerVisible, setPickerVisible] = useState(false);
 
   return (
     <View style={styles.fieldContainer}>
-      {/* Title & Icon */}
+      {/* Label Row */}
       <View style={styles.titleContainer}>
         <Ionicons
           style={styles.icon}
@@ -33,37 +35,52 @@ export default function WeightField({
         </ThemedText>
       </View>
 
-      {/* Input Wrapper (Border & Layout) */}
-      <View
-        style={[
-          styles.inputWrapper,
-          { borderColor: isEditing ? "transparent" : "transparent" },
-        ]}
-      >
-        {isEditing ? (
-          <View style={styles.weightRow}>
-            <WeightSelector
-              value={weight}
-              onChange={setWeight}
-              min={0}
-              max={100000}
-              step={1}
-            />
-            <View style={styles.weightTypeContainer}>
-              <CategoryPicker
-                compact={true}
-                selectedValue={weightType}
-                onValueChange={setWeightType}
-                items={WEIGHT_TYPES}
-              />
-            </View>
-          </View>
-        ) : (
-          <ThemedText style={styles.answer} type="default">
-            {weight} {weightType}
+      {/* Non-Editable Display Mode */}
+      {!isEditing ? (
+        <View style={styles.displayRow}>
+          <ThemedText
+            type="default"
+            style={[styles.answer, { color: textColor }]}
+          >
+            {weight ? `${weight} ${weightType}` : "-"}
           </ThemedText>
-        )}
-      </View>
+        </View>
+      ) : (
+        /* Editable Mode */
+        <View style={styles.weightRow}>
+          {/* Touchable Opacity for Weight Input */}
+          <TouchableOpacity
+            onPress={() => setPickerVisible(true)}
+            style={[styles.weightInputWrapper, { borderColor: iconColor }]}
+          >
+            <ThemedText type="default">{weight ? `${weight}` : "-"}</ThemedText>
+          </TouchableOpacity>
+
+          {/* Category Picker for Weight Type */}
+          <View style={styles.weightTypeContainer}>
+            <CategoryPicker
+              compact={true}
+              selectedValue={weightType}
+              onValueChange={setWeightType}
+              items={WEIGHT_TYPES}
+            />
+          </View>
+        </View>
+      )}
+
+      {/* Numeric Picker Modal */}
+      {isEditing && (
+        <NumericPickerModal
+          visible={pickerVisible}
+          title="Select Weight"
+          value={weight}
+          onValueChange={setWeight}
+          onClose={() => setPickerVisible(false)}
+          min={0}
+          max={1000}
+          step={1}
+        />
+      )}
     </View>
   );
 }
@@ -76,31 +93,45 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 6,
+    alignSelf: "flex-start",
   },
   label: {
-    marginLeft: 8,
+    marginLeft: 6, // Standardized spacing
   },
   icon: {
-    marginRight: 4,
-  },
-  inputWrapper: {
-    borderWidth: 1,
-    borderRadius: 5,
-    padding: 8, // Matches PreyTypeField padding
+    marginRight: 6, // Standardized spacing
   },
   weightRow: {
     flexDirection: "row",
     alignItems: "center",
-    width: "48%",
+    justifyContent: "space-between",
+    width: "100%",
+    paddingTop: 12,
+  },
+  displayRow: {
+    paddingVertical: 10,
+    paddingHorizontal: 0, // Removes additional padding
+    alignItems: "flex-start", // Aligns text to the left
+  },
+  answer: {
+    textAlign: "left", // Ensures left alignment
+    paddingVertical: 16,
+  },
+  weightInputWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+    borderWidth: 1,
+    borderRadius: 5,
+    marginTop: 6,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    justifyContent: "space-between",
   },
   weightTypeContainer: {
     marginLeft: 0,
-    width: 50,
+    width: 70,
     justifyContent: "center",
     alignItems: "center",
-  },
-  answer: {
-    paddingVertical: 12,
-    borderRadius: 5,
   },
 });

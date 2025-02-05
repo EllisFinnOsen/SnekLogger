@@ -42,22 +42,30 @@ const FreezerCard = ({ prey }) => {
         marginVertical: 5,
         backgroundColor: fieldColor,
         borderRadius: 10,
+        flexDirection: "row",
+        justifyContent: "space-between",
       }}
     >
-      <Ionicons name="bug-sharp" size={24} color={iconColor} />
-      <MaterialCommunityIcons name="rodent" size={24} color={iconColor} />
-      <ThemedText style={{ fontSize: 18, fontWeight: "bold" }}>
-        {prey.preyType}: {prey.quantity}
-      </ThemedText>
-      <ThemedText>
-        Weight: ~{prey.weight} {prey.weightType}
-      </ThemedText>
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <MaterialCommunityIcons name="rodent" size={36} color={iconColor} />
+        <View style={{ flexDirection: "column", paddingLeft: 15 }}>
+          <ThemedText style={{ fontSize: 18, fontWeight: "bold" }}>
+            {prey.preyType}: {prey.quantity}
+          </ThemedText>
+
+          <ThemedText>
+            Weight: ~{prey.weight} {prey.weightType}
+          </ThemedText>
+        </View>
+      </View>
 
       {/* Manage Button */}
       <TouchableOpacity
         onPress={() => setModalVisible(true)}
         style={{
-          backgroundColor: "#007bff",
+          backgroundColor: fieldColor,
+          borderColor: fieldAccent,
+          borderWidth: 1,
           padding: 8,
           borderRadius: 5,
           marginTop: 5,
@@ -119,15 +127,15 @@ const FreezerCard = ({ prey }) => {
         >
           <View
             style={{
-              backgroundColor: "white",
+              backgroundColor: fieldColor,
               padding: 20,
               borderRadius: 10,
               width: 300,
             }}
           >
-            <Text style={{ fontSize: 18, marginBottom: 10 }}>
+            <ThemedText style={{ fontSize: 18, marginBottom: 10 }}>
               Change Quantity
-            </Text>
+            </ThemedText>
 
             {/* Number Picker */}
             <NumberPicker

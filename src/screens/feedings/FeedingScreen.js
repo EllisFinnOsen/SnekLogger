@@ -131,7 +131,11 @@ export default function FeedingScreen() {
           <PreyTypeField preyType={feeding.preyType} isEditing={false} />
         </View>
         <View style={styles.weightWrap}>
-          <WeightField weight={feeding.preyWeight} isEditing={false} />
+          <WeightField
+            weight={feeding.preyWeight}
+            isEditing={false}
+            weightType={feeding.preyWeightType}
+          />
         </View>
       </View>
 

@@ -24,6 +24,8 @@ export const initializeDatabase = async () => {
       DROP TABLE IF EXISTS group_pets;
       DROP TABLE IF EXISTS feedings;
       DROP TABLE IF EXISTS users;
+      DROP TABLE IF EXISTS freezer;
+      DROP TABLE IF EXISTS feeding_freezer;
       
 
       CREATE TABLE IF NOT EXISTS pets (
