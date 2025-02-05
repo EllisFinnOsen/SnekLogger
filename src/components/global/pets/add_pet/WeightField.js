@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
     width: "48%",
   },
   weightTypeContainer: {
-    marginLeft: 16,
+    marginLeft: 0,
     width: 50,
     justifyContent: "center",
     alignItems: "center",

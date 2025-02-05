@@ -155,7 +155,7 @@ export default function FeedingLogCard({
     >
       <TouchableOpacity
         onPress={() =>
-          navigation.navigate("EditFeeding", { feedingId: item.id })
+          navigation.navigate("FeedingScreen", { feedingId: item.id })
         }
         style={styles.container}
         testID="feeding-log-card"

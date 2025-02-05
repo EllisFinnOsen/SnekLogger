@@ -41,7 +41,6 @@ export default function PreyTypeField({ preyType, setPreyType, isEditing }) {
 const styles = StyleSheet.create({
   fieldContainer: {
     marginVertical: 8,
-    width: "30%",
   },
   titleContainer: {
     flexDirection: "row",
@@ -59,7 +58,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   answer: {
-    paddingVertical: 12,
+    paddingVertical: 16,
     borderRadius: 5,
   },
 });

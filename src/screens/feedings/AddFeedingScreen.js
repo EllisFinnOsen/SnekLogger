@@ -1,12 +1,11 @@
+// File: AddFeedingScreen.js
 import React, { useState } from "react";
 import { View, Image, StyleSheet } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
-import { addFeeding, fetchPets } from "@/redux/actions";
-import { insertFeedingInDb } from "@/database";
-import { formatDateString, formatTimeString } from "@/utils/dateUtils";
+import { addFeeding } from "@/redux/actions";
+import { insertFeedingInDb } from "@/database"; // Ensure database writes correctly
 import ThemedScrollView from "@/components/global/ThemedScrollView";
-import { ThemedText } from "@/components/global/ThemedText";
 import EditHeader from "@/components/global/EditHeader";
 import CustomButton from "@/components/global/CustomButton";
 import HeaderSection from "@/components/global/pets/add_pet/HeaderSection";
@@ -24,12 +23,11 @@ export default function AddFeedingScreen() {
   const navigation = useNavigation();
   const pets = useSelector((state) => state.pets.pets || []);
 
-  // Default values
-  const todayDate = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
-  const currentTime = new Date().toTimeString().split(" ")[0].substring(0, 5); // HH:MM
+  const todayDate = new Date().toISOString().split("T")[0];
+  const currentTime = new Date().toTimeString().split(" ")[0].substring(0, 5);
 
-  // State
   const [selectedPetId, setSelectedPetId] = useState(null);
+  const selectedPet = pets.find((pet) => pet.id === selectedPetId) || {};
   const [feedingDate, setFeedingDate] = useState(todayDate);
   const [feedingTime, setFeedingTime] = useState(currentTime);
   const [preyType, setPreyType] = useState("");
@@ -43,18 +41,18 @@ export default function AddFeedingScreen() {
   const cancelColor = useThemeColor({}, "field");
   const activeColor = useThemeColor({}, "active");
 
-  // ✅ Find the selected pet based on selectedPetId
-  const selectedPet = pets.find((pet) => pet.id === selectedPetId) || {};
-
   const handleSave = async () => {
     if (!selectedPetId) {
       console.error("Error: No pet selected for feeding.");
       return;
     }
 
+    // ✅ Ensure feedingDate is always in `YYYY-MM-DD` format
+    const formattedDate = feedingDate.split("T")[0];
+
     const newFeeding = {
       petId: selectedPetId,
-      feedingDate,
+      feedingDate: formattedDate, // ✅ Ensures proper format
       feedingTime,
       preyType,
       preyWeight,
@@ -63,30 +61,41 @@ export default function AddFeedingScreen() {
       complete: isComplete ? 1 : 0,
     };
 
-    dispatch(addFeeding(newFeeding)); // ✅ Dispatch the action
-    navigation.goBack(); // ✅ Navigate back after saving
+    try {
+      // ✅ Insert into database first
+      const insertedId = await insertFeedingInDb(newFeeding);
+      if (!insertedId) {
+        console.error("Error inserting feeding into database.");
+        return;
+      }
+
+      // ✅ Dispatch Redux action only after successful DB write
+      dispatch(addFeeding({ id: insertedId, ...newFeeding }));
+
+      console.log("Feeding added successfully:", newFeeding);
+      navigation.goBack();
+    } catch (error) {
+      console.error("Error adding feeding:", error);
+    }
   };
 
   const handleCancel = () => {
-    navigation.goBack(); // Discard changes and go back
+    navigation.goBack();
   };
 
   return (
     <ThemedScrollView contentContainerStyle={styles.container}>
-      {/* Header Section */}
       <HeaderSection
-        isEditing={true} // Always start in editing mode
         onSave={handleSave}
         onCancel={handleCancel}
+        onBack={handleCancel}
       />
-
       <EditHeader
         label="Add Feeding"
         description="Fill out feeding details and press save."
       />
 
-      {/* Pet Selection */}
-      <View style={styles.section}>
+      <View style={styles.petWrap}>
         <Image
           source={{
             uri: checkImageURL(selectedPet.imageURL)
@@ -104,33 +113,35 @@ export default function AddFeedingScreen() {
             }))}
             selectedValue={selectedPetId}
             onValueChange={setSelectedPetId}
+            isEditing={true}
           />
         </View>
       </View>
 
-      {/* Completion Toggle */}
       <CompletionToggle
         isComplete={isComplete}
         onToggle={() => setIsComplete(!isComplete)}
       />
 
-      {/* Prey Type & Weight Selection */}
       <View style={styles.preyRow}>
-        <PreyTypeField
-          preyType={preyType}
-          setPreyType={setPreyType}
-          isEditing={true}
-        />
-        <WeightField
-          weight={preyWeight}
-          setWeight={setPreyWeight}
-          weightType={preyWeightType}
-          setWeightType={setPreyWeightType}
-          isEditing={true}
-        />
+        <View style={styles.preyWrap}>
+          <PreyTypeField
+            isEditing={true}
+            preyType={preyType}
+            setPreyType={setPreyType}
+          />
+        </View>
+        <View style={styles.weightWrap}>
+          <WeightField
+            weight={preyWeight}
+            setWeight={setPreyWeight}
+            weightType={preyWeightType}
+            setWeightType={setPreyWeightType}
+            isEditing={true}
+          />
+        </View>
       </View>
 
-      {/* Date & Time Inputs */}
       <DateTimeFields
         feedingDate={feedingDate}
         setFeedingDate={setFeedingDate}
@@ -143,20 +154,16 @@ export default function AddFeedingScreen() {
         isEditing={true}
       />
 
-      {/* Notes Field */}
-      <NotesField notes={notes} setNotes={setNotes} isEditing={true} />
+      <NotesField notes={notes} setNotes={setNotes} />
 
-      {/* Action Buttons */}
       <View style={styles.buttonRow}>
         <CustomButton
           title="Save"
-          textType="title"
           onPress={handleSave}
           style={[styles.saveButton, { backgroundColor: activeColor }]}
         />
         <CustomButton
           title="Cancel"
-          textType="title"
           onPress={handleCancel}
           style={[styles.cancelButton, { backgroundColor: cancelColor }]}
         />
@@ -167,10 +174,16 @@ export default function AddFeedingScreen() {
 
 const styles = StyleSheet.create({
   container: { flexGrow: 1, padding: 16 },
-  preyRow: { flexDirection: "row", justifyContent: "space-between" },
   petImage: { width: 40, height: 40, borderRadius: 50, marginRight: 16 },
-  section: { flexDirection: "row", alignItems: "center", marginBottom: 8 },
-  saveButton: { flex: 1, marginBottom: 8 },
-  cancelButton: { flex: 1 },
-  buttonRow: { flexDirection: "row", justifyContent: "space-between" },
+  petWrap: { flexDirection: "row", marginVertical: 30 },
+  preyRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 12,
+  },
+  preyWrap: { width: "48%" },
+  weightWrap: { width: "48%" },
+  saveButton: { marginTop: 16, flex: 1, marginBottom: 8 },
+  cancelButton: { marginTop: 8 },
+  buttonRow: { flexDirection: "column" },
 });

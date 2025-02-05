@@ -138,7 +138,16 @@
 <a name='L73'></a><a href='#L73'>73</a>
 <a name='L74'></a><a href='#L74'>74</a>
 <a name='L75'></a><a href='#L75'>75</a>
-<a name='L76'></a><a href='#L76'>76</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -213,20 +222,28 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
 import TabNavigator from "./TabNavigator";
 import AnotherScreen from "@/screens/AnotherScreen"; // Import any additional screens that are not part of the tabs
-import PetProfileScreen from "@/screens/pets/PetProfileScreen";
-import EditFeedingScreen from "@/screens/feedings/EditFeedingScreen";
-import GroupScreen from "@/screens/groups/GroupScreen";
 import AddPetScreen from "@/screens/pets/AddPetScreen";
+import PetProfileScreen from "@/screens/pets/PetProfileScreen";
 import EditPetScreen from "@/screens/pets/EditPetScreen";
-import { useThemeColor } from "@/hooks/useThemeColor";
 import AddFeedingScreen from "@/screens/feedings/AddFeedingScreen";
+import FeedingScreen from "@/screens/feedings/FeedingScreen";
+import EditFeedingScreen from "@/screens/feedings/EditFeedingScreen";
 import AddGroupScreen from "@/screens/groups/AddGroupScreen";
+import GroupScreen from "@/screens/groups/GroupScreen";
 import EditGroupScreen from "@/screens/groups/EditGroupScreen";
+import { useThemeColor } from "@/hooks/useThemeColor";
 &nbsp;
 const Stack = createStackNavigator();
 &nbsp;
@@ -248,20 +265,16 @@ export default function <span class="fstat-no" title="function not covered" >Sta
           component={TabNavigator}
           options={{ headerShown: false }}
         /&gt;
-        &lt;Stack.Screen name="PetProfileScreen" component={PetProfileScreen} /&gt;
-        &lt;Stack.Screen
-          name="EditFeeding"
-          component={EditFeedingScreen}
-          options={{ headerShown: false }}
-        /&gt;
-        &lt;Stack.Screen
-          name="GroupScreen"
-          component={GroupScreen}
-          options={{ headerShown: false }}
-        /&gt;
+&nbsp;
         &lt;Stack.Screen
           name="AddPetScreen"
           component={AddPetScreen}
+          options={{ headerShown: false }}
+        /&gt;
+        &lt;Stack.Screen name="PetProfileScreen" component={PetProfileScreen} /&gt;
+        &lt;Stack.Screen
+          name="EditPetScreen"
+          component={EditPetScreen}
           options={{ headerShown: false }}
         /&gt;
         &lt;Stack.Screen
@@ -270,18 +283,29 @@ export default function <span class="fstat-no" title="function not covered" >Sta
           options={{ headerShown: false }}
         /&gt;
         &lt;Stack.Screen
+          name="GroupScreen"
+          component={GroupScreen}
+          options={{ headerShown: false }}
+        /&gt;
+        &lt;Stack.Screen
           name="EditGroupScreen"
           component={EditGroupScreen}
           options={{ headerShown: false }}
         /&gt;
-        &lt;Stack.Screen
-          name="EditPetScreen"
-          component={EditPetScreen}
-          options={{ headerShown: false }}
-        /&gt;
+&nbsp;
         &lt;Stack.Screen
           name="AddFeedingScreen"
           component={AddFeedingScreen}
+          options={{ headerShown: false }}
+        /&gt;
+        &lt;Stack.Screen
+          name="FeedingScreen"
+          component={FeedingScreen}
+          options={{ headerShown: false }}
+        /&gt;
+        &lt;Stack.Screen
+          name="EditFeedingScreen"
+          component={EditFeedingScreen}
           options={{ headerShown: false }}
         /&gt;
       &lt;/Stack.Navigator&gt;
@@ -295,7 +319,7 @@ export default function <span class="fstat-no" title="function not covered" >Sta
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-02-03T23:00:18.889Z
+                at 2025-02-05T01:21:37.555Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

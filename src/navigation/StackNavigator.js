@@ -3,15 +3,16 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
 import TabNavigator from "./TabNavigator";
 import AnotherScreen from "@/screens/AnotherScreen"; // Import any additional screens that are not part of the tabs
-import PetProfileScreen from "@/screens/pets/PetProfileScreen";
-import EditFeedingScreen from "@/screens/feedings/EditFeedingScreen";
-import GroupScreen from "@/screens/groups/GroupScreen";
 import AddPetScreen from "@/screens/pets/AddPetScreen";
+import PetProfileScreen from "@/screens/pets/PetProfileScreen";
 import EditPetScreen from "@/screens/pets/EditPetScreen";
-import { useThemeColor } from "@/hooks/useThemeColor";
 import AddFeedingScreen from "@/screens/feedings/AddFeedingScreen";
+import FeedingScreen from "@/screens/feedings/FeedingScreen";
+import EditFeedingScreen from "@/screens/feedings/EditFeedingScreen";
 import AddGroupScreen from "@/screens/groups/AddGroupScreen";
+import GroupScreen from "@/screens/groups/GroupScreen";
 import EditGroupScreen from "@/screens/groups/EditGroupScreen";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 const Stack = createStackNavigator();
 
@@ -33,20 +34,16 @@ export default function StackNavigator() {
           component={TabNavigator}
           options={{ headerShown: false }}
         />
-        <Stack.Screen name="PetProfileScreen" component={PetProfileScreen} />
-        <Stack.Screen
-          name="EditFeeding"
-          component={EditFeedingScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="GroupScreen"
-          component={GroupScreen}
-          options={{ headerShown: false }}
-        />
+
         <Stack.Screen
           name="AddPetScreen"
           component={AddPetScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen name="PetProfileScreen" component={PetProfileScreen} />
+        <Stack.Screen
+          name="EditPetScreen"
+          component={EditPetScreen}
           options={{ headerShown: false }}
         />
         <Stack.Screen
@@ -55,18 +52,29 @@ export default function StackNavigator() {
           options={{ headerShown: false }}
         />
         <Stack.Screen
+          name="GroupScreen"
+          component={GroupScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
           name="EditGroupScreen"
           component={EditGroupScreen}
           options={{ headerShown: false }}
         />
-        <Stack.Screen
-          name="EditPetScreen"
-          component={EditPetScreen}
-          options={{ headerShown: false }}
-        />
+
         <Stack.Screen
           name="AddFeedingScreen"
           component={AddFeedingScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="FeedingScreen"
+          component={FeedingScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="EditFeedingScreen"
+          component={EditFeedingScreen}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
