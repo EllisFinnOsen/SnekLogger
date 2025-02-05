@@ -4,7 +4,7 @@ import { View, StyleSheet } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 import { fetchUserProfileFromDb, updateUserProfileInDb } from "@/database";
-import { updateUser, updateUserProfile } from "@/redux/actions";
+import { updateUserProfile } from "@/redux/actions";
 import ThemedScrollView from "@/components/global/ThemedScrollView";
 import EditHeader from "@/components/global/EditHeader";
 import HeaderSection from "@/components/global/pets/add_pet/HeaderSection";
@@ -18,6 +18,7 @@ export default function EditUserProfileScreen() {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const fieldColor = useThemeColor({}, "field");
+  const activeColor = useThemeColor({}, "active");
 
   // Get user profile from Redux
   const userProfileFromRedux = useSelector((state) => state.user.profile);
@@ -31,16 +32,26 @@ export default function EditUserProfileScreen() {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Debug logs
+  useEffect(() => {
+    console.log("Initial Redux state:", userProfileFromRedux);
+    console.log("Initial local state - Birthdate:", birthdate);
+  }, []);
+
   // Load user profile from the database if Redux state is empty
   useEffect(() => {
     const loadUserProfile = async () => {
+      setIsLoading(true);
       try {
-        setIsLoading(true);
-        const userData = await fetchUserProfileFromDb();
-        if (userData) {
-          setName(userData.name || "");
-          setPhoto(userData.photo || "");
-          setBirthdate(userData.birthdate || "");
+        if (!userProfileFromRedux) {
+          const userData = await fetchUserProfileFromDb();
+          console.log("Fetched user profile from DB:", userData);
+          if (userData) {
+            setName(userData.name || "");
+            setPhoto(userData.photo || "");
+            setBirthdate(userData.birthdate || "");
+            console.log("Setting birthdate from DB:", userData.birthdate);
+          }
         }
       } catch (error) {
         console.error("Error fetching user profile:", error);
@@ -49,20 +60,31 @@ export default function EditUserProfileScreen() {
       }
     };
 
-    if (!userProfileFromRedux) {
-      loadUserProfile();
-    } else {
-      setIsLoading(false);
+    loadUserProfile();
+  }, []);
+
+  // Ensure Redux updates reflect in the state
+  useEffect(() => {
+    if (userProfileFromRedux) {
+      console.log(
+        "Updated Redux state - Birthdate:",
+        userProfileFromRedux.birthdate
+      );
+      setName(userProfileFromRedux.name || "");
+      setPhoto(userProfileFromRedux.photo || "");
+      setBirthdate(userProfileFromRedux.birthdate || ""); // Ensure update
     }
   }, [userProfileFromRedux]);
 
   // Save updated user profile
   const handleSave = async () => {
     const updatedUser = { name, photo, birthdate };
+    console.log("Saving profile with birthdate:", updatedUser);
 
     try {
-      await updateUserProfileInDb(updatedUser); // ✅ Update database
-      dispatch(updateUserProfile(updatedUser)); // ✅ Update Redux store
+      await updateUserProfileInDb(updatedUser);
+      dispatch(updateUserProfile(updatedUser)); // Update Redux store
+      console.log("Updated Redux state with:", updatedUser);
       navigation.goBack();
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -91,24 +113,25 @@ export default function EditUserProfileScreen() {
       />
 
       {/* Profile Image Field */}
-      <UserImageField imageURL={photo} setImageURL={setPhoto} />
+      <UserImageField photo={photo} setPhoto={setPhoto} />
 
       {/* Name Field */}
       <UserNameField name={name} setName={setName} required={true} />
 
       {/* Birthdate Field */}
       <DatePickerField
-        birthDate={birthdate}
-        setBirthDate={setBirthdate}
+        dateValue={birthdate} // ✅ Corrected to `dateValue`
+        setDateValue={setBirthdate} // ✅ Ensure this updates `birthdate`
         showDatePicker={showDatePicker}
         setShowDatePicker={setShowDatePicker}
+        icon="calendar-clear"
       />
 
       {/* Save Button */}
       <CustomButton
         title="Save"
         onPress={handleSave}
-        style={[styles.saveButton, { backgroundColor: fieldColor }]}
+        style={[styles.saveButton, { backgroundColor: activeColor }]}
       />
     </ThemedScrollView>
   );

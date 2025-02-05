@@ -38,10 +38,7 @@ export default function UserImageField({ photo, setPhoto }) {
   const pickFromGallery = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
-      Alert.alert(
-        "Permission required",
-        "Permission to access your gallery is needed."
-      );
+      Alert.alert("Permission required", "Gallery access is needed.");
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -50,19 +47,16 @@ export default function UserImageField({ photo, setPhoto }) {
       aspect: [1, 1],
       quality: 1,
     });
-    if (!result.canceled) {
-      setPhoto(result.assets[0].uri);
+
+    if (!result.canceled && result.assets.length > 0) {
+      setPhoto(result.assets[0].uri); // ✅ Corrected
     }
   };
 
-  // Function to take a photo using the camera
   const takePhoto = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== "granted") {
-      Alert.alert(
-        "Permission required",
-        "Permission to access your camera is needed."
-      );
+      Alert.alert("Permission required", "Camera access is needed.");
       return;
     }
     const result = await ImagePicker.launchCameraAsync({
@@ -70,8 +64,9 @@ export default function UserImageField({ photo, setPhoto }) {
       aspect: [1, 1],
       quality: 1,
     });
-    if (!result.canceled) {
-      setPhoto(result.assets[0].uri);
+
+    if (!result.canceled && result.assets.length > 0) {
+      setPhoto(result.assets[0].uri); // ✅ Corrected
     }
   };
 
@@ -83,7 +78,7 @@ export default function UserImageField({ photo, setPhoto }) {
   return (
     <View style={styles.container}>
       <ThemedText type="default" style={styles.title}>
-        Pet Image
+        Profile Image
       </ThemedText>
       <View style={styles.imageRow}>
         {/* Circle placeholder */}

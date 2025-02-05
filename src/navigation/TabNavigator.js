@@ -26,12 +26,12 @@ export default function TabNavigator() {
 
           if (route.name === "Home") {
             iconName = "home";
-          } else if (route.name === "Collection") {
-            iconName = "paw";
+          } else if (route.name === "Groups") {
+            iconName = "file-tray-stacked";
           } else if (route.name === "Freezer") {
-            iconName = "nutrition";
+            iconName = "snow-outline";
           } else if (route.name === "Profile") {
-            iconName = "ellipsis-horizontal";
+            iconName = "settings";
           }
 
           // You can return any component that you like here!
@@ -50,7 +50,7 @@ export default function TabNavigator() {
         options={{ headerShown: false }}
       />
       <Tab.Screen
-        name="Collection"
+        name="Groups"
         component={CollectionScreen}
         options={{ headerShown: false }}
       />
