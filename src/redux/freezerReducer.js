@@ -38,9 +38,14 @@ export default function freezerReducer(state = initialState, action) {
       };
 
     case UPDATE_FREEZER_ITEM:
-      return state.map((item) =>
-        item.id === action.payload.id ? action.payload : item
-      );
+      return {
+        ...state,
+        items: state.items.map((item) =>
+          item.id === action.payload.id
+            ? { ...item, quantity: action.payload.quantity }
+            : item
+        ),
+      };
 
     default:
       return state;

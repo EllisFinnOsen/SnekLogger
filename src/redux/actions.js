@@ -315,3 +315,12 @@ export const fetchFreezerItemsWithWarnings = () => async (dispatch) => {
     console.error("Error fetching freezer items:", error);
   }
 };
+
+export const updateFreezerItem = (id, quantity) => async (dispatch) => {
+  try {
+    await updateFreezerItem(id, quantity);
+    dispatch({ type: UPDATE_FREEZER_ITEM, payload: { id, quantity } });
+  } catch (error) {
+    console.error("Error updating freezer item:", error);
+  }
+};

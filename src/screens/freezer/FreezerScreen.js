@@ -19,6 +19,8 @@ import { ThemedView } from "@/components/global/ThemedView";
 import { ThemedText } from "@/components/global/ThemedText";
 import { SIZES } from "@/constants/Theme";
 import EditHeader from "@/components/global/EditHeader";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import CustomButton from "@/components/global/CustomButton";
 
 const FreezerScreen = () => {
   const dispatch = useDispatch();
@@ -29,6 +31,12 @@ const FreezerScreen = () => {
   const [quantity, setQuantity] = useState("");
   const [preyWeight, setPreyWeight] = useState("");
   const [preyWeightType, setPreyWeightType] = useState("g");
+
+  const iconColor = useThemeColor({}, "icon");
+  const fieldColor = useThemeColor({}, "field");
+  const errorColor = useThemeColor({}, "error");
+  const activeColor = useThemeColor({}, "active");
+  const textColor = useThemeColor({}, "text");
 
   useEffect(() => {
     dispatch(fetchFreezerItemsWithWarnings()); // ✅ Corrected function call
@@ -59,7 +67,7 @@ const FreezerScreen = () => {
     <ThemedScrollView>
       <ThemedView style={styles.container}>
         <ThemedText type="title" style={styles.title}>
-          Freezer Stock
+          Your Freezer
         </ThemedText>
         <EditHeader
           label="Track your stock"
@@ -67,18 +75,24 @@ const FreezerScreen = () => {
         />
 
         <View style={{ flex: 1 }}>
-          <Button
-            title="➕ Add to Freezer"
+          <CustomButton
+            title="+ Add to Freezer"
             onPress={() => setModalVisible(true)}
+            style={[styles.saveButton, { backgroundColor: activeColor }]}
           />
 
-          <FlatList
-            data={Array.isArray(freezerItems) ? freezerItems : []} // ✅ Ensure array
-            keyExtractor={(item) =>
-              item?.id?.toString() || Math.random().toString()
-            } // ✅ Avoid undefined keys
-            renderItem={({ item }) => item && <FreezerCard prey={item} />} // ✅ Ensure valid item
-          />
+          {freezerItems && freezerItems.length > 0 ? (
+            freezerItems.map((item) => (
+              <FreezerCard
+                key={item?.id?.toString() || Math.random().toString()}
+                prey={item}
+              />
+            ))
+          ) : (
+            <Text style={{ textAlign: "center", marginTop: 20 }}>
+              No prey items in freezer.
+            </Text>
+          )}
 
           {/* Add Prey Modal */}
           <Modal

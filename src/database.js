@@ -168,14 +168,6 @@ export const insertMockData = async () => {
       `
     );
 
-    // --- Reduce stock in freezer ---
-    await db.runAsync(
-      `UPDATE freezer SET quantity = quantity - 1 WHERE id = 1`
-    );
-    await db.runAsync(
-      `UPDATE freezer SET quantity = quantity - 2 WHERE id = 2`
-    );
-
     console.log("Mock data inserted successfully.");
   } catch (error) {
     console.error("Error inserting mock data:", error);
