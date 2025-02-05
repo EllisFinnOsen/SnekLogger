@@ -15,7 +15,7 @@ export default function NotesField({ notes, setNotes, isEditing = true }) {
     <View style={styles.fieldContainer}>
       {/* Icon & Label */}
       <View style={styles.titleContainer}>
-        <Ionicons name="document-text-outline" size={18} color={iconColor} />
+        <Ionicons name="document-text" size={18} color={iconColor} />
         <ThemedText type="default" style={[styles.label, { color: iconColor }]}>
           Notes
         </ThemedText>

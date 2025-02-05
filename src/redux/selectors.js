@@ -20,6 +20,18 @@ export const selectFeedingsByPet = createSelector(
   }
 );
 
+// File: selectors.js
+export const selectFeedingById = createSelector(
+  [feedingsSelector, (_, feedingId) => Number(feedingId)],
+  (feedings, feedingId) => {
+    const feeding = feedings.find(
+      (feeding) => Number(feeding.id) === feedingId
+    );
+    console.log("selectFeedingById:", { feedingId, feeding });
+    return feeding || null; // Ensure it returns null if not found
+  }
+);
+
 // Selector to filter upcoming and incomplete feedings, then sort them by feedingDate (soonest first)
 // Now we use a fixed reference date (startOfToday) so that the computed result is stable.
 export const selectUpcomingFeedings = createSelector(

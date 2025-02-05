@@ -166,6 +166,7 @@ export const fetchFeedingsByPetFromDb = async (petId) => {
 
 // Fetch a single feeding by its ID
 export const fetchFeedingByIdFromDb = async (feedingId) => {
+  console.log("Fetching feeding from DB for ID:", feedingId);
   try {
     const db = await openDatabase();
     const result = await db.getFirstAsync(

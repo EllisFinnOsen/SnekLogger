@@ -14,6 +14,7 @@ export default function WeightSelector({
 }) {
   const textColor = useThemeColor({}, "text");
   const bgColor = useThemeColor({}, "background");
+  const fieldColor = useThemeColor({}, "field");
   const iconColor = useThemeColor({}, "icon");
 
   const increase = () => {
@@ -46,7 +47,10 @@ export default function WeightSelector({
     <View style={styles.container}>
       <TouchableOpacity
         onPress={decrease}
-        style={[styles.button, { borderColor: iconColor }]}
+        style={[
+          styles.button,
+          { borderColor: "transparent", backgroundColor: fieldColor },
+        ]}
       >
         <ThemedText type="default" style={{ color: iconColor }}>
           –
@@ -69,9 +73,15 @@ export default function WeightSelector({
       />
       <TouchableOpacity
         onPress={increase}
-        style={[styles.button, { borderColor: iconColor }]}
+        style={[
+          styles.button,
+          { borderColor: "transparent", backgroundColor: fieldColor },
+        ]}
       >
-        <ThemedText type="default" style={{ color: iconColor }}>
+        <ThemedText
+          type="default"
+          style={{ color: iconColor, backgroundColor: fieldColor }}
+        >
           +
         </ThemedText>
       </TouchableOpacity>
@@ -82,7 +92,7 @@ export default function WeightSelector({
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "stretch",
   },
   button: {
     padding: 8,
@@ -92,7 +102,7 @@ const styles = StyleSheet.create({
   input: {
     marginHorizontal: 8,
     paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingVertical: 4,
     borderWidth: 1,
     borderRadius: 5,
     minWidth: 60,
