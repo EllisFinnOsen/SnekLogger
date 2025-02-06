@@ -8,7 +8,7 @@ import {
   ADD_GROUP,
   DELETE_GROUP,
   UPDATE_GROUP,
-} from "./actionTypes";
+} from "../actions/actionTypes";
 
 const initialState = {
   groups: [],

@@ -5,8 +5,9 @@ import { ThemedText } from "@/components/global/ThemedText";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import ExistingPetPicker from "./ExistingPetPicker";
 import { useFocusEffect } from "@react-navigation/native";
-import { addPetToGroupAction, fetchPets } from "@/redux/actions";
 import { useDispatch, useSelector } from "react-redux";
+import { fetchPets } from "@/redux/actions";
+import { addPetToGroupAction } from "@/redux/actions";
 
 export default function AddPetPickerModal({
   visible,

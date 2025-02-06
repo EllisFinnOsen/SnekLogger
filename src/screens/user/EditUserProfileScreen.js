@@ -3,8 +3,6 @@ import React, { useState, useEffect } from "react";
 import { View, StyleSheet } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
-import { fetchUserProfileFromDb, updateUserProfileInDb } from "@/database";
-import { updateUserProfile } from "@/redux/actions";
 import ThemedScrollView from "@/components/global/ThemedScrollView";
 import EditHeader from "@/components/global/EditHeader";
 import HeaderSection from "@/components/global/pets/add_pet/HeaderSection";
@@ -13,6 +11,11 @@ import DatePickerField from "@/components/global/DatePickerField";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import UserImageField from "@/components/UserImageField";
 import UserNameField from "@/components/UserNameField";
+import {
+  fetchUserProfileFromDb,
+  updateUserProfileInDb,
+} from "@/database/users";
+import { updateUserProfile } from "@/redux/actions";
 
 export default function EditUserProfileScreen() {
   const navigation = useNavigation();

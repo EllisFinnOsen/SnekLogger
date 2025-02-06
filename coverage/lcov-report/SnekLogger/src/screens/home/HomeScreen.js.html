@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">6.25% </span>
+                <span class="strong">4% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>1/16</span>
+                <span class='fraction'>1/25</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/4</span>
+                <span class='fraction'>0/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/6</span>
+                <span class='fraction'>0/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">7.14% </span>
+                <span class="strong">4.54% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>1/14</span>
+                <span class='fraction'>1/22</span>
             </div>
         
             
@@ -141,8 +141,9 @@
 <a name='L76'></a><a href='#L76'>76</a>
 <a name='L77'></a><a href='#L77'>77</a>
 <a name='L78'></a><a href='#L78'>78</a>
-<a name='L79'></a><a href='#L79'>79</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -162,6 +163,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -169,12 +174,21 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -209,46 +223,41 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React, { useEffect } from "react";
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React, { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchPets, fetchFeedingsByPet } from "@/redux/actions";
-import { initializeDatabase, insertMockData } from "@/database";
+import { initializeDatabase } from "@/database";
+import { insertMockData } from "@/database/mockData";
 import { ThemedView } from "@/components/global/ThemedView";
 import { ThemedText } from "@/components/global/ThemedText";
 import ThemedScrollView from "@/components/global/ThemedScrollView";
 import HomePetList from "@/components/global/pets/HomePetList";
-import ViewAllUpcomingList from "@/components/global/feedings/ViewAllUpcomingList";
-import ViewAllPastFeedings from "@/components/global/feedings/ViewAllPastFeedings";
-import ViewPastCompleteFeedings from "@/components/global/feedings/ViewCompleteFeedings";
+import FeedingsByDaySections from "@/components/global/feedings/FeedingsByDaySections.js";
 import { HelloWave } from "@/components/global/HelloWave";
 import { SIZES } from "@/constants/Theme";
-import LateFeedingsList from "@/components/global/feedings/LateFeedingList";
-import FeedingsByDaySections from "@/components/global/feedings/FeedingsByDaySections.js";
-import AddLogCard from "@/components/global/feedings/AddLogCard";
+import { fetchPets } from "@/redux/actions";
+import { fetchFeedingsByPet } from "@/redux/actions";
+import { fetchUserProfile } from "@/redux/actions";
+import { resetDatabase } from "@/database/reset";
 &nbsp;
 export default function <span class="fstat-no" title="function not covered" >HomeScreen(</span>{ navigation }) {
   const dispatch = <span class="cstat-no" title="statement not covered" >useDispatch();</span>
   const pets = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate) =&gt; <span class="cstat-no" title="statement not covered" >state.pets.pets || [])</span>;</span>
+  const userProfileFromRedux = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate) =&gt; <span class="cstat-no" title="statement not covered" >state.user.profile)</span>;</span>
+&nbsp;
+  // Local state to update when Redux state is fetched
+  const [userProfile, setUserProfile] = <span class="cstat-no" title="statement not covered" >useState(userProfileFromRedux);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
     const setupDatabase = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >as</span>ync () =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      try {</span>
+<span class="cstat-no" title="statement not covered" >        await resetDatabase();</span>
 <span class="cstat-no" title="statement not covered" >        await initializeDatabase();</span>
 <span class="cstat-no" title="statement not covered" >        await insertMockData();</span>
 <span class="cstat-no" title="statement not covered" >        dispatch(fetchPets());</span>
+<span class="cstat-no" title="statement not covered" >        dispatch(fetchUserProfile()); </span>// Fetch user profile on load
       } catch (error) {
-        //console.error("Error setting up database:", error);
+<span class="cstat-no" title="statement not covered" >        console.error("Error setting up database:", error);</span>
       }
     };
 &nbsp;
@@ -261,12 +270,19 @@ export default function <span class="fstat-no" title="function not covered" >Hom
     }
   }, [dispatch, pets]);
 &nbsp;
+  // Update local state when Redux state updates
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    if (userProfileFromRedux) {</span>
+<span class="cstat-no" title="statement not covered" >      setUserProfile(userProfileFromRedux);</span>
+    }
+  }, [userProfileFromRedux]);
+&nbsp;
 <span class="cstat-no" title="statement not covered" >  return (</span>
     &lt;ThemedScrollView&gt;
       &lt;ThemedView&gt;
         &lt;ThemedView style={styles.titleContainer}&gt;
           &lt;ThemedText style={styles.wave} type="title"&gt;
-            Hello, Ellis
+            Hello, {userProfile?.name || "User"}
           &lt;/ThemedText&gt;
           &lt;HelloWave /&gt;
         &lt;/ThemedView&gt;
@@ -283,16 +299,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: SIZES.xLarge,
   },
-  container: {
-    paddingTop: 0,
-    flex: 1,
-    padding: 0,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 16,
-  },
   wave: {
     marginRight: 16,
   },
@@ -304,7 +310,7 @@ const styles = StyleSheet.create({
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-02-05T01:21:37.555Z
+                at 2025-02-06T00:01:22.582Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

@@ -14,13 +14,13 @@ import PreyTypeField from "@/components/global/feedings/PreyTypeField";
 import DateTimeFields from "@/components/global/feedings/DateTimeFields";
 import CustomButton from "@/components/global/CustomButton";
 import { ThemedText } from "@/components/global/ThemedText";
-import { fetchFeedingByIdFromDb, updateFeedingInDb } from "@/database";
 import HeaderSection from "@/components/global/pets/add_pet/HeaderSection";
 import NotesField from "@/components/global/pets/add_pet/NotesField";
 import WeightField from "@/components/global/pets/add_pet/WeightField";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { checkImageURL } from "@/utils/checkImage";
 import { updateFeeding } from "@/redux/actions";
+import { fetchFeedingByIdFromDb, updateFeedingInDb } from "@/database/feedings";
 
 export default function FeedingScreen() {
   const route = useRoute();

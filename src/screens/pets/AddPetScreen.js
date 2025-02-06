@@ -1,13 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { addPetToDb } from "@/database";
-import { addPet, addPetToGroupAction, fetchGroups } from "@/redux/actions";
 import ThemedScrollView from "@/components/global/ThemedScrollView";
 import { SIZES } from "@/constants/Theme";
 import EditHeader from "@/components/global/EditHeader";
-
-// Import subcomponents
 import HeaderSection from "@/components/global/pets/add_pet/HeaderSection";
 import PetNameField from "@/components/global/pets/add_pet/PetNameField";
 import DatePickerField from "@/components/global/DatePickerField";
@@ -17,6 +13,9 @@ import CategorySection from "@/components/global/pets/add_pet/CategorySection";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import CustomButton from "@/components/global/CustomButton";
 import MultipleGroupPicker from "@/components/global/pets/add_pet/MultipleGroupPicker";
+import { addPet } from "@/redux/actions";
+import { addPetToGroupAction, fetchGroups } from "@/redux/actions";
+import { addPetToDb } from "@/database/pets";
 
 export default function AddPetScreen({ navigation, route }) {
   const iconColor = useThemeColor({}, "icon");

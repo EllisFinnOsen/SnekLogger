@@ -9,13 +9,12 @@ import {
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useFocusEffect } from "@react-navigation/native";
-import { fetchFeedingsByPet } from "@/redux/actions";
-import { fetchPetsFromDb } from "@/database";
-// Import your new feeding component
 import ViewByDateForPet from "./ViewByDateForPet";
 import PetParallaxScrollView from "@/components/global/pets/pet_profile/PetParallaxScrollView";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { ThemedText } from "@/components/global/ThemedText";
+import { fetchPetsFromDb } from "@/database/feedings";
+import { fetchFeedingsByPet } from "@/redux/actions";
 
 export default function PetProfileScreen({ route, navigation }) {
   const { petId } = route.params;

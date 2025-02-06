@@ -4,7 +4,7 @@ import {
   DELETE_FREEZER_ITEM,
   UPDATE_FREEZER_ITEM,
   SET_LOW_STOCK_WARNINGS,
-} from "./actionTypes";
+} from "../actions/actionTypes";
 
 const initialState = {
   items: [],

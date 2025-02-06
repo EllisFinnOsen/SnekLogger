@@ -1,23 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, ActivityIndicator, View, TextInput } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchPetById,
-  updatePetToDb,
-  fetchGroupsForPetFromDb,
-  deletePetFromDb, // <-- Make sure to implement this in your database file
-} from "@/database";
-import {
-  updatePet,
-  addPetToGroupAction,
-  removePetFromGroupAction,
-  deletePet, // <-- Add this Redux action
-} from "@/redux/actions";
 import ThemedScrollView from "@/components/global/ThemedScrollView";
 import { SIZES } from "@/constants/Theme";
 import EditHeader from "@/components/global/EditHeader";
-
-// Import subcomponents (reuse from AddPetScreen)
 import HeaderSection from "@/components/global/pets/add_pet/HeaderSection";
 import PetNameField from "@/components/global/pets/add_pet/PetNameField";
 import DatePickerField from "@/components/global/DatePickerField";
@@ -26,7 +12,11 @@ import PetImageField from "@/components/global/pets/add_pet/PetImageField";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import CustomButton from "@/components/global/CustomButton";
 import MultipleGroupPicker from "@/components/global/pets/add_pet/MultipleGroupPicker";
-import DeleteButton from "@/components/global/DeleteButton"; // New reusable delete button
+import DeleteButton from "@/components/global/DeleteButton";
+import { deletePetFromDb, fetchPetById, updatePetToDb } from "@/database/pets";
+import { fetchGroupsForPetFromDb } from "@/database/groups";
+import { deletePet, updatePet } from "@/redux/actions";
+import { addPetToGroupAction, removePetFromGroupAction } from "@/redux/actions";
 
 export default function EditPetScreen({ route, navigation }) {
   const { petId } = route.params;

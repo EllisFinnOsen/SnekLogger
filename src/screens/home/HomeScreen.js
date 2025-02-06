@@ -1,12 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  fetchPets,
-  fetchFeedingsByPet,
-  fetchUserProfile,
-} from "@/redux/actions"; // Ensure action exists
-import { initializeDatabase, insertMockData } from "@/database";
+import { initializeDatabase } from "@/database";
+import { insertMockData } from "@/database/mockData";
 import { ThemedView } from "@/components/global/ThemedView";
 import { ThemedText } from "@/components/global/ThemedText";
 import ThemedScrollView from "@/components/global/ThemedScrollView";
@@ -14,6 +10,10 @@ import HomePetList from "@/components/global/pets/HomePetList";
 import FeedingsByDaySections from "@/components/global/feedings/FeedingsByDaySections.js";
 import { HelloWave } from "@/components/global/HelloWave";
 import { SIZES } from "@/constants/Theme";
+import { fetchPets } from "@/redux/actions";
+import { fetchFeedingsByPet } from "@/redux/actions";
+import { fetchUserProfile } from "@/redux/actions";
+import { resetDatabase } from "@/database/reset";
 
 export default function HomeScreen({ navigation }) {
   const dispatch = useDispatch();
@@ -26,6 +26,7 @@ export default function HomeScreen({ navigation }) {
   useEffect(() => {
     const setupDatabase = async () => {
       try {
+        await resetDatabase();
         await initializeDatabase();
         await insertMockData();
         dispatch(fetchPets());

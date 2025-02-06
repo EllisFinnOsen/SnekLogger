@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { View, TouchableOpacity } from "react-native";
 import { useDispatch } from "react-redux";
-import { updateFreezerItem, deleteFreezerItem } from "@/redux/actions";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { ThemedText } from "@/components/global/ThemedText";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";

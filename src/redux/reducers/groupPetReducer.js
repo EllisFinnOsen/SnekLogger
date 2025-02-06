@@ -1,5 +1,5 @@
 // groupPetsReducer.js
-import { FETCH_GROUP_PETS } from "./actionTypes";
+import { FETCH_GROUP_PETS } from "../actions/actionTypes";
 
 const initialGroupPetsState = {};
 

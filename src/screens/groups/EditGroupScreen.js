@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { updateGroupToDb, deleteGroupFromDb } from "@/database"; // Make sure these are implemented in your database file.
-import { updateGroup, deleteGroup, fetchGroups } from "@/redux/actions"; // Ensure these actions are defined.
 import ThemedScrollView from "@/components/global/ThemedScrollView";
 import { SIZES } from "@/constants/Theme";
 import EditHeader from "@/components/global/EditHeader";
@@ -10,8 +8,10 @@ import CustomButton from "@/components/global/CustomButton";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import NameField from "@/components/global/groups/NameField";
 import NotesField from "@/components/global/pets/add_pet/NotesField";
-import DeleteButton from "@/components/global/DeleteButton"; // Our reusable deletion component
+import DeleteButton from "@/components/global/DeleteButton";
 import HeaderSection from "@/components/global/pets/add_pet/HeaderSection";
+import { deleteGroup, fetchGroups, updateGroup } from "@/redux/actions";
+import { deleteGroupFromDb, updateGroupToDb } from "@/database/groups";
 
 export default function EditGroupScreen({ navigation, route }) {
   const dispatch = useDispatch();

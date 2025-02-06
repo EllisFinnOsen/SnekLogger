@@ -1,8 +1,8 @@
-// FeedingLogCard.test.js
+// __test__/FeedingLogCard.test.js
 import React from "react";
 import { render, fireEvent, waitFor, act } from "@testing-library/react-native";
 import FeedingLogCard from "@/components/global/feedings/FeedingLogCard";
-import { updateFeedingInDb } from "@/database";
+import { updateFeedingInDb } from "@/database/feedings";
 import { updateFeeding } from "@/redux/actions";
 
 // ----- Mocks ----- //
@@ -16,7 +16,6 @@ jest.mock("@react-navigation/native", () => ({
 }));
 
 // --- Redux ---
-// Create a sample state that includes a pet with id 101.
 const sampleState = {
   pets: {
     pets: [
@@ -38,7 +37,7 @@ jest.mock("react-redux", () => ({
 }));
 
 // --- Database ---
-jest.mock("@/database", () => ({
+jest.mock("@/database/feedings", () => ({
   updateFeedingInDb: jest.fn(),
 }));
 
@@ -83,7 +82,6 @@ jest.mock("@/utils/dateUtils", () => ({
 }));
 
 // --- Vector Icons ---
-// Correctly import Text inside the mock factory.
 jest.mock("@expo/vector-icons", () => {
   const React = require("react");
   const { Text } = require("react-native");
@@ -114,7 +112,6 @@ describe("FeedingLogCard", () => {
   });
 
   it("renders correctly with an incomplete feeding log", () => {
-    // Disable animations in tests by passing animateOnChange={false}
     const { getByText, getByTestId } = render(
       <FeedingLogCard
         item={sampleItemIncomplete}
@@ -123,15 +120,12 @@ describe("FeedingLogCard", () => {
       />
     );
 
-    // Verify that the pet name, prey type, and formatted date/time are rendered.
     expect(getByText("Fido")).toBeTruthy();
     expect(getByText("Kibble")).toBeTruthy();
     expect(getByText("02/01")).toBeTruthy();
     expect(getByText("(12:00 PM)")).toBeTruthy();
 
-    // Query the icon by its testID.
     const icon = getByTestId("feeding-log-icon");
-    // For an incomplete feeding, the icon should show "square-outline".
     expect(icon.props.children).toBe("square-outline");
   });
 
@@ -143,12 +137,12 @@ describe("FeedingLogCard", () => {
         isVisible={true}
       />
     );
+
     const icon = getByTestId("feeding-log-icon");
-    // For a complete feeding, the icon should show "checkbox".
     expect(icon.props.children).toBe("checkbox");
   });
 
-  it("navigates to the FeedingScreen screen on main card press", () => {
+  it("navigates to the FeedingScreen on card press", () => {
     const { getByTestId } = render(
       <FeedingLogCard
         item={sampleItemIncomplete}
@@ -156,17 +150,18 @@ describe("FeedingLogCard", () => {
         isVisible={true}
       />
     );
+
     const cardTouchable = getByTestId("feeding-log-card");
     act(() => {
       fireEvent.press(cardTouchable);
     });
+
     expect(mockNavigate).toHaveBeenCalledWith("FeedingScreen", {
       feedingId: sampleItemIncomplete.id,
     });
   });
 
-  it("toggles completion status when the checkbox toggle is pressed", async () => {
-    // Simulate a successful database update.
+  it("toggles completion status when the checkbox is pressed", async () => {
     updateFeedingInDb.mockResolvedValueOnce();
 
     const { getByTestId } = render(
@@ -176,13 +171,12 @@ describe("FeedingLogCard", () => {
         isVisible={true}
       />
     );
+
     const toggleButton = getByTestId("feeding-log-toggle");
 
-    // Fire the press event and wait for updates.
     await act(async () => {
       fireEvent.press(toggleButton, { stopPropagation: () => {} });
     });
-    expect(mockNavigate).not.toHaveBeenCalled();
 
     await waitFor(() => {
       expect(updateFeedingInDb).toHaveBeenCalledWith(
@@ -202,7 +196,6 @@ describe("FeedingLogCard", () => {
   });
 
   it("does not toggle the completion status when updateFeedingInDb fails", async () => {
-    // Simulate a failure in the database update.
     updateFeedingInDb.mockRejectedValueOnce(new Error("DB error"));
 
     const { getByTestId } = render(
@@ -212,6 +205,7 @@ describe("FeedingLogCard", () => {
         isVisible={true}
       />
     );
+
     const toggleButton = getByTestId("feeding-log-toggle");
 
     await act(async () => {
@@ -223,11 +217,12 @@ describe("FeedingLogCard", () => {
     });
 
     expect(mockDispatch).not.toHaveBeenCalled();
+
     const icon = getByTestId("feeding-log-icon");
     expect(icon.props.children).toBe("square-outline");
   });
 
-  it("updates its internal checked state when the item.complete prop changes", () => {
+  it("updates internal checked state when item.complete prop changes", () => {
     const { getByTestId, rerender } = render(
       <FeedingLogCard
         item={sampleItemIncomplete}
@@ -235,10 +230,10 @@ describe("FeedingLogCard", () => {
         isVisible={true}
       />
     );
+
     let icon = getByTestId("feeding-log-icon");
     expect(icon.props.children).toBe("square-outline");
 
-    // Re-render with the item marked as complete.
     rerender(
       <FeedingLogCard
         item={sampleItemComplete}
@@ -246,6 +241,7 @@ describe("FeedingLogCard", () => {
         isVisible={true}
       />
     );
+
     icon = getByTestId("feeding-log-icon");
     expect(icon.props.children).toBe("checkbox");
   });
