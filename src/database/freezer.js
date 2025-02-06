@@ -37,7 +37,16 @@ export const addPreyToFreezer = async (
 export const fetchFreezerItems = async () => {
   try {
     const db = await openDatabase();
-    return await db.getAllAsync("SELECT * FROM freezer WHERE quantity > 0");
+    const freezerItems = await db.getAllAsync(
+      "SELECT id, preyType, quantity, weight, weightType FROM freezer WHERE quantity > 0"
+    );
+
+    // Format for dropdown (marking items from freezer)
+    return freezerItems.map((item) => ({
+      id: item.id,
+      category: `${item.preyType} (From Freezer)`,
+      options: [`${item.preyType} - ${item.quantity} available`],
+    }));
   } catch (error) {
     console.error("Error fetching freezer items:", error);
     throw error;
@@ -89,9 +98,13 @@ export const linkFeedingToFreezer = async (
       "SELECT quantity FROM freezer WHERE id = ?",
       [freezerId]
     );
+
     if (freezerItem && freezerItem.quantity >= quantityUsed) {
       const newQuantity = freezerItem.quantity - quantityUsed;
-      await updateFreezerItem(freezerId, newQuantity);
+      await updateFreezerItemInDB(freezerId, {
+        ...freezerItem,
+        quantity: newQuantity,
+      });
     } else {
       console.warn("Not enough prey in freezer!");
     }

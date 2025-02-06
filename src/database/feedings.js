@@ -69,7 +69,7 @@ export const updateFeedingInDb = async (
   preyType,
   preyWeight,
   preyWeightType,
-  notes, // Include notes
+  notes,
   complete
 ) => {
   try {
@@ -92,11 +92,21 @@ export const updateFeedingInDb = async (
         preyType,
         preyWeight ?? 0,
         preyWeightType ?? "g",
-        notes ?? "", // Ensure notes are never undefined
+        notes ?? "",
         complete ?? 0,
         feedingId,
       ]
     );
+
+    if (complete === 1) {
+      const linkedItems = await fetchFeedingFreezerUsage(feedingId);
+      for (const item of linkedItems) {
+        await updateFreezerItemInDB(item.freezerId, {
+          quantity: Math.max(item.quantity - item.quantityUsed, 0),
+        });
+      }
+    }
+
     return result;
   } catch (error) {
     console.error("Error updating feeding in DB:", error);

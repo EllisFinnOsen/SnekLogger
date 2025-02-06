@@ -38,6 +38,8 @@ export default function AddFeedingScreen() {
   const [showFeedingDatePicker, setShowFeedingDatePicker] = useState(false);
   const [showFeedingTimePicker, setShowFeedingTimePicker] = useState(false);
 
+  const [freezerId, setFreezerId] = useState(null);
+
   const cancelColor = useThemeColor({}, "field");
   const activeColor = useThemeColor({}, "active");
 
@@ -47,12 +49,11 @@ export default function AddFeedingScreen() {
       return;
     }
 
-    // ✅ Ensure feedingDate is always in `YYYY-MM-DD` format
     const formattedDate = feedingDate.split("T")[0];
 
     const newFeeding = {
       petId: selectedPetId,
-      feedingDate: formattedDate, // ✅ Ensures proper format
+      feedingDate: formattedDate,
       feedingTime,
       preyType,
       preyWeight,
@@ -62,15 +63,17 @@ export default function AddFeedingScreen() {
     };
 
     try {
-      // ✅ Insert into database first
       const insertedId = await insertFeedingInDb(newFeeding);
       if (!insertedId) {
         console.error("Error inserting feeding into database.");
         return;
       }
 
-      // ✅ Dispatch Redux action only after successful DB write
       dispatch(addFeeding({ id: insertedId, ...newFeeding }));
+
+      if (freezerId) {
+        await linkFeedingToFreezer(insertedId, freezerId, 1); // Reduce by 1 by default
+      }
 
       console.log("Feeding added successfully:", newFeeding);
       navigation.goBack();
