@@ -4,6 +4,7 @@ import {
   DELETE_FREEZER_ITEM,
   UPDATE_FREEZER_ITEM,
   SET_LOW_STOCK_WARNINGS,
+  LINK_FEEDING_TO_FREEZER,
 } from "../actions/actionTypes";
 
 const initialState = {
@@ -19,10 +20,20 @@ export default function freezerReducer(state = initialState, action) {
         items: Array.isArray(action.payload) ? action.payload : [], // ✅ Ensure array
       };
 
-    case SET_LOW_STOCK_WARNINGS:
+    case LINK_FEEDING_TO_FREEZER:
       return {
         ...state,
-        lowStockWarnings: Array.isArray(action.payload) ? action.payload : [],
+        items: state.items.map((item) =>
+          item.id === action.payload.freezerId
+            ? {
+                ...item,
+                quantity: Math.max(
+                  0,
+                  item.quantity - action.payload.quantityUsed
+                ), // ✅ Decrement stock
+              }
+            : item
+        ),
       };
 
     case ADD_FREEZER_ITEM:

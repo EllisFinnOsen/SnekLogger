@@ -1,5 +1,5 @@
 // File: FreezerSelectionModal.js
-import React from "react";
+import React, { useEffect } from "react";
 import {
   View,
   Modal,
@@ -8,18 +8,27 @@ import {
   StyleSheet,
 } from "react-native";
 import { ThemedText } from "@/components/global/ThemedText";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectFreezerItems } from "@/redux/selectors";
 import CustomButton from "@/components/global/CustomButton";
+import { fetchFreezerItemsAction } from "@/redux/actions";
 import { useThemeColor } from "@/hooks/useThemeColor";
 
 export default function FreezerSelectionModal({ visible, onSelect, onClose }) {
+  const dispatch = useDispatch();
   const freezerItems = useSelector(selectFreezerItems);
+
   const textColor = useThemeColor({}, "text");
   const iconColor = useThemeColor({}, "icon");
   const bgColor = useThemeColor({}, "background");
   const fieldAccent = useThemeColor({}, "fieldAccent");
-  const subtleColor = useThemeColor({}, "subtleText");
+
+  // ✅ Fetch freezer items when modal opens
+  useEffect(() => {
+    if (visible) {
+      dispatch(fetchFreezerItemsAction());
+    }
+  }, [visible, dispatch]);
 
   return (
     <Modal visible={visible} transparent animationType="fade">
@@ -31,7 +40,7 @@ export default function FreezerSelectionModal({ visible, onSelect, onClose }) {
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
               <TouchableOpacity
-                style={styles.listItem}
+                style={[styles.listItem, { borderBottomColor: fieldAccent }]}
                 onPress={() => onSelect(item)}
               >
                 <ThemedText type="default">
@@ -60,5 +69,9 @@ const styles = StyleSheet.create({
     width: 300,
     alignItems: "center",
   },
-  listItem: { padding: 10, borderBottomWidth: 1, width: "100%" },
+  listItem: {
+    padding: 10,
+    borderBottomWidth: 1,
+    width: "100%",
+  },
 });

@@ -60,18 +60,22 @@ export const deleteFreezerItem = (freezerId) => async (dispatch) => {
   }
 };
 
+// ✅ Link feeding to freezer and update stock
 export const linkFeedingWithFreezer =
   (feedingId, freezerId, quantityUsed) => async (dispatch) => {
     try {
       await linkFeedingToFreezer(feedingId, freezerId, quantityUsed);
 
-      // Fetch the updated freezer list after updating DB
+      // ✅ Fetch the updated freezer list after decrementing stock
       const updatedFreezerItems = await fetchFreezerItems();
 
-      // Update Redux store with new freezer state
-      dispatch({ type: "FETCH_FREEZER_ITEMS", payload: updatedFreezerItems });
+      dispatch({ type: FETCH_FREEZER_ITEMS, payload: updatedFreezerItems });
+      dispatch({
+        type: LINK_FEEDING_TO_FREEZER,
+        payload: { feedingId, freezerId, quantityUsed },
+      });
     } catch (error) {
-      //console.error("Error linking feeding to freezer:", error);
+      console.error("Error linking feeding to freezer:", error);
     }
   };
 

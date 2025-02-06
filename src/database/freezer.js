@@ -74,31 +74,24 @@ export const linkFeedingToFreezer = async (
   try {
     const db = await openDatabase();
 
-    // Insert the feeding-freezer relationship
     await db.runAsync(
       `INSERT INTO feeding_freezer (feedingId, freezerId, quantityUsed)
-         VALUES (?, ?, ?)`,
+         VALUES (?, ?, ?);`,
       [feedingId, freezerId, quantityUsed]
     );
 
-    // Reduce the quantity in the freezer table
-    const freezerItem = await db.getFirstAsync(
-      "SELECT quantity FROM freezer WHERE id = ?",
-      [freezerId]
+    // ✅ Decrement quantity in freezer table
+    await db.runAsync(
+      `UPDATE freezer SET quantity = quantity - ? WHERE id = ?;`,
+      [quantityUsed, freezerId]
     );
 
-    if (freezerItem && freezerItem.quantity >= quantityUsed) {
-      const newQuantity = Math.max(0, freezerItem.quantity - quantityUsed);
-
-      await db.runAsync("UPDATE freezer SET quantity = ? WHERE id = ?", [
-        newQuantity,
-        freezerId,
-      ]);
-    } else {
-      //console.warn("Not enough prey in freezer!");
-    }
+    // ✅ Fetch and return the updated item
+    return await db.getFirstAsync(`SELECT * FROM freezer WHERE id = ?;`, [
+      freezerId,
+    ]);
   } catch (error) {
-    //console.error("Error linking feeding to freezer:", error);
+    console.error("Error linking feeding to freezer:", error);
     throw error;
   }
 };
