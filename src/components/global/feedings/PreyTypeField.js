@@ -44,7 +44,6 @@ const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 6,
   },
   label: {
     marginLeft: 6,
