@@ -41,15 +41,15 @@ export default function FeedingScreen() {
   // Function to fetch feeding details from the database
   const loadFeeding = async () => {
     try {
-      console.log("Fetching feeding from database:", feedingId);
+      //console.log("Fetching feeding from database:", feedingId);
       const dbFeeding = await fetchFeedingByIdFromDb(feedingId);
-      console.log("Database returned:", dbFeeding);
+      //console.log("Database returned:", dbFeeding);
       if (dbFeeding) {
         setLocalFeeding(dbFeeding);
         setIsComplete(dbFeeding.complete);
       }
     } catch (error) {
-      console.error("Error fetching feeding from database:", error);
+      //console.error("Error fetching feeding from database:", error);
     }
   };
 
@@ -83,7 +83,7 @@ export default function FeedingScreen() {
 
       setIsComplete(newCompleteValue);
     } catch (error) {
-      console.error("Error updating feeding completion status:", error);
+      //console.error("Error updating feeding completion status:", error);
     }
   };
 

@@ -42,14 +42,14 @@ export default function EditFeedingScreen() {
     if (!reduxFeeding) {
       const loadFeeding = async () => {
         try {
-          console.log("Fetching feeding from database:", feedingId);
+          //console.log("Fetching feeding from database:", feedingId);
           const dbFeeding = await fetchFeedingByIdFromDb(feedingId);
           if (dbFeeding) {
-            console.log("Database returned:", dbFeeding);
+            //console.log("Database returned:", dbFeeding);
             setFeeding(dbFeeding);
           }
         } catch (error) {
-          console.error("Error fetching feeding from database:", error);
+          //console.error("Error fetching feeding from database:", error);
         }
       };
 
@@ -117,7 +117,7 @@ export default function EditFeedingScreen() {
 
       navigation.goBack();
     } catch (error) {
-      console.error("Error updating feeding:", error);
+      //console.error("Error updating feeding:", error);
     }
   };
 

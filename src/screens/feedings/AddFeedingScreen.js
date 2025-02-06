@@ -43,7 +43,7 @@ export default function AddFeedingScreen() {
 
   const handleSave = async () => {
     if (!selectedPetId) {
-      console.error("Error: No pet selected for feeding.");
+      //console.error("Error: No pet selected for feeding.");
       return;
     }
 
@@ -65,17 +65,17 @@ export default function AddFeedingScreen() {
       // ✅ Insert into database first
       const insertedId = await insertFeedingInDb(newFeeding);
       if (!insertedId) {
-        console.error("Error inserting feeding into database.");
+        //console.error("Error inserting feeding into database.");
         return;
       }
 
       // ✅ Dispatch Redux action only after successful DB write
       dispatch(addFeeding({ id: insertedId, ...newFeeding }));
 
-      console.log("Feeding added successfully:", newFeeding);
+      //console.log("Feeding added successfully:", newFeeding);
       navigation.goBack();
     } catch (error) {
-      console.error("Error adding feeding:", error);
+      //console.error("Error adding feeding:", error);
     }
   };
 
@@ -129,6 +129,7 @@ export default function AddFeedingScreen() {
             isEditing={true}
             preyType={preyType}
             setPreyType={setPreyType}
+            showSelectionModal={true}
           />
         </View>
         <View style={styles.weightWrap}>

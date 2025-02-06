@@ -96,7 +96,7 @@ export const addGroupToDb = async (group) => {
     );
     return result.lastInsertRowId; // Return the new group's ID.
   } catch (error) {
-    console.error("Error adding group to database:", error);
+    //console.error("Error adding group to database:", error);
     throw error;
   }
 };
@@ -110,7 +110,7 @@ export const updateGroupToDb = async (group) => {
     );
     return result;
   } catch (error) {
-    console.error("Error updating group in DB:", error);
+    //console.error("Error updating group in DB:", error);
     throw error;
   }
 };
@@ -123,7 +123,7 @@ export const deleteGroupFromDb = async (groupId) => {
     ]);
     return result;
   } catch (error) {
-    console.error("Error deleting group from DB:", error);
+    //console.error("Error deleting group from DB:", error);
     throw error;
   }
 };

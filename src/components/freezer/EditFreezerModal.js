@@ -36,7 +36,6 @@ export default function EditFreezerModal({ visible, prey, onClose }) {
   const handleUpdatePrey = () => {
     let isValid = true;
 
-    // Validate prey type
     if (!preyType.trim()) {
       setPreyTypeError("Prey type is required.");
       isValid = false;
@@ -44,7 +43,6 @@ export default function EditFreezerModal({ visible, prey, onClose }) {
       setPreyTypeError("");
     }
 
-    // Validate quantity (Required)
     if (!quantity || isNaN(quantity) || quantity <= 0) {
       setQuantityError("Quantity is required.");
       isValid = false;
@@ -52,7 +50,6 @@ export default function EditFreezerModal({ visible, prey, onClose }) {
       setQuantityError("");
     }
 
-    // Prey weight is OPTIONAL, but validate if present
     if (preyWeight && (isNaN(preyWeight) || preyWeight < 0)) {
       setPreyWeightError("Invalid weight value.");
       isValid = false;
@@ -62,7 +59,7 @@ export default function EditFreezerModal({ visible, prey, onClose }) {
 
     if (!isValid) return;
 
-    // Dispatch update action
+    // ✅ Ensure we update Redux with new values from the database
     dispatch(
       updateFreezerItem(prey.id, preyType, quantity, preyWeight, preyWeightType)
     );

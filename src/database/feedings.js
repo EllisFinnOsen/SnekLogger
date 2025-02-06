@@ -35,7 +35,7 @@ export const fetchFeedingsByPetFromDb = async (petId) => {
 
 // Fetch a single feeding by its ID
 export const fetchFeedingByIdFromDb = async (feedingId) => {
-  console.log("Fetching feeding from DB for ID:", feedingId);
+  //console.log("Fetching feeding from DB for ID:", feedingId);
   try {
     const db = await openDatabase();
     const result = await db.getFirstAsync(
@@ -55,7 +55,7 @@ export const fetchFeedingByIdFromDb = async (feedingId) => {
       }
     );
   } catch (error) {
-    console.error("Error fetching feeding by ID:", error);
+    //console.error("Error fetching feeding by ID:", error);
     throw error;
   }
 };
@@ -99,7 +99,7 @@ export const updateFeedingInDb = async (
     );
     return result;
   } catch (error) {
-    console.error("Error updating feeding in DB:", error);
+    //console.error("Error updating feeding in DB:", error);
     throw error;
   }
 };
@@ -134,7 +134,7 @@ export const insertFeedingInDb = async ({
 
     return result.lastInsertRowId; // Return the ID of the newly created feeding
   } catch (error) {
-    console.error("Error inserting feeding in DB:", error);
+    //console.error("Error inserting feeding in DB:", error);
     throw error;
   }
 };

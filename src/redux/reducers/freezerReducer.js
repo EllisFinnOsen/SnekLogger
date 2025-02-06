@@ -42,7 +42,13 @@ export default function freezerReducer(state = initialState, action) {
         ...state,
         items: state.items.map((item) =>
           item.id === action.payload.id
-            ? { ...item, ...action.payload } // Merge all updated fields
+            ? {
+                ...item,
+                preyType: action.payload.preyType,
+                quantity: action.payload.quantity, // ✅ Correctly updating quantity
+                weight: action.payload.preyWeight,
+                weightType: action.payload.preyWeightType,
+              }
             : item
         ),
       };

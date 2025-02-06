@@ -32,7 +32,7 @@ export default function HomeScreen({ navigation }) {
         dispatch(fetchPets());
         dispatch(fetchUserProfile()); // Fetch user profile on load
       } catch (error) {
-        console.error("Error setting up database:", error);
+        //console.error("Error setting up database:", error);
       }
     };
 

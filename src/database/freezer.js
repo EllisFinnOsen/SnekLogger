@@ -11,13 +11,6 @@ export const addPreyToFreezer = async (
       throw new Error("Missing required fields in addPreyToFreezer");
     }
 
-    console.log("Adding prey to DB:", {
-      preyType,
-      quantity,
-      weight,
-      weightType,
-    }); // 🛠 Log before DB call
-
     const db = await openDatabase();
     const result = await db.runAsync(
       `INSERT INTO freezer (preyType, quantity, weight, weightType)
@@ -25,11 +18,11 @@ export const addPreyToFreezer = async (
       [preyType, quantity, weight, weightType]
     );
 
-    console.log("Inserted prey, result:", result); // 🛠 Log DB result
+    //console.log("Inserted prey, result:", result); // 🛠 Log DB result
 
     return result.lastInsertRowId;
   } catch (error) {
-    console.error("Error adding prey to freezer:", error);
+    //console.error("Error adding prey to freezer:", error);
     throw error;
   }
 };
@@ -39,7 +32,7 @@ export const fetchFreezerItems = async () => {
     const db = await openDatabase();
     return await db.getAllAsync("SELECT * FROM freezer WHERE quantity > 0");
   } catch (error) {
-    console.error("Error fetching freezer items:", error);
+    //console.error("Error fetching freezer items:", error);
     throw error;
   }
 };
@@ -47,30 +40,32 @@ export const fetchFreezerItems = async () => {
 export const updateFreezerItemInDB = async (id, updatedData) => {
   try {
     const db = await openDatabase();
+
     await db.runAsync(
       `UPDATE freezer SET preyType = ?, quantity = ?, weight = ?, weightType = ? WHERE id = ?`,
       [
         updatedData.preyType,
         updatedData.quantity,
-        updatedData.weight,
-        updatedData.weightType,
+        updatedData.preyWeight, // ✅ Fix naming
+        updatedData.preyWeightType,
         id,
       ]
     );
 
-    // Fetch and return the updated item
+    // ✅ Fetch the updated item and return it
     const result = await db.getFirstAsync(
       `SELECT * FROM freezer WHERE id = ?`,
       [id]
     );
 
-    return result; // Return updated object
+    return result; // ✅ This ensures Redux gets the latest data
   } catch (error) {
     console.error("Error updating freezer item:", error);
     throw error;
   }
 };
 
+// File: freezer.js
 export const linkFeedingToFreezer = async (
   feedingId,
   freezerId,
@@ -78,25 +73,32 @@ export const linkFeedingToFreezer = async (
 ) => {
   try {
     const db = await openDatabase();
+
+    // Insert the feeding-freezer relationship
     await db.runAsync(
       `INSERT INTO feeding_freezer (feedingId, freezerId, quantityUsed)
          VALUES (?, ?, ?)`,
       [feedingId, freezerId, quantityUsed]
     );
 
-    // Reduce the quantity in the freezer
+    // Reduce the quantity in the freezer table
     const freezerItem = await db.getFirstAsync(
       "SELECT quantity FROM freezer WHERE id = ?",
       [freezerId]
     );
+
     if (freezerItem && freezerItem.quantity >= quantityUsed) {
-      const newQuantity = freezerItem.quantity - quantityUsed;
-      await updateFreezerItem(freezerId, newQuantity);
+      const newQuantity = Math.max(0, freezerItem.quantity - quantityUsed);
+
+      await db.runAsync("UPDATE freezer SET quantity = ? WHERE id = ?", [
+        newQuantity,
+        freezerId,
+      ]);
     } else {
-      console.warn("Not enough prey in freezer!");
+      //console.warn("Not enough prey in freezer!");
     }
   } catch (error) {
-    console.error("Error linking feeding to freezer:", error);
+    //console.error("Error linking feeding to freezer:", error);
     throw error;
   }
 };
@@ -113,7 +115,7 @@ export const fetchFeedingFreezerUsage = async (feedingId) => {
     );
     return result;
   } catch (error) {
-    console.error("Error fetching feeding freezer usage:", error);
+    //console.error("Error fetching feeding freezer usage:", error);
     throw error;
   }
 };
@@ -122,9 +124,9 @@ export const deletePreyFromFreezer = async (freezerId) => {
   try {
     const db = await openDatabase();
     await db.runAsync("DELETE FROM freezer WHERE id = ?", [freezerId]);
-    console.log("Prey item deleted from freezer");
+    //console.log("Prey item deleted from freezer");
   } catch (error) {
-    console.error("Error deleting prey from freezer:", error);
+    //console.error("Error deleting prey from freezer:", error);
     throw error;
   }
 };

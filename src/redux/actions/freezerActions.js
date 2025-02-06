@@ -4,6 +4,7 @@ import {
   fetchFeedingFreezerUsage,
   fetchFreezerItems,
   linkFeedingToFreezer,
+  updateFreezerItemInDB,
 } from "@/database/freezer";
 import {
   ADD_FREEZER_ITEM,
@@ -12,6 +13,7 @@ import {
   FETCH_FREEZER_ITEMS,
   LINK_FEEDING_TO_FREEZER,
   SET_LOW_STOCK_WARNINGS,
+  UPDATE_FREEZER_ITEM,
 } from "./actionTypes";
 
 const LOW_STOCK_THRESHOLD = 5;
@@ -22,7 +24,7 @@ export const fetchFreezerItemsAction = () => async (dispatch) => {
     const freezerItems = await fetchFreezerItems(); // ✅ Correct function call
     dispatch({ type: FETCH_FREEZER_ITEMS, payload: freezerItems });
   } catch (error) {
-    console.error("Error fetching freezer items:", error);
+    //console.error("Error fetching freezer items:", error);
   }
 };
 
@@ -30,13 +32,6 @@ export const fetchFreezerItemsAction = () => async (dispatch) => {
 export const addFreezerItem =
   (preyType, quantity, weight, weightType) => async (dispatch) => {
     try {
-      console.log("Attempting to add prey:", {
-        preyType,
-        quantity,
-        weight,
-        weightType,
-      }); // 🛠 Debugging log
-
       const freezerItemId = await addPreyToFreezer(
         preyType,
         quantity,
@@ -44,14 +39,14 @@ export const addFreezerItem =
         weightType
       );
 
-      console.log("Prey added with ID:", freezerItemId); // 🛠 Log new ID
+      //console.log("Prey added with ID:", freezerItemId); // 🛠 Log new ID
 
       dispatch({
         type: ADD_FREEZER_ITEM,
         payload: { id: freezerItemId, preyType, quantity, weight, weightType },
       });
     } catch (error) {
-      console.error("Error adding prey to freezer:", error);
+      //console.error("Error adding prey to freezer:", error);
     }
   };
 
@@ -61,21 +56,22 @@ export const deleteFreezerItem = (freezerId) => async (dispatch) => {
     await deletePreyFromFreezer(freezerId);
     dispatch({ type: DELETE_FREEZER_ITEM, payload: freezerId }); // ✅ Ensuring correct ID
   } catch (error) {
-    console.error("Error deleting prey from freezer:", error);
+    //console.error("Error deleting prey from freezer:", error);
   }
 };
 
-// Link a feeding to a freezer item (reducing inventory)
 export const linkFeedingWithFreezer =
   (feedingId, freezerId, quantityUsed) => async (dispatch) => {
     try {
       await linkFeedingToFreezer(feedingId, freezerId, quantityUsed);
-      dispatch({
-        type: LINK_FEEDING_TO_FREEZER,
-        payload: { feedingId, freezerId, quantityUsed },
-      });
+
+      // Fetch the updated freezer list after updating DB
+      const updatedFreezerItems = await fetchFreezerItems();
+
+      // Update Redux store with new freezer state
+      dispatch({ type: "FETCH_FREEZER_ITEMS", payload: updatedFreezerItems });
     } catch (error) {
-      console.error("Error linking feeding to freezer:", error);
+      //console.error("Error linking feeding to freezer:", error);
     }
   };
 
@@ -88,7 +84,7 @@ export const fetchFeedingFreezerLinks = (feedingId) => async (dispatch) => {
       payload: { feedingId, linkedItems },
     });
   } catch (error) {
-    console.error("Error fetching feeding freezer links:", error);
+    //console.error("Error fetching feeding freezer links:", error);
   }
 };
 
@@ -97,11 +93,11 @@ export const fetchFreezerItemsWithWarnings = () => async (dispatch) => {
   try {
     const freezerItems = await fetchFreezerItems(); // ✅ Correct function call
 
-    console.log("Fetched Freezer Items:", freezerItems); // 🔍 Debugging Log
+    //console.log("Fetched Freezer Items:", freezerItems); // 🔍 Debugging Log
 
     // Ensure freezerItems is always an array
     if (!Array.isArray(freezerItems)) {
-      console.warn("freezerItems is not an array!", freezerItems);
+      //console.warn("freezerItems is not an array!", freezerItems);
       return;
     }
 
@@ -110,13 +106,14 @@ export const fetchFreezerItemsWithWarnings = () => async (dispatch) => {
     const lowStockItems = freezerItems.filter((item) => item.quantity <= 5);
     dispatch({ type: SET_LOW_STOCK_WARNINGS, payload: lowStockItems });
   } catch (error) {
-    console.error("Error fetching freezer items:", error);
+    //console.error("Error fetching freezer items:", error);
   }
 };
 
 export const updateFreezerItem =
   (id, preyType, quantity, preyWeight, preyWeightType) => async (dispatch) => {
     try {
+      // ✅ Fetch updated item from DB after update
       const updatedItem = await updateFreezerItemInDB(id, {
         preyType,
         quantity,
@@ -126,7 +123,7 @@ export const updateFreezerItem =
 
       dispatch({
         type: UPDATE_FREEZER_ITEM,
-        payload: updatedItem, // Dispatch full updated object
+        payload: updatedItem, // ✅ Now correctly dispatching full object
       });
     } catch (error) {
       console.error("Error updating freezer item:", error);
