@@ -8,8 +8,8 @@ import { FONT, SIZES } from "@/constants/Theme";
 export default function CategoryPicker({
   label,
   selectedValue,
-  onValueChange,
-  items,
+  onValueChange = () => {},
+  items = [],
   compact = false,
 }) {
   ////console.log("CategoryPicker items:", items);
