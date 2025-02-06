@@ -1,4 +1,3 @@
-// ViewByDateForPet.js
 import React, { useEffect, useMemo } from "react";
 import { View } from "react-native";
 import { useSelector } from "react-redux";
@@ -43,8 +42,6 @@ export default function ViewByDateForPet({ petId }) {
     isAfter(parseFeedingDateForDay(feeding), today)
   );
 
-  const allFeedingsCompleted = incompleteFeedings.length === 0;
-
   let firstValidSection = null;
   let modifiedFeedings = [];
 
@@ -56,15 +53,17 @@ export default function ViewByDateForPet({ petId }) {
     modifiedFeedings = [{ id: "add-log-card" }, ...upcomingFeedings];
   }
 
-  if (petFeedings.length === 0) {
-    firstValidSection = "upcoming";
-    modifiedFeedings = [{ id: "add-log-card" }];
-  }
+  // ✅ Ensure AddLogCard is always shown in "Upcoming Feedings" if no other section has it
+  const addLogCardOnly = [{ id: "add-log-card" }];
+  const showAddLogCardInUpcoming =
+    firstValidSection === null ||
+    (lateFeedings.length > 0 && pastCompleteFeedings.length > 0);
 
   return (
     <View>
       <View style={{ height: 48 }}></View>
 
+      {/* Render Late Feedings */}
       {lateFeedings.length > 0 && (
         <FeedingsList
           feedings={lateFeedings}
@@ -74,6 +73,7 @@ export default function ViewByDateForPet({ petId }) {
         />
       )}
 
+      {/* Render Today's Feedings */}
       {firstValidSection === "today" && (
         <FeedingsList
           feedings={modifiedFeedings}
@@ -83,22 +83,22 @@ export default function ViewByDateForPet({ petId }) {
         />
       )}
 
-      {firstValidSection === "upcoming" && (
+      {/* Render Upcoming Feedings (Always has AddLogCard if no other section does) */}
+      {(firstValidSection === "upcoming" || showAddLogCardInUpcoming) && (
         <FeedingsList
-          feedings={modifiedFeedings}
+          feedings={
+            firstValidSection === "upcoming" ? modifiedFeedings : addLogCardOnly
+          }
           title="Upcoming Feedings"
           showAllLink={true}
           noFeedingsText="No upcoming feedings available"
         />
       )}
 
+      {/* Render Past Completed Feedings WITHOUT AddLogCard */}
       {pastCompleteFeedings.length > 0 && (
         <FeedingsList
-          feedings={
-            allFeedingsCompleted
-              ? [{ id: "add-log-card" }, ...pastCompleteFeedings]
-              : pastCompleteFeedings
-          }
+          feedings={pastCompleteFeedings} // ❌ No AddLogCard here
           title="Completed Feedings"
           showAllLink={false}
           noFeedingsText="No past feedings available"

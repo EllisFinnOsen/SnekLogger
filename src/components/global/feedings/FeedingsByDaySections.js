@@ -30,10 +30,6 @@ export default function FeedingsByDaySections() {
     isAfter(parseFeedingDateForDay(feeding), today)
   );
 
-  // Determine if all feedings are complete
-  const allFeedingsCompleted = incompleteFeedings.length === 0;
-
-  // Determine where to insert AddLogCard (first valid section excluding Late Feedings)
   let firstValidSection = null;
   let modifiedFeedings = [];
 
@@ -45,16 +41,17 @@ export default function FeedingsByDaySections() {
     modifiedFeedings = [{ id: "add-log-card" }, ...upcomingFeedings];
   }
 
-  // NEW: If there are absolutely no feedings, force the Upcoming section
-  if (allFeedings.length === 0) {
-    firstValidSection = "upcoming";
-    modifiedFeedings = [{ id: "add-log-card" }];
-  }
+  // ✅ Ensure AddLogCard is always shown in "Upcoming Feedings" if no other section has it
+  const addLogCardOnly = [{ id: "add-log-card" }];
+  const showAddLogCardInUpcoming =
+    firstValidSection === null ||
+    (lateFeedings.length > 0 && pastCompletedFeedings.length > 0);
 
   return (
     <View>
       <View style={{ height: 48 }}></View>
-      {/* Render Late Feedings without AddLogCard */}
+
+      {/* Render Late Feedings */}
       {lateFeedings.length > 0 && (
         <FeedingsList
           feedings={lateFeedings}
@@ -64,7 +61,7 @@ export default function FeedingsByDaySections() {
         />
       )}
 
-      {/* Render Today's Feedings with AddLogCard if it's the first valid section */}
+      {/* Render Today's Feedings */}
       {firstValidSection === "today" && (
         <FeedingsList
           feedings={modifiedFeedings}
@@ -74,24 +71,22 @@ export default function FeedingsByDaySections() {
         />
       )}
 
-      {/* Render Upcoming Feedings with AddLogCard if it's the first valid section */}
-      {firstValidSection === "upcoming" && (
+      {/* Render Upcoming Feedings (Always has AddLogCard if no other section does) */}
+      {(firstValidSection === "upcoming" || showAddLogCardInUpcoming) && (
         <FeedingsList
-          feedings={modifiedFeedings}
+          feedings={
+            firstValidSection === "upcoming" ? modifiedFeedings : addLogCardOnly
+          }
           title="Upcoming Feedings"
           showAllLink={true}
           noFeedingsText="No upcoming feedings available"
         />
       )}
 
-      {/* Render Past Completed Feedings with AddLogCard if ALL feedings are completed */}
+      {/* Render Past Completed Feedings WITHOUT AddLogCard */}
       {pastCompletedFeedings.length > 0 && (
         <FeedingsList
-          feedings={
-            allFeedingsCompleted
-              ? [{ id: "add-log-card" }, ...pastCompletedFeedings]
-              : pastCompletedFeedings
-          }
+          feedings={pastCompletedFeedings} // ❌ No AddLogCard here
           title="Completed Feedings"
           showAllLink={false}
           noFeedingsText="No past feedings available"
