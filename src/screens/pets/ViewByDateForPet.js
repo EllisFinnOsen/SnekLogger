@@ -1,5 +1,5 @@
 // ViewByDateForPet.js
-import React from "react";
+import React, { useEffect, useMemo } from "react";
 import { View } from "react-native";
 import { useSelector } from "react-redux";
 import { startOfToday, isSameDay, isAfter } from "date-fns";
@@ -7,10 +7,20 @@ import FeedingsList from "@/components/global/feedings/FeedingsList";
 import AddLogCard from "@/components/global/feedings/AddLogCard";
 
 export default function ViewByDateForPet({ petId }) {
-  const allFeedings = useSelector((state) => state.feedings);
-  const petFeedings = allFeedings.filter(
-    (feeding) => Number(feeding.petId) === Number(petId)
+  const allFeedings = useSelector(
+    (state) => state.feedings,
+    (prev, next) => JSON.stringify(prev) === JSON.stringify(next)
   );
+
+  useEffect(() => {
+    console.log("Current Redux Feedings:", allFeedings);
+  }, [allFeedings]);
+
+  const petFeedings = useMemo(() => {
+    return allFeedings.filter(
+      (feeding) => Number(feeding.petId) === Number(petId)
+    );
+  }, [allFeedings, petId]);
 
   const incompleteFeedings = petFeedings.filter(
     (feeding) => feeding.complete === 0

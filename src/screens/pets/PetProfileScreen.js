@@ -1,5 +1,5 @@
 // PetProfileScreen.js
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -21,6 +21,7 @@ export default function PetProfileScreen({ route, navigation }) {
   const dispatch = useDispatch();
   const [pet, setPet] = useState(null);
   const [selectedTab, setSelectedTab] = useState("Feedings");
+  const [hasFetchedFeedings, setHasFetchedFeedings] = useState(false);
 
   // (Optional) Use feedings state if needed for something else
   const feedings = useSelector((state) => state.feedings);
@@ -40,14 +41,14 @@ export default function PetProfileScreen({ route, navigation }) {
     }
   };
 
-  // Refresh pet details and feedings when the screen is focused
-  useFocusEffect(
-    React.useCallback(() => {
-      loadPetDetails();
-      // If your new component handles its own fetching of feedings, you may not need this dispatch
+  useEffect(() => {
+    loadPetDetails();
+
+    if (!hasFetchedFeedings) {
       dispatch(fetchFeedingsByPet(petId));
-    }, [dispatch, petId])
-  );
+      setHasFetchedFeedings(true);
+    }
+  }, []); // Empty dependency array ensures it runs only once
 
   if (!pet) return <Text>Loading pet details...</Text>;
 

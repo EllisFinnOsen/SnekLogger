@@ -8,6 +8,11 @@ import { ADD_FEEDING, FETCH_FEEDINGS, UPDATE_FEEDING } from "./actionTypes";
 export const addFeeding = (newFeeding) => async (dispatch) => {
   try {
     const feedingId = await insertFeedingInDb(newFeeding);
+    console.log("Dispatching ADD_FEEDING for feeding:", {
+      id: feedingId,
+      ...newFeeding,
+    });
+
     dispatch({
       type: ADD_FEEDING,
       payload: { id: feedingId, ...newFeeding },
