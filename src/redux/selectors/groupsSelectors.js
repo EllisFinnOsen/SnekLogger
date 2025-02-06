@@ -9,7 +9,7 @@ const selectGroupPetsByGroupId = (state, groupId) =>
 export const makeSelectGroupPets = () =>
   createSelector([selectGroupPetsByGroupId], (pets) => {
     console.log("makeSelectGroupPets: pets reference", pets);
-    return pets;
+    return [...pets]; // Ensure a new array reference is returned
   });
 
 export const selectGroupById = createSelector(

@@ -1,4 +1,5 @@
 import {
+  addPetToGroup,
   fetchGroupsForPetFromDb,
   fetchPetsByGroupIdFromDb,
   getGroupsFromDb,
@@ -39,22 +40,25 @@ export const fetchPetsByGroupId = (groupId) => async (dispatch) => {
 };
 export const addPetToGroupAction = (groupId, petId) => async (dispatch) => {
   if (!petId) {
-    //console.error("Invalid petId:", petId);
+    console.error("Invalid petId:", petId);
     return; // Stop if petId is invalid
   }
   try {
     await addPetToGroup(groupId, petId);
-    // Optionally, refresh the pet list for this group:
-    await dispatch(fetchPetsByGroupId(groupId));
-    // Dispatch an action if you want to update local redux state (optional if fetchPetsByGroupId re-fetches)
+
+    // ✅ Re-fetch updated pet list from DB
+    const pets = await fetchPetsByGroupIdFromDb(groupId);
+
+    // ✅ Update Redux state with the full pet list
     dispatch({
-      type: ADD_PET_TO_GROUP,
-      payload: { groupId, petId },
+      type: FETCH_GROUP_PETS, // 🔄 Instead of ADD_PET_TO_GROUP, update the full list
+      payload: { groupId, pets },
     });
   } catch (error) {
-    //console.error("Error adding pet to group:", error);
+    console.error("Error adding pet to group:", error);
   }
 };
+
 export const fetchGroupsForPet = (petId) => async (dispatch) => {
   try {
     const groups = await fetchGroupsForPetFromDb(petId);
@@ -71,7 +75,8 @@ export const removePetFromGroupAction =
     try {
       await removePetFromGroup(groupId, petId);
       // Optionally, re-fetch the pet list for this group:
-      await dispatch(fetchPetsByGroupIdFromDb(groupId));
+      await dispatch(fetchPetsByGroupId(groupId));
+
       dispatch({
         type: REMOVE_PET_FROM_GROUP,
         payload: { groupId, petId },

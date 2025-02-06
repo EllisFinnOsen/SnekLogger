@@ -28,11 +28,12 @@ export default function groupsReducer(state = initialState, action) {
 
     case FETCH_GROUP_PETS: {
       const { groupId, pets } = action.payload;
+
       return {
         ...state,
         groupPets: {
           ...state.groupPets,
-          [groupId]: pets,
+          [groupId]: [...pets], // Ensure full replacement
         },
       };
     }
