@@ -1,28 +1,27 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { ThemedText } from "@/components/global/ThemedText";
-import { PREY_TYPES } from "@/constants/FeedingTypes";
-import { useThemeColor } from "@/hooks/useThemeColor";
 import NestedSearchablePicker from "@/components/global/NestedSearchablePicker";
 import { fetchFreezerItems } from "@/database/freezer";
+import { PREY_TYPES } from "@/constants/FeedingTypes"; // ✅ Ensure we still include default prey types
 
 export default function PreyTypeField({
   preyType,
   setPreyType,
   setFreezerId,
   isEditing,
-  errorMessage, // Receive error message
 }) {
   const [freezerItems, setFreezerItems] = useState([]);
-  const iconColor = useThemeColor({}, "icon");
-  const errorColor = useThemeColor({}, "error");
+
   useEffect(() => {
     const loadFreezerItems = async () => {
       try {
         const items = await fetchFreezerItems();
         const formattedItems = items.map((item) => ({
-          category: `${item.preyType} (From Freezer)`,
+          category: item.preyType
+            ? `${item.preyType} (From Freezer)`
+            : "Unknown Prey (From Freezer)", // ✅ Ensure valid name
           value: item.id, // Store freezer ID
         }));
         setFreezerItems(formattedItems);
@@ -34,16 +33,21 @@ export default function PreyTypeField({
     loadFreezerItems();
   }, []);
 
+  const combinedOptions = [
+    ...PREY_TYPES.map((type) => ({ category: type, value: type })), // ✅ Add default prey types
+    ...freezerItems, // ✅ Append freezer prey options
+  ];
+
   const handleSelectPrey = (selectedValue) => {
     const selectedItem = freezerItems.find(
       (item) => item.value === selectedValue
     );
     if (selectedItem) {
       setPreyType(selectedItem.category.replace(" (From Freezer)", ""));
-      setFreezerId(selectedValue); // Store the freezer item ID
+      setFreezerId(selectedValue);
     } else {
       setPreyType(selectedValue);
-      setFreezerId(null); // Reset if it's not from freezer
+      setFreezerId(null);
     }
   };
 
@@ -51,13 +55,13 @@ export default function PreyTypeField({
     <View style={styles.fieldContainer}>
       <View style={styles.titleContainer}>
         <Ionicons style={styles.icon} name="fish" size={18} />
-        <ThemedText type="default" style={[styles.label, { color: iconColor }]}>
+        <ThemedText type="default" style={styles.label}>
           Prey Type
         </ThemedText>
       </View>
 
       <NestedSearchablePicker
-        options={freezerItems}
+        options={combinedOptions}
         selectedValue={preyType}
         onValueChange={handleSelectPrey}
         placeholder="Select prey type..."

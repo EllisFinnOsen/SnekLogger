@@ -37,15 +37,13 @@ export const addPreyToFreezer = async (
 export const fetchFreezerItems = async () => {
   try {
     const db = await openDatabase();
-    const freezerItems = await db.getAllAsync(
-      "SELECT id, preyType, quantity, weight, weightType FROM freezer WHERE quantity > 0"
+    const items = await db.getAllAsync(
+      "SELECT * FROM freezer WHERE quantity > 0"
     );
 
-    // Format for dropdown (marking items from freezer)
-    return freezerItems.map((item) => ({
-      id: item.id,
-      category: `${item.preyType} (From Freezer)`,
-      options: [`${item.preyType} - ${item.quantity} available`],
+    return items.map((item) => ({
+      ...item,
+      preyType: item.preyType || "Unknown Prey", // ✅ Ensure it's never undefined
     }));
   } catch (error) {
     console.error("Error fetching freezer items:", error);
