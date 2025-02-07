@@ -5,7 +5,7 @@ export const resetDatabase = async () => {
   try {
     const db = await openDatabase();
 
-    console.log("Resetting database...");
+    //console.log("Resetting database...");
 
     await db.execAsync(`
       PRAGMA journal_mode = WAL;
@@ -79,10 +79,10 @@ export const resetDatabase = async () => {
       );
     `);
 
-    console.log("Tables reset successfully. Now inserting mock data...");
+    //console.log("Tables reset successfully. Now inserting mock data...");
 
-    console.log("Database reset complete with fresh mock data.");
+    //console.log("Database reset complete with fresh mock data.");
   } catch (error) {
-    console.error("Error resetting database:", error);
+    //console.error("Error resetting database:", error);
   }
 };

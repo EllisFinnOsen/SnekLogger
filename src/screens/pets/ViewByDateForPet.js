@@ -12,7 +12,7 @@ export default function ViewByDateForPet({ petId }) {
   );
 
   useEffect(() => {
-    console.log("Current Redux Feedings:", allFeedings);
+    //console.log("Current Redux Feedings:", allFeedings);
   }, [allFeedings]);
 
   const petFeedings = useMemo(() => {

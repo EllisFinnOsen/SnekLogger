@@ -11,12 +11,13 @@ export const addPreyToFreezer = async (
       throw new Error("Missing required fields in addPreyToFreezer");
     }
 
-    console.log("Adding prey to DB:", {
+    /*
+   //console.log("Adding prey to DB:", {
       preyType,
       quantity,
       weight,
       weightType,
-    }); // 🛠 Log before DB call
+    }); // 🛠 Log before DB call*/
 
     const db = await openDatabase();
     const result = await db.runAsync(
@@ -25,11 +26,11 @@ export const addPreyToFreezer = async (
       [preyType, quantity, weight, weightType]
     );
 
-    console.log("Inserted prey, result:", result); // 🛠 Log DB result
+    //console.log("Inserted prey, result:", result); // 🛠 Log DB result
 
     return result.lastInsertRowId;
   } catch (error) {
-    console.error("Error adding prey to freezer:", error);
+    //console.error("Error adding prey to freezer:", error);
     throw error;
   }
 };
@@ -39,7 +40,7 @@ export const fetchFreezerItems = async () => {
     const db = await openDatabase();
     return await db.getAllAsync("SELECT * FROM freezer WHERE quantity > 0");
   } catch (error) {
-    console.error("Error fetching freezer items:", error);
+    //console.error("Error fetching freezer items:", error);
     throw error;
   }
 };
@@ -66,7 +67,7 @@ export const updateFreezerItemInDB = async (id, updatedData) => {
 
     return result; // Return updated object
   } catch (error) {
-    console.error("Error updating freezer item:", error);
+    //console.error("Error updating freezer item:", error);
     throw error;
   }
 };
@@ -78,9 +79,9 @@ export const linkFeedingToFreezer = async (feedingId, freezerId) => {
       `INSERT INTO freezer_link (feedingId, freezerId) VALUES (?, ?);`,
       [feedingId, freezerId]
     );
-    console.log(`Linked Feeding ${feedingId} to Freezer Item ${freezerId}`);
+    //console.log(`Linked Feeding ${feedingId} to Freezer Item ${freezerId}`);
   } catch (error) {
-    console.error("Error linking feeding to freezer:", error);
+    //console.error("Error linking feeding to freezer:", error);
   }
 };
 
@@ -96,7 +97,7 @@ export const fetchFeedingFreezerUsage = async (feedingId) => {
     );
     return result;
   } catch (error) {
-    console.error("Error fetching feeding freezer usage:", error);
+    //console.error("Error fetching feeding freezer usage:", error);
     throw error;
   }
 };
@@ -105,9 +106,9 @@ export const deletePreyFromFreezer = async (freezerId) => {
   try {
     const db = await openDatabase();
     await db.runAsync("DELETE FROM freezer WHERE id = ?", [freezerId]);
-    console.log("Prey item deleted from freezer");
+    //console.log("Prey item deleted from freezer");
   } catch (error) {
-    console.error("Error deleting prey from freezer:", error);
+    //console.error("Error deleting prey from freezer:", error);
     throw error;
   }
 };
@@ -128,7 +129,7 @@ export const updateFreezerQuantityBasedOnFeeding = async (
     );
 
     if (!result) {
-      console.log(`No freezer item linked to Feeding ID: ${feedingId}`);
+      //console.log(`No freezer item linked to Feeding ID: ${feedingId}`);
       return;
     }
 
@@ -136,9 +137,9 @@ export const updateFreezerQuantityBasedOnFeeding = async (
     const newQuantity = isComplete ? quantity - 1 : quantity + 1;
 
     if (newQuantity < 0) {
-      console.warn(
+      /*//console.warn(
         `Freezer quantity cannot be negative for Freezer ID: ${freezerId}`
-      );
+      );*/
       return;
     }
 
@@ -148,11 +149,11 @@ export const updateFreezerQuantityBasedOnFeeding = async (
       freezerId,
     ]);
 
-    console.log(
+    /*//console.log(
       `Updated freezer quantity for Freezer ID: ${freezerId}, New Quantity: ${newQuantity}`
-    );
+    );*/
   } catch (error) {
-    console.error("Error updating freezer quantity based on feeding:", error);
+    //console.error("Error updating freezer quantity based on feeding:", error);
   }
 };
 
@@ -166,7 +167,7 @@ export const fetchFeedingFreezerIdFromDb = async (feedingId) => {
 
     return result?.freezerId || null; // ✅ Return freezer ID if found, otherwise null
   } catch (error) {
-    console.error("Error fetching freezer ID from database:", error);
+    //console.error("Error fetching freezer ID from database:", error);
     throw error;
   }
 };
@@ -175,7 +176,7 @@ export const unlinkFeedingFromFreezer = async (feedingId) => {
   try {
     const db = await openDatabase();
 
-    console.log(`Attempting to remove freezer link for feedingId ${feedingId}`);
+    //console.log(`Attempting to remove freezer link for feedingId ${feedingId}`);
 
     // Delete the freezer link
     await db.runAsync("DELETE FROM freezer_link WHERE feedingId = ?", [
@@ -189,16 +190,17 @@ export const unlinkFeedingFromFreezer = async (feedingId) => {
     );
 
     if (!checkResult) {
-      console.log(
+      /*console.log(
         `✅ Successfully removed freezer link for feedingId ${feedingId}`
-      );
+      );*/
     } else {
-      console.error(
+      /*
+     //console.error(
         `❌ Freezer link still exists for feedingId ${feedingId}:`,
         checkResult
-      );
+      );*/
     }
   } catch (error) {
-    console.error("Error unlinking feeding from freezer:", error);
+    //console.error("Error unlinking feeding from freezer:", error);
   }
 };

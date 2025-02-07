@@ -46,15 +46,15 @@ export default function FeedingScreen() {
   // Function to fetch feeding details from the database
   const loadFeeding = async () => {
     try {
-      console.log("Fetching feeding from database:", feedingId);
+      //console.log("Fetching feeding from database:", feedingId);
       const dbFeeding = await fetchFeedingByIdFromDb(feedingId);
-      console.log("Database returned:", dbFeeding);
+      //console.log("Database returned:", dbFeeding);
       if (dbFeeding) {
         setLocalFeeding(dbFeeding);
         setIsComplete(dbFeeding.complete);
       }
     } catch (error) {
-      console.error("Error fetching feeding from database:", error);
+      //console.error("Error fetching feeding from database:", error);
     }
   };
 
@@ -62,7 +62,7 @@ export default function FeedingScreen() {
     useCallback(() => {
       const loadFeedingData = async () => {
         try {
-          console.log("Fetching feeding from database:", feedingId);
+          //console.log("Fetching feeding from database:", feedingId);
           const dbFeeding = await fetchFeedingByIdFromDb(feedingId);
           if (dbFeeding) {
             setLocalFeeding(dbFeeding);
@@ -73,7 +73,7 @@ export default function FeedingScreen() {
             setSelectedFreezerId(freezerId);
           }
         } catch (error) {
-          console.error("Error fetching feeding details:", error);
+          //console.error("Error fetching feeding details:", error);
         }
       };
 
@@ -108,7 +108,7 @@ export default function FeedingScreen() {
       // ✅ Refetch feeding details to ensure UI updates
       await loadFeeding();
     } catch (error) {
-      console.error("Error updating feeding completion status:", error);
+      //console.error("Error updating feeding completion status:", error);
     }
   };
 

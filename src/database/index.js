@@ -78,8 +78,8 @@ export const initializeDatabase = async () => {
       );
     `);
 
-    console.log("Database initialized");
+    //console.log("Database initialized");
   } catch (error) {
-    console.error("Error initializing database:", error);
+    //console.error("Error initializing database:", error);
   }
 };

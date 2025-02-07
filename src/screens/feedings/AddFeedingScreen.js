@@ -45,7 +45,7 @@ export default function AddFeedingScreen() {
 
   const handleSave = async () => {
     if (!selectedPetId) {
-      console.error("Error: No pet selected for feeding.");
+      //console.error("Error: No pet selected for feeding.");
       return;
     }
 
@@ -63,7 +63,7 @@ export default function AddFeedingScreen() {
     try {
       const insertedId = await insertFeedingInDb(newFeeding);
       if (!insertedId) {
-        console.error("Error inserting feeding into database.");
+        //console.error("Error inserting feeding into database.");
         return;
       }
 
@@ -74,7 +74,7 @@ export default function AddFeedingScreen() {
       dispatch(addFeeding({ id: insertedId, ...newFeeding }));
       navigation.goBack();
     } catch (error) {
-      console.error("Error adding feeding:", error);
+      //console.error("Error adding feeding:", error);
     }
   };
 

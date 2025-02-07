@@ -11,17 +11,17 @@ import { updateFreezerQuantityBasedOnFeeding } from "@/database/freezer";
 export const addFeeding = (newFeeding) => async (dispatch) => {
   try {
     const feedingId = await insertFeedingInDb(newFeeding);
-    console.log("Dispatching ADD_FEEDING for feeding:", {
+    /*//console.log("Dispatching ADD_FEEDING for feeding:", {
       id: feedingId,
       ...newFeeding,
-    });
+    });*/
 
     dispatch({
       type: ADD_FEEDING,
       payload: { id: feedingId, ...newFeeding },
     });
   } catch (error) {
-    console.error("Error adding new feeding:", error);
+    //console.error("Error adding new feeding:", error);
   }
 };
 
@@ -51,21 +51,21 @@ export const updateFeeding = (updatedFeeding) => async (dispatch) => {
     // ✅ Refresh Redux freezer state
     dispatch(fetchFreezerItemsAction());
   } catch (error) {
-    console.error("Error updating feeding:", error);
+    //console.error("Error updating feeding:", error);
   }
 };
 
 export const fetchFeedingsByPet = (petId) => async (dispatch) => {
   try {
-    console.log(`Fetching feedings for pet ID: ${petId}`);
+    //console.log(`Fetching feedings for pet ID: ${petId}`);
 
     const feedings = await fetchFeedingsByPetFromDb(petId);
-    console.log(`Fetched feedings for pet ${petId}:`, feedings); // 🔍 Debugging log
+    //console.log(`Fetched feedings for pet ${petId}:`, feedings); // 🔍 Debugging log
 
     dispatch({ type: FETCH_FEEDINGS, payload: feedings });
 
-    console.log("Dispatched feedings to Redux:", feedings);
+    //console.log("Dispatched feedings to Redux:", feedings);
   } catch (error) {
-    console.error("Error fetching feedings:", error);
+    //console.error("Error fetching feedings:", error);
   }
 };

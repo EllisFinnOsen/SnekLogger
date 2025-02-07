@@ -11,6 +11,7 @@ import { ThemedText } from "./ThemedText";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { SIZES } from "@/constants/Theme";
 import { Ionicons } from "@expo/vector-icons";
+import EditHeader from "./EditHeader";
 
 export default function NestedSearchablePicker({
   label,
@@ -132,6 +133,10 @@ export default function NestedSearchablePicker({
       <Modal visible={modalVisible} animationType="slide" transparent={true}>
         <View style={styles.modalOverlay}>
           <View style={[styles.modalContainer, { backgroundColor: bgColor }]}>
+            <EditHeader
+              label="Add Prey Type"
+              description="Select from the list below, or enter a custom prey type."
+            />
             {/* ✅ Remove from Freezer Button (Only if Freezer ID exists) */}
             {selectedFreezerId && (
               <TouchableOpacity
@@ -147,6 +152,7 @@ export default function NestedSearchablePicker({
               </TouchableOpacity>
             )}
             {/* Custom Input Mode */}
+
             {customMode ? (
               <View style={styles.customInputContainer}>
                 <TextInput

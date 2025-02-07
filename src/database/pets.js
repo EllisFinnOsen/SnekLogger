@@ -84,7 +84,7 @@ export const deletePetFromDb = async (petId) => {
     const result = await db.runAsync("DELETE FROM pets WHERE id = ?", [petId]);
     return result;
   } catch (error) {
-    console.error("Error deleting pet from DB:", error);
+    //console.error("Error deleting pet from DB:", error);
     throw error;
   }
 };

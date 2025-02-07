@@ -51,8 +51,8 @@ export const insertOnePet = async () => {
       `
     );
 
-    console.log("Mock data inserted successfully.");
+    //console.log("Mock data inserted successfully.");
   } catch (error) {
-    console.error("Error inserting mock data:", error);
+    //console.error("Error inserting mock data:", error);
   }
 };

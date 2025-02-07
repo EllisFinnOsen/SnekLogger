@@ -9,7 +9,7 @@ const initialState = [];
 export default function feedingsReducer(state = initialState, action) {
   switch (action.type) {
     case FETCH_FEEDINGS:
-      console.log("Redux: Updating feedings with", action.payload);
+      //console.log("Redux: Updating feedings with", action.payload);
       return [
         ...new Map(
           [...state, ...action.payload].map((f) => [f.id, f])

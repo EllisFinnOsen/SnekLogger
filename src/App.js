@@ -39,7 +39,7 @@ export default function App() {
         await insertOnePet();
         setDbInitialized(true); // Mark database as ready
       } catch (error) {
-        console.error("Error setting up database:", error);
+        //console.error("Error setting up database:", error);
       }
     };
 

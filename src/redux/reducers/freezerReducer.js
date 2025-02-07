@@ -50,9 +50,9 @@ export default function freezerReducer(state = initialState, action) {
       };
 
     case REMOVE_FREEZER_LINK:
-      console.log(
+      /*console.log(
         `Redux removing freezer link for feedingId: ${action.payload}`
-      );
+      );*/
 
       const newLinks = { ...state.freezerLinks };
       delete newLinks[action.payload]; // ✅ Ensure it's removed from Redux state

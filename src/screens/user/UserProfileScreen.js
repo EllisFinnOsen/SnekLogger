@@ -28,15 +28,15 @@ export default function UserProfileScreen() {
 
   const loadUserProfile = async () => {
     try {
-      console.log("Fetching user profile from database...");
+      //console.log("Fetching user profile from database...");
       const userData = await fetchUserProfileFromDb();
-      console.log("Database returned:", userData);
+      //console.log("Database returned:", userData);
       if (userData) {
         setUserProfile(userData); // Update local state
         dispatch(updateUserProfile(userData)); // Update Redux
       }
     } catch (error) {
-      console.error("Error fetching user profile:", error);
+      //console.error("Error fetching user profile:", error);
     }
   };
 

@@ -10,7 +10,7 @@ export const selectFeedingsByPet = createSelector(
     const result = feedings.filter(
       (feeding) => Number(feeding.petId) === petId
     );
-    console.log("selectFeedingsByPet:", { petId, result });
+    //console.log("selectFeedingsByPet:", { petId, result });
     return result;
   }
 );
@@ -21,7 +21,7 @@ export const selectFeedingById = createSelector(
     const feeding = feedings.find(
       (feeding) => Number(feeding.id) === feedingId
     );
-    console.log("selectFeedingById:", { feedingId, feeding });
+    //console.log("selectFeedingById:", { feedingId, feeding });
     return feeding || null;
   }
 );
@@ -49,7 +49,7 @@ export const selectUpcomingFeedings = createSelector(
     }
 
     selectUpcomingFeedings.lastResult = sorted;
-    console.log("selectUpcomingFeedings:", sorted);
+    //console.log("selectUpcomingFeedings:", sorted);
     return sorted;
   }
 );

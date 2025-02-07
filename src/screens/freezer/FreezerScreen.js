@@ -62,9 +62,10 @@ const FreezerScreen = () => {
               />
             ))
           ) : (
-            <Text style={{ textAlign: "center", marginTop: 20 }}>
-              No prey items in freezer.
-            </Text>
+            <ThemedText
+              type="smDetail"
+              style={{ textAlign: "center", marginTop: 20 }}
+            ></ThemedText>
           )}
 
           {/* Add Prey Modal */}

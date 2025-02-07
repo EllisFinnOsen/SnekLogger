@@ -47,14 +47,14 @@ export default function EditFeedingScreen() {
     if (!reduxFeeding) {
       const loadFeeding = async () => {
         try {
-          console.log("Fetching feeding from database:", feedingId);
+          //console.log("Fetching feeding from database:", feedingId);
           const dbFeeding = await fetchFeedingByIdFromDb(feedingId);
           if (dbFeeding) {
-            console.log("Database returned:", dbFeeding);
+            //console.log("Database returned:", dbFeeding);
             setFeeding(dbFeeding);
           }
         } catch (error) {
-          console.error("Error fetching feeding from database:", error);
+          //console.error("Error fetching feeding from database:", error);
         }
       };
 
@@ -95,11 +95,11 @@ export default function EditFeedingScreen() {
         try {
           const freezerId = await fetchFeedingFreezerIdFromDb(feeding.id);
           setSelectedFreezerId(freezerId);
-          console.log(
+          /* //console.log(
             `Loaded Freezer ID: ${freezerId} for Feeding ID: ${feeding.id}`
-          );
+          );*/
         } catch (error) {
-          console.error("Error fetching freezer ID:", error);
+          //console.error("Error fetching freezer ID:", error);
         }
       }
     };
@@ -138,23 +138,23 @@ export default function EditFeedingScreen() {
 
       // ✅ Ensure freezer link is removed if necessary
       if (selectedFreezerId) {
-        console.log(
+        /* //console.log(
           `🔗 Linking Feeding ID ${feeding.id} to Freezer ID ${selectedFreezerId}`
-        );
+        );*/
         await linkFeedingToFreezer(feeding.id, selectedFreezerId);
       } else {
-        console.log(`❄️ Removing freezer link for Feeding ID: ${feeding.id}`);
+        //console.log(`❄️ Removing freezer link for Feeding ID: ${feeding.id}`);
         await dispatch(removeFreezerLink(feeding.id));
       }
 
       // ✅ Dispatch Redux update
       dispatch(updateFeeding(updatedFeeding));
 
-      console.log(`✅ Feeding updated successfully:`, updatedFeeding);
+      //console.log(`✅ Feeding updated successfully:`, updatedFeeding);
 
       navigation.goBack();
     } catch (error) {
-      console.error("❌ Error updating feeding:", error);
+      //console.error("❌ Error updating feeding:", error);
     }
   };
 
