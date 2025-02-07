@@ -1,4 +1,7 @@
-import { updateFreezerQuantityBasedOnFeeding } from "./freezer.js";
+import {
+  unlinkFeedingFromFreezer,
+  updateFreezerQuantityBasedOnFeeding,
+} from "./freezer.js";
 import { openDatabase } from "./index.js";
 
 // Fetch all pets
@@ -147,6 +150,25 @@ export const insertFeedingInDb = async ({
     return result.lastInsertRowId;
   } catch (error) {
     //console.error("Error inserting feeding in DB:", error);
+    throw error;
+  }
+};
+
+export const deleteFeedingFromDb = async (feedingId) => {
+  try {
+    const db = await openDatabase();
+
+    // First, remove any linked freezer items
+    await unlinkFeedingFromFreezer(feedingId);
+
+    // Now, delete the feeding record
+    const result = await db.runAsync("DELETE FROM feedings WHERE id = ?", [
+      feedingId,
+    ]);
+
+    return result;
+  } catch (error) {
+    console.error("Error deleting feeding from DB:", error);
     throw error;
   }
 };

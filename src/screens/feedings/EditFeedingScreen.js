@@ -25,6 +25,8 @@ import {
   linkFeedingToFreezer,
 } from "@/database/freezer";
 import { removeFreezerLink } from "@/redux/actions"; // ✅ Import Redux action
+import { deleteFeeding } from "@/redux/actions";
+import DeleteButton from "@/components/global/DeleteButton";
 
 export default function EditFeedingScreen() {
   const route = useRoute();
@@ -162,6 +164,15 @@ export default function EditFeedingScreen() {
     navigation.goBack();
   };
 
+  const handleDelete = async () => {
+    try {
+      await dispatch(deleteFeeding(feedingId)); // ✅ Delete from DB and Redux
+      navigation.popToTop();
+    } catch (error) {
+      console.error("Error deleting feeding:", error);
+    }
+  };
+
   return (
     <ThemedScrollView contentContainerStyle={styles.container}>
       <HeaderSection
@@ -248,6 +259,7 @@ export default function EditFeedingScreen() {
           onPress={handleCancel}
           style={[styles.cancelButton, { backgroundColor: fieldColor }]}
         />
+        <DeleteButton onPress={handleDelete} />
       </View>
     </ThemedScrollView>
   );

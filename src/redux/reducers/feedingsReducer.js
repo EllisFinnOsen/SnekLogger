@@ -2,6 +2,7 @@ import {
   FETCH_FEEDINGS,
   UPDATE_FEEDING,
   ADD_FEEDING,
+  REMOVE_FEEDING,
 } from "../actions/actionTypes";
 
 const initialState = [];
@@ -29,6 +30,9 @@ export default function feedingsReducer(state = initialState, action) {
         return state; // Prevent duplicate additions
       }
       return [...state, action.payload];
+
+    case REMOVE_FEEDING:
+      return state.filter((feeding) => feeding.id !== action.payload);
 
     default:
       return state;

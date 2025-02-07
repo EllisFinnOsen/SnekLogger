@@ -21,8 +21,7 @@ export const selectFeedingById = createSelector(
     const feeding = feedings.find(
       (feeding) => Number(feeding.id) === feedingId
     );
-    //console.log("selectFeedingById:", { feedingId, feeding });
-    return feeding || null;
+    return feeding ?? selectFeedingById.lastResult ?? null;
   }
 );
 

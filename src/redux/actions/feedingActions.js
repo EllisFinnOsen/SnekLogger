@@ -1,9 +1,16 @@
 import {
+  deleteFeedingFromDb,
   fetchFeedingsByPetFromDb,
   insertFeedingInDb,
   updateFeedingInDb,
 } from "@/database/feedings";
-import { ADD_FEEDING, FETCH_FEEDINGS, UPDATE_FEEDING } from "./actionTypes";
+import {
+  ADD_FEEDING,
+  FETCH_FEEDINGS,
+  REMOVE_FEEDING,
+  REMOVE_FREEZER_LINK,
+  UPDATE_FEEDING,
+} from "./actionTypes";
 import { fetchFreezerItemsAction } from "./freezerActions";
 import { updateFreezerQuantityBasedOnFeeding } from "@/database/freezer";
 
@@ -67,5 +74,23 @@ export const fetchFeedingsByPet = (petId) => async (dispatch) => {
     //console.log("Dispatched feedings to Redux:", feedings);
   } catch (error) {
     //console.error("Error fetching feedings:", error);
+  }
+};
+
+export const deleteFeeding = (feedingId) => async (dispatch) => {
+  try {
+    // Delete from database
+    await deleteFeedingFromDb(feedingId);
+
+    // Remove freezer link from Redux state
+    dispatch({ type: REMOVE_FREEZER_LINK, payload: feedingId });
+
+    // Remove feeding from Redux state
+    dispatch({ type: REMOVE_FEEDING, payload: feedingId });
+
+    // Refresh freezer items to reflect changes
+    dispatch(fetchFreezerItemsAction());
+  } catch (error) {
+    console.error("Error deleting feeding:", error);
   }
 };
