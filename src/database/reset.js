@@ -15,7 +15,7 @@ export const resetDatabase = async () => {
       DROP TABLE IF EXISTS feedings;
       DROP TABLE IF EXISTS users;
       DROP TABLE IF EXISTS freezer;
-      DROP TABLE IF EXISTS feeding_freezer;
+      DROP TABLE IF EXISTS freezer_link;
 
       CREATE TABLE IF NOT EXISTS pets (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -70,7 +70,7 @@ export const resetDatabase = async () => {
         weightType TEXT
       );
 
-      CREATE TABLE IF NOT EXISTS feeding_freezer (
+      CREATE TABLE IF NOT EXISTS freezer_link (
         feedingId INTEGER NOT NULL,
         freezerId INTEGER NOT NULL,
         quantityUsed INTEGER NOT NULL DEFAULT 1,

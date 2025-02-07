@@ -18,9 +18,11 @@ export default function NestedSearchablePicker({
   freezerItems = [],
   selectedValue,
   onValueChange,
+  onFreezerConfirm, // Callback for linking freezer item
+  onFreezerDecline,
   placeholder = "Select an option...",
   otherLabel = "Other (Enter custom option)",
-  errorMessage = "", // Error handling
+  errorMessage = "",
 }) {
   const textColor = useThemeColor({}, "text");
   const iconColor = useThemeColor({}, "icon");
@@ -34,6 +36,9 @@ export default function NestedSearchablePicker({
   const [customMode, setCustomMode] = useState(false);
   const [customText, setCustomText] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [confirmModalVisible, setConfirmModalVisible] = useState(false);
+  const [selectedPrey, setSelectedPrey] = useState(null);
+  const [matchingFreezerItem, setMatchingFreezerItem] = useState(null);
 
   // Filter categories based on search term
   const filteredCategories = options.filter(({ category }) =>
@@ -50,12 +55,8 @@ export default function NestedSearchablePicker({
   };
 
   const handleSelectOption = (option) => {
-    if (option === otherLabel) {
-      setCustomMode(true);
-    } else {
-      onValueChange(option);
-      closeModal();
-    }
+    onValueChange(option); // Only send selected prey type
+    closeModal();
   };
 
   const handleCustomSubmit = () => {
@@ -87,7 +88,7 @@ export default function NestedSearchablePicker({
           styles.picker,
           {
             backgroundColor: bgColor,
-            borderColor: errorMessage ? errorColor : iconColor, // Red border if error
+            borderColor: errorMessage ? errorColor : iconColor,
           },
         ]}
         onPress={() => setModalVisible(true)}
@@ -142,7 +143,7 @@ export default function NestedSearchablePicker({
             ) : selectedCategory ? (
               <>
                 <FlatList
-                  data={[...selectedCategory.options, otherLabel]} // Ensure "Other" appears
+                  data={[...selectedCategory.options, otherLabel]}
                   keyExtractor={(item, index) => item + index}
                   renderItem={({ item }) => (
                     <TouchableOpacity
@@ -169,7 +170,6 @@ export default function NestedSearchablePicker({
               </>
             ) : (
               <>
-                {/* Search Input */}
                 <TextInput
                   placeholder="Search..."
                   placeholderTextColor={subtleColor}
@@ -183,11 +183,7 @@ export default function NestedSearchablePicker({
 
                 {/* List of Categories */}
                 <FlatList
-                  data={[
-                    ...filteredCategories,
-                    ...freezerItems,
-                    { category: otherLabel },
-                  ]}
+                  data={[...filteredCategories, { category: otherLabel }]}
                   keyExtractor={(item, index) => item.category + index}
                   renderItem={({ item }) => (
                     <TouchableOpacity
@@ -206,11 +202,34 @@ export default function NestedSearchablePicker({
               </>
             )}
 
-            {/* Cancel Button */}
             <TouchableOpacity onPress={closeModal} style={styles.cancelButton}>
               <ThemedText type="default" style={{ color: iconColor }}>
                 Cancel
               </ThemedText>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Confirmation Modal */}
+      <Modal visible={confirmModalVisible} transparent={true}>
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContainer, { backgroundColor: bgColor }]}>
+            <ThemedText type="default" style={{ textAlign: "center" }}>
+              You have {matchingFreezerItem?.quantity} of {selectedPrey} in your
+              freezer. Would you like to use them?
+            </ThemedText>
+            <TouchableOpacity
+              onPress={onFreezerConfirm}
+              style={styles.submitButton}
+            >
+              <ThemedText type="default">Yes</ThemedText>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={onFreezerDecline}
+              style={styles.cancelButton}
+            >
+              <ThemedText type="default">No</ThemedText>
             </TouchableOpacity>
           </View>
         </View>

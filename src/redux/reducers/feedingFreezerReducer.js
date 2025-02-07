@@ -1,13 +1,13 @@
 import {
   LINK_FEEDING_TO_FREEZER,
-  FETCH_FEEDING_FREEZER_LINKS,
+  FETCH_FEEDING_LINK_LINKS,
 } from "../actions/actionTypes";
 
 const initialState = {};
 
 export default function feedingFreezerReducer(state = initialState, action) {
   switch (action.type) {
-    case FETCH_FEEDING_FREEZER_LINKS:
+    case FETCH_FEEDING_LINK_LINKS:
       return {
         ...state,
         [action.payload.feedingId]: action.payload.linkedItems,

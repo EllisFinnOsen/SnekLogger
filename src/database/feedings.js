@@ -1,3 +1,4 @@
+import { updateFreezerQuantityBasedOnFeeding } from "./freezer.js";
 import { openDatabase } from "./index.js";
 
 // Fetch all pets
@@ -60,7 +61,6 @@ export const fetchFeedingByIdFromDb = async (feedingId) => {
   }
 };
 
-// Update feeding (e.g., feedingDate, feedingTime) in DB
 export const updateFeedingInDb = async (
   feedingId,
   petId,
@@ -69,7 +69,7 @@ export const updateFeedingInDb = async (
   preyType,
   preyWeight,
   preyWeightType,
-  notes, // Include notes
+  notes,
   complete
 ) => {
   try {
@@ -92,11 +92,15 @@ export const updateFeedingInDb = async (
         preyType,
         preyWeight ?? 0,
         preyWeightType ?? "g",
-        notes ?? "", // Ensure notes are never undefined
+        notes ?? "",
         complete ?? 0,
         feedingId,
       ]
     );
+
+    // ✅ Update freezer quantity based on the new feeding completion status
+    await updateFreezerQuantityBasedOnFeeding(feedingId, complete);
+
     return result;
   } catch (error) {
     console.error("Error updating feeding in DB:", error);

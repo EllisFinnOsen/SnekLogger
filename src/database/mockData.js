@@ -63,7 +63,7 @@ export const insertMockData = async () => {
 
     // Link feedings to freezer items
     await db.runAsync(
-      `INSERT INTO feeding_freezer (feedingId, freezerId, quantityUsed)
+      `INSERT INTO freezer_link (feedingId, freezerId, quantityUsed)
        VALUES
         (1, 1, 1),
         (2, 2, 2)

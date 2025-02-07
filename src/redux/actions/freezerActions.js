@@ -8,7 +8,7 @@ import {
 import {
   ADD_FREEZER_ITEM,
   DELETE_FREEZER_ITEM,
-  FETCH_FEEDING_FREEZER_LINKS,
+  FETCH_FEEDING_LINK_LINKS,
   FETCH_FREEZER_ITEMS,
   LINK_FEEDING_TO_FREEZER,
   SET_LOW_STOCK_WARNINGS,
@@ -84,7 +84,7 @@ export const fetchFeedingFreezerLinks = (feedingId) => async (dispatch) => {
   try {
     const linkedItems = await fetchFeedingFreezerUsage(feedingId);
     dispatch({
-      type: FETCH_FEEDING_FREEZER_LINKS,
+      type: FETCH_FEEDING_LINK_LINKS,
       payload: { feedingId, linkedItems },
     });
   } catch (error) {

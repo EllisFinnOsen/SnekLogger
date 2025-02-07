@@ -69,7 +69,7 @@ export const initializeDatabase = async () => {
         weightType TEXT
       );
 
-      CREATE TABLE IF NOT EXISTS feeding_freezer (
+      CREATE TABLE IF NOT EXISTS freezer_link (
         feedingId INTEGER NOT NULL,
         freezerId INTEGER NOT NULL,
         quantityUsed INTEGER NOT NULL DEFAULT 1,
