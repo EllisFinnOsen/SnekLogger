@@ -82,6 +82,6 @@ describe("HomePetList", () => {
     const petListComponent = getByTestId("pet-list");
     fireEvent.press(petListComponent);
 
-    expect(mockNavigate).toHaveBeenCalledWith("Collection");
+    expect(mockNavigate).toHaveBeenCalledWith("GroupScreen");
   });
 });

@@ -12,6 +12,11 @@ test("Ensure resetDatabase and insertMockData are commented out in App.js", () =
     /\bawait insertMockData\(\);/.test(appCode) &&
     !/\/\/\s*await insertMockData\(\);/.test(appCode);
 
+  const insertOnePet =
+    /\bawait insertMockData\(\);/.test(appCode) &&
+    !/\/\/\s*await insertMockData\(\);/.test(appCode);
+
   expect(resetDatabaseActive).toBe(false);
   expect(insertMockDataActive).toBe(false);
+  expect(insertOnePet).toBe(false);
 });

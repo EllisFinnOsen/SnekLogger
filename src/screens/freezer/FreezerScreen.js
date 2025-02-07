@@ -11,6 +11,7 @@ import { useThemeColor } from "@/hooks/useThemeColor";
 import CustomButton from "@/components/global/CustomButton";
 import AddFreezerModal from "@/components/freezer/AddFreezerModal";
 import { addFreezerItem, fetchFreezerItemsWithWarnings } from "@/redux/actions";
+import AddFreezerButton from "@/components/global/freezer/AddFreezerButton";
 
 const FreezerScreen = () => {
   const dispatch = useDispatch();
@@ -46,11 +47,7 @@ const FreezerScreen = () => {
         />
 
         <View style={{ flex: 1, paddingTop: 32 }}>
-          <CustomButton
-            title="+ Add to Freezer"
-            onPress={() => setModalVisible(true)}
-            style={[styles.saveButton, { backgroundColor: activeColor }]}
-          />
+          <AddFreezerButton onPress={() => setModalVisible(true)} />
 
           <View style={{ paddingBottom: 32 }} />
 

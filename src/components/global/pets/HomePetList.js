@@ -10,7 +10,7 @@ export default function HomePetList() {
       pets={pets}
       title="Your Pets"
       showAllLink={true}
-      onShowAllPress={() => navigation.navigate("Collection")}
+      onShowAllPress={() => navigation.navigate("GroupScreen")}
     />
   );
 }

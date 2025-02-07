@@ -26,7 +26,7 @@ export default function HorizontalPetsList() {
     <ThemedView style={styles.container}>
       <ThemedView style={styles.header}>
         <ThemedText type="subtitle">Your Pets</ThemedText>
-        <TouchableOpacity onPress={() => navigation.navigate("Collection")}>
+        <TouchableOpacity onPress={() => navigation.navigate("GroupScreen")}>
           <ThemedText type="link">Show all</ThemedText>
         </TouchableOpacity>
       </ThemedView>
