@@ -117,6 +117,17 @@ export const insertFeedingInDb = async ({
 }) => {
   try {
     const db = await openDatabase();
+    // Check if a feeding with the same petId, date, and time already exists
+    const existingFeeding = await db.getFirstAsync(
+      "SELECT id FROM feedings WHERE petId = ? AND feedingDate = ? AND feedingTime = ?",
+      [petId, feedingDate, feedingTime]
+    );
+
+    if (existingFeeding) {
+      console.warn("Feeding already exists, skipping insert.");
+      return existingFeeding.id; // Return existing ID instead of inserting duplicate
+    }
+
     const result = await db.runAsync(
       `INSERT INTO feedings 
         (petId, feedingDate, feedingTime, preyType, preyWeight, preyWeightType, notes, complete)
@@ -126,14 +137,14 @@ export const insertFeedingInDb = async ({
         feedingDate,
         feedingTime,
         preyType,
-        preyWeight ?? 0, // Default to 0 if missing
+        preyWeight ?? 0,
         preyWeightType ?? "g",
         notes ?? "",
-        complete ? 1 : 0, // Ensure it's stored as an integer
+        complete ? 1 : 0,
       ]
     );
 
-    return result.lastInsertRowId; // Return the ID of the newly created feeding
+    return result.lastInsertRowId;
   } catch (error) {
     console.error("Error inserting feeding in DB:", error);
     throw error;

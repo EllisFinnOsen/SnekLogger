@@ -57,9 +57,15 @@ export const updateFeeding = (updatedFeeding) => async (dispatch) => {
 
 export const fetchFeedingsByPet = (petId) => async (dispatch) => {
   try {
+    console.log(`Fetching feedings for pet ID: ${petId}`);
+
     const feedings = await fetchFeedingsByPetFromDb(petId);
+    console.log(`Fetched feedings for pet ${petId}:`, feedings); // 🔍 Debugging log
+
     dispatch({ type: FETCH_FEEDINGS, payload: feedings });
+
+    console.log("Dispatched feedings to Redux:", feedings);
   } catch (error) {
-    //feeding////console.error("Error fetching feedings:", error);
+    console.error("Error fetching feedings:", error);
   }
 };

@@ -17,13 +17,6 @@ export default function HomeScreen({ navigation }) {
 
   const [userProfile, setUserProfile] = useState(userProfileFromRedux);
 
-  // Fetch feedings *only* when pets exist
-  useEffect(() => {
-    if (pets.length > 0) {
-      pets.forEach((pet) => dispatch(fetchFeedingsByPet(pet.id)));
-    }
-  }, [dispatch, pets]);
-
   useEffect(() => {
     if (userProfileFromRedux) {
       setUserProfile(userProfileFromRedux);

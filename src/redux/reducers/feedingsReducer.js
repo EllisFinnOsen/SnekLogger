@@ -9,18 +9,12 @@ const initialState = [];
 export default function feedingsReducer(state = initialState, action) {
   switch (action.type) {
     case FETCH_FEEDINGS:
-      const newFeedings = action.payload;
-      const petId = newFeedings.length ? newFeedings[0].petId : null;
-
-      if (!petId) return state;
-
-      // Keep only unique feedings (avoid duplicate entries)
-      const existingFeedings = state.filter((f) => f.petId === petId);
-      const uniqueNewFeedings = newFeedings.filter(
-        (newF) => !existingFeedings.some((f) => f.id === newF.id)
-      );
-
-      return [...state.filter((f) => f.petId !== petId), ...uniqueNewFeedings];
+      console.log("Redux: Updating feedings with", action.payload);
+      return [
+        ...new Map(
+          [...state, ...action.payload].map((f) => [f.id, f])
+        ).values(),
+      ];
 
     case UPDATE_FEEDING:
       return state.map((feeding) =>
