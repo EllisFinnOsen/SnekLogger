@@ -18,6 +18,7 @@ import {
   fetchPets,
   fetchUserProfile,
 } from "@/redux/actions";
+import { insertOnePet } from "./database/onepet";
 
 export default function App() {
   const colorScheme = useColorScheme();
@@ -32,9 +33,10 @@ export default function App() {
   useEffect(() => {
     const setupDatabase = async () => {
       try {
-        //await resetDatabase();
+        await resetDatabase();
         await initializeDatabase();
         //await insertMockData();
+        await insertOnePet();
         setDbInitialized(true); // Mark database as ready
       } catch (error) {
         console.error("Error setting up database:", error);

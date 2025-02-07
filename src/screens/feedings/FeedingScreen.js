@@ -22,6 +22,8 @@ import { checkImageURL } from "@/utils/checkImage";
 import { updateFeeding } from "@/redux/actions";
 import { fetchFeedingByIdFromDb, updateFeedingInDb } from "@/database/feedings";
 import { fetchFeedingFreezerIdFromDb } from "@/database/freezer";
+import PreyDisplay from "@/components/global/feedings/PreyDisplay";
+import WeightDisplay from "@/components/global/feedings/WeightDisplay";
 
 export default function FeedingScreen() {
   const route = useRoute();
@@ -151,16 +153,14 @@ export default function FeedingScreen() {
 
       <View style={[styles.preyRow, { borderColor: fieldColor }]}>
         <View style={styles.preyWrap}>
-          <PreyTypeField
+          <PreyDisplay
             preyType={feeding.preyType}
-            isEditing={false}
-            selectedFreezerId={selectedFreezerId} // ✅ Pass existing freezer ID
+            selectedFreezerId={selectedFreezerId}
           />
         </View>
         <View style={styles.weightWrap}>
-          <WeightField
+          <WeightDisplay
             weight={feeding.preyWeight}
-            isEditing={false}
             weightType={feeding.preyWeightType}
           />
         </View>

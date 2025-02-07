@@ -123,7 +123,7 @@ export default function EditFeedingScreen() {
         complete: isComplete ? 1 : 0,
       };
 
-      // ✅ Update the feeding in the database first
+      // ✅ Update feeding in DB
       await updateFeedingInDb(
         feeding.id,
         selectedPetId,
@@ -136,7 +136,7 @@ export default function EditFeedingScreen() {
         isComplete ? 1 : 0
       );
 
-      // ✅ Handle freezer link updates
+      // ✅ Ensure freezer link is removed if necessary
       if (selectedFreezerId) {
         console.log(
           `🔗 Linking Feeding ID ${feeding.id} to Freezer ID ${selectedFreezerId}`

@@ -31,8 +31,10 @@ export default function PreyTypeField({
   const errorColor = useThemeColor({}, "error");
 
   useEffect(() => {
-    dispatch(fetchFreezerItemsWithWarnings());
-  }, [dispatch]);
+    if (freezerItems.length === 0) {
+      dispatch(fetchFreezerItemsWithWarnings());
+    }
+  }, [dispatch, freezerItems.length]); // ✅ Ensures freezer items are available before use
 
   // ✅ New: Ensure freezer ID updates when prop changes
   useEffect(() => {
@@ -42,34 +44,38 @@ export default function PreyTypeField({
   }, [externalFreezerId]);
 
   const handlePreySelection = (selectedPrey) => {
-    if (!hideFreezerItems) {
-      const freezerMatch = freezerItems.find(
-        (item) => item.preyType === selectedPrey
-      );
-      if (freezerMatch) {
-        setMatchingFreezerItem(freezerMatch);
-        setTempPreyType(selectedPrey);
-        setConfirmModalVisible(true);
-        return;
-      }
+    const freezerMatch = freezerItems.find(
+      (item) => item.preyType === selectedPrey
+    );
+
+    if (!hideFreezerItems && freezerMatch) {
+      setMatchingFreezerItem(freezerMatch);
+      setTempPreyType(selectedPrey);
+      setConfirmModalVisible(true);
+      return;
     }
 
+    // ✅ If preyType is not in freezer, clear selectedFreezerId
     setPreyType(selectedPrey);
     setSelectedFreezerId(null);
-    onFreezerSelection && onFreezerSelection(null); // ✅ Update external state if needed
+    onFreezerSelection && onFreezerSelection(null); // ✅ Update parent state
   };
 
   const handleConfirmFreezer = () => {
     setPreyType(tempPreyType);
     setSelectedFreezerId(matchingFreezerItem.id);
-    onFreezerSelection && onFreezerSelection(matchingFreezerItem.id); // ✅ Update external state
+    onFreezerSelection && onFreezerSelection(matchingFreezerItem.id);
     setConfirmModalVisible(false);
   };
 
   const handleDeclineFreezer = () => {
-    setPendingFreezerRemoval(true); // ✅ Mark for removal (but not yet deleted)
-    setSelectedFreezerId(null); // ✅ Remove the freezer icon from UI
-    onFreezerSelection && onFreezerSelection(null); // ✅ Ensure parent state is updated
+    setMatchingFreezerItem(null);
+    setTempPreyType(null);
+    setConfirmModalVisible(false);
+
+    // ✅ Ensure freezer link is removed
+    setSelectedFreezerId(null);
+    onFreezerSelection && onFreezerSelection(null);
   };
 
   return (
