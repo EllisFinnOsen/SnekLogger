@@ -1,5 +1,5 @@
 {
-  "name": "test-redux-app",
+  "name": "vortrack",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -43,7 +43,9 @@
     "react-redux": "^9.2.0",
     "redux": "^5.0.1",
     "redux-thunk": "^3.1.0",
-    "reselect": "^5.1.1"
+    "reselect": "^5.1.1",
+    "expo-notifications": "~0.29.13",
+    "expo-device": "~7.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

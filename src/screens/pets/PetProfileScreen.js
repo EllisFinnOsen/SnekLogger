@@ -82,7 +82,7 @@ export default function PetProfileScreen({ route, navigation }) {
           <ViewByDateForPet petId={petId} pet={pet} />
         ) : (
           <ScrollView>
-            <Text>Details about {pet.name}</Text>
+            <ThemedText>Details about {pet.name}</ThemedText>
             {/* Add additional pet details as needed */}
           </ScrollView>
         )}
