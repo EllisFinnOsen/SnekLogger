@@ -39,11 +39,9 @@ export default function HomeScreen({ navigation }) {
           </ThemedText>
           <HelloWave />
         </ThemedView>
-        {pets.length === 0 ? (
-          <ThemedText>No pets found.</ThemedText>
-        ) : (
-          <HomePetList />
-        )}
+
+        <HomePetList />
+
         <FeedingsByDaySections />
       </ThemedView>
     </ThemedScrollView>
