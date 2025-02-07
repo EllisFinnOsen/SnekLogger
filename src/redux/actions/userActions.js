@@ -10,7 +10,7 @@ export const fetchUserProfile = () => async (dispatch) => {
     const userProfile = await fetchUserProfileFromDb();
     dispatch({ type: FETCH_USER, payload: userProfile });
   } catch (error) {
-    console.error("Error fetching user profile:", error);
+    //console.error("Error fetching user profile:", error);
   }
 };
 
@@ -20,6 +20,6 @@ export const updateUserProfile = (updatedUser) => async (dispatch) => {
     await updateUserProfileInDb(updatedUser);
     dispatch({ type: UPDATE_USER, payload: updatedUser });
   } catch (error) {
-    console.error("Error updating user profile:", error);
+    //console.error("Error updating user profile:", error);
   }
 };

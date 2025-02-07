@@ -1,6 +1,6 @@
 import { openDatabase } from "./index.js";
 
-export const insertMockData = async () => {
+export const insertOnePet = async () => {
   try {
     const db = await openDatabase();
 
@@ -35,7 +35,7 @@ export const insertMockData = async () => {
     await db.runAsync(
       `INSERT INTO feedings (petId, feedingDate, feedingTime, preyType, preyWeight, preyWeightType, notes, complete)
        VALUES
-        (3, '2025-01-10', '09:00:00', 'Rat', 2.0, 'g', 'Weekly feeding', 0),
+        (3, '2025-01-10', '09:00:00', 'Dog', 2.0, 'g', 'Weekly feeding', 0),
         (2, '2025-02-02', '09:00:00', 'Pig', 2.0, 'g', 'Weekly feeding', 1)
       `
     );
@@ -48,25 +48,6 @@ export const insertMockData = async () => {
          name = excluded.name,
          photo = excluded.photo,
          birthdate = excluded.birthdate
-      `
-    );
-
-    // Insert sample freezer items
-    await db.runAsync(
-      `INSERT INTO freezer (preyType, quantity, weight, weightType)
-       VALUES
-        ('Rat', 10, 2.0, 'g'),
-        ('Mouse', 15, 1.5, 'g'),
-        ('Chick', 8, 3.0, 'g')
-      `
-    );
-
-    // Link feedings to freezer items
-    await db.runAsync(
-      `INSERT INTO freezer_link (feedingId, freezerId, quantityUsed)
-       VALUES
-        (1, 1, 1),
-        (2, 2, 2)
       `
     );
 

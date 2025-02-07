@@ -1,3 +1,7 @@
+import {
+  unlinkFeedingFromFreezer,
+  updateFreezerQuantityBasedOnFeeding,
+} from "./freezer.js";
 import { openDatabase } from "./index.js";
 
 // Fetch all pets
@@ -35,7 +39,7 @@ export const fetchFeedingsByPetFromDb = async (petId) => {
 
 // Fetch a single feeding by its ID
 export const fetchFeedingByIdFromDb = async (feedingId) => {
-  console.log("Fetching feeding from DB for ID:", feedingId);
+  //console.log("Fetching feeding from DB for ID:", feedingId);
   try {
     const db = await openDatabase();
     const result = await db.getFirstAsync(
@@ -55,12 +59,11 @@ export const fetchFeedingByIdFromDb = async (feedingId) => {
       }
     );
   } catch (error) {
-    console.error("Error fetching feeding by ID:", error);
+    //console.error("Error fetching feeding by ID:", error);
     throw error;
   }
 };
 
-// Update feeding (e.g., feedingDate, feedingTime) in DB
 export const updateFeedingInDb = async (
   feedingId,
   petId,
@@ -69,7 +72,7 @@ export const updateFeedingInDb = async (
   preyType,
   preyWeight,
   preyWeightType,
-  notes, // Include notes
+  notes,
   complete
 ) => {
   try {
@@ -92,14 +95,15 @@ export const updateFeedingInDb = async (
         preyType,
         preyWeight ?? 0,
         preyWeightType ?? "g",
-        notes ?? "", // Ensure notes are never undefined
+        notes ?? "",
         complete ?? 0,
         feedingId,
       ]
     );
+
     return result;
   } catch (error) {
-    console.error("Error updating feeding in DB:", error);
+    //console.error("Error updating feeding in DB:", error);
     throw error;
   }
 };
@@ -116,6 +120,17 @@ export const insertFeedingInDb = async ({
 }) => {
   try {
     const db = await openDatabase();
+    // Check if a feeding with the same petId, date, and time already exists
+    const existingFeeding = await db.getFirstAsync(
+      "SELECT id FROM feedings WHERE petId = ? AND feedingDate = ? AND feedingTime = ?",
+      [petId, feedingDate, feedingTime]
+    );
+
+    if (existingFeeding) {
+      //console.warn("Feeding already exists, skipping insert.");
+      return existingFeeding.id; // Return existing ID instead of inserting duplicate
+    }
+
     const result = await db.runAsync(
       `INSERT INTO feedings 
         (petId, feedingDate, feedingTime, preyType, preyWeight, preyWeightType, notes, complete)
@@ -125,16 +140,35 @@ export const insertFeedingInDb = async ({
         feedingDate,
         feedingTime,
         preyType,
-        preyWeight ?? 0, // Default to 0 if missing
+        preyWeight ?? 0,
         preyWeightType ?? "g",
         notes ?? "",
-        complete ? 1 : 0, // Ensure it's stored as an integer
+        complete ? 1 : 0,
       ]
     );
 
-    return result.lastInsertRowId; // Return the ID of the newly created feeding
+    return result.lastInsertRowId;
   } catch (error) {
-    console.error("Error inserting feeding in DB:", error);
+    //console.error("Error inserting feeding in DB:", error);
+    throw error;
+  }
+};
+
+export const deleteFeedingFromDb = async (feedingId) => {
+  try {
+    const db = await openDatabase();
+
+    // First, remove any linked freezer items
+    await unlinkFeedingFromFreezer(feedingId);
+
+    // Now, delete the feeding record
+    const result = await db.runAsync("DELETE FROM feedings WHERE id = ?", [
+      feedingId,
+    ]);
+
+    return result;
+  } catch (error) {
+    console.error("Error deleting feeding from DB:", error);
     throw error;
   }
 };

@@ -20,6 +20,13 @@ import { checkImageURL } from "@/utils/checkImage";
 import ExistingPetPicker from "@/components/global/pets/add_pet/ExistingPetPicker";
 import { fetchFeedingByIdFromDb, updateFeedingInDb } from "@/database/feedings";
 import { updateFeeding } from "@/redux/actions";
+import {
+  fetchFeedingFreezerIdFromDb,
+  linkFeedingToFreezer,
+} from "@/database/freezer";
+import { removeFreezerLink } from "@/redux/actions"; // ✅ Import Redux action
+import { deleteFeeding } from "@/redux/actions";
+import DeleteButton from "@/components/global/DeleteButton";
 
 export default function EditFeedingScreen() {
   const route = useRoute();
@@ -42,14 +49,14 @@ export default function EditFeedingScreen() {
     if (!reduxFeeding) {
       const loadFeeding = async () => {
         try {
-          console.log("Fetching feeding from database:", feedingId);
+          //console.log("Fetching feeding from database:", feedingId);
           const dbFeeding = await fetchFeedingByIdFromDb(feedingId);
           if (dbFeeding) {
-            console.log("Database returned:", dbFeeding);
+            //console.log("Database returned:", dbFeeding);
             setFeeding(dbFeeding);
           }
         } catch (error) {
-          console.error("Error fetching feeding from database:", error);
+          //console.error("Error fetching feeding from database:", error);
         }
       };
 
@@ -79,13 +86,32 @@ export default function EditFeedingScreen() {
   const [isComplete, setIsComplete] = useState(feeding.complete);
   const [showFeedingDatePicker, setShowFeedingDatePicker] = useState(false);
   const [showFeedingTimePicker, setShowFeedingTimePicker] = useState(false);
+  const [selectedFreezerId, setSelectedFreezerId] = useState(null);
+  const [pendingFreezerRemoval, setPendingFreezerRemoval] = useState(false);
 
   const selectedPet = pets.find((pet) => pet.id === selectedPetId) || {};
 
+  useEffect(() => {
+    const loadFreezerId = async () => {
+      if (feeding?.id) {
+        try {
+          const freezerId = await fetchFeedingFreezerIdFromDb(feeding.id);
+          setSelectedFreezerId(freezerId);
+          /* //console.log(
+            `Loaded Freezer ID: ${freezerId} for Feeding ID: ${feeding.id}`
+          );*/
+        } catch (error) {
+          //console.error("Error fetching freezer ID:", error);
+        }
+      }
+    };
+
+    loadFreezerId();
+  }, [feeding?.id]); // ✅ Fetch freezer ID when feeding is loaded
+
   const handleSave = async () => {
     try {
-      // ✅ Ensure feedingDate is formatted correctly before saving
-      const formattedFeedingDate = feedingDate.split("T")[0]; // Extracts YYYY-MM-DD
+      const formattedFeedingDate = feedingDate.split("T")[0];
 
       const updatedFeeding = {
         id: feeding.id,
@@ -99,11 +125,11 @@ export default function EditFeedingScreen() {
         complete: isComplete ? 1 : 0,
       };
 
-      // ✅ Update in database first
+      // ✅ Update feeding in DB
       await updateFeedingInDb(
         feeding.id,
         selectedPetId,
-        formattedFeedingDate, // Ensure correct format
+        formattedFeedingDate,
         feedingTime,
         preyType,
         preyWeight,
@@ -112,17 +138,39 @@ export default function EditFeedingScreen() {
         isComplete ? 1 : 0
       );
 
-      // ✅ Dispatch Redux update after DB update
+      // ✅ Ensure freezer link is removed if necessary
+      if (selectedFreezerId) {
+        /* //console.log(
+          `🔗 Linking Feeding ID ${feeding.id} to Freezer ID ${selectedFreezerId}`
+        );*/
+        await linkFeedingToFreezer(feeding.id, selectedFreezerId);
+      } else {
+        //console.log(`❄️ Removing freezer link for Feeding ID: ${feeding.id}`);
+        await dispatch(removeFreezerLink(feeding.id));
+      }
+
+      // ✅ Dispatch Redux update
       dispatch(updateFeeding(updatedFeeding));
+
+      //console.log(`✅ Feeding updated successfully:`, updatedFeeding);
 
       navigation.goBack();
     } catch (error) {
-      console.error("Error updating feeding:", error);
+      //console.error("❌ Error updating feeding:", error);
     }
   };
 
   const handleCancel = () => {
     navigation.goBack();
+  };
+
+  const handleDelete = async () => {
+    try {
+      await dispatch(deleteFeeding(feedingId)); // ✅ Delete from DB and Redux
+      navigation.popToTop();
+    } catch (error) {
+      console.error("Error deleting feeding:", error);
+    }
   };
 
   return (
@@ -168,9 +216,11 @@ export default function EditFeedingScreen() {
       <View style={[styles.preyRow, { borderColor: fieldColor }]}>
         <View style={styles.preyWrap}>
           <PreyTypeField
+            isEditing={true}
             preyType={preyType}
             setPreyType={setPreyType}
-            isEditing={true}
+            onFreezerSelection={setSelectedFreezerId} // ✅ Capture selected freezer ID
+            selectedFreezerId={selectedFreezerId} // ✅ Pass existing freezer ID if available
           />
         </View>
         <View style={styles.weightWrap}>
@@ -209,6 +259,7 @@ export default function EditFeedingScreen() {
           onPress={handleCancel}
           style={[styles.cancelButton, { backgroundColor: fieldColor }]}
         />
+        <DeleteButton onPress={handleDelete} />
       </View>
     </ThemedScrollView>
   );

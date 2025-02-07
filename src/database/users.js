@@ -7,7 +7,7 @@ export const fetchUserProfileFromDb = async () => {
     const result = await db.getFirstAsync("SELECT * FROM users");
     return result || { name: "", photo: "", birthdate: "" }; // Default values
   } catch (error) {
-    console.error("Error fetching user profile:", error);
+    //console.error("Error fetching user profile:", error);
     throw error;
   }
 };
@@ -25,7 +25,7 @@ export const updateUserProfileInDb = async (user) => {
       [user.name, user.photo, user.birthdate]
     );
   } catch (error) {
-    console.error("Error updating user profile in DB:", error);
+    //console.error("Error updating user profile in DB:", error);
     throw error;
   }
 };

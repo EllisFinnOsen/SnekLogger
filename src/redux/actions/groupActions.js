@@ -40,7 +40,7 @@ export const fetchPetsByGroupId = (groupId) => async (dispatch) => {
 };
 export const addPetToGroupAction = (groupId, petId) => async (dispatch) => {
   if (!petId) {
-    console.error("Invalid petId:", petId);
+    //console.error("Invalid petId:", petId);
     return; // Stop if petId is invalid
   }
   try {
@@ -55,7 +55,7 @@ export const addPetToGroupAction = (groupId, petId) => async (dispatch) => {
       payload: { groupId, pets },
     });
   } catch (error) {
-    console.error("Error adding pet to group:", error);
+    //console.error("Error adding pet to group:", error);
   }
 };
 

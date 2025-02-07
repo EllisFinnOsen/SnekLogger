@@ -89,6 +89,7 @@ export default function AddFreezerModal({ visible, onClose, onAddPrey }) {
             setPreyType={setPreyType}
             isEditing={true}
             errorMessage={preyTypeError}
+            hideFreezerItems={true}
           />
 
           <View style={styles.preyRow}>

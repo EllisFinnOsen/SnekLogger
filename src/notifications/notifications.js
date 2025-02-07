@@ -14,22 +14,22 @@ Notifications.setNotificationHandler({
 });
 
 export async function registerForPushNotificationsAsync() {
-  console.log("Requesting notification permissions...");
+  //console.log("Requesting notification permissions...");
   const { status } = await Notifications.getPermissionsAsync();
-  console.log("Notification permission status:", status);
+  //console.log("Notification permission status:", status);
 
   if (status !== "granted") {
     const { status: newStatus } = await Notifications.requestPermissionsAsync();
-    console.log("New notification permission status:", newStatus);
+    //console.log("New notification permission status:", newStatus);
 
     if (newStatus !== "granted") {
-      console.log("Push notifications permission not granted.");
+      //console.log("Push notifications permission not granted.");
       return;
     }
   }
 
   const token = (await Notifications.getExpoPushTokenAsync()).data;
-  console.log("Notification Token:", token);
+  //console.log("Notification Token:", token);
 
   return token;
 }
@@ -49,7 +49,7 @@ export async function scheduleFeedingNotifications() {
     );
 
     if (feedings.length === 0) {
-      console.log("No incomplete feedings found.");
+      //console.log("No incomplete feedings found.");
       return;
     }
 
@@ -75,7 +75,7 @@ export async function scheduleFeedingNotifications() {
           },
           trigger: { seconds: 10 }, // TESTING: Trigger after 10 seconds
         });
-        console.log(`Scheduled feeding reminder for today (pet: ${petName})`);
+        //console.log(`Scheduled feeding reminder for today (pet: ${petName})`);
       } else if (feedingDate === tomorrowDate) {
         // Tomorrow's feeding reminder
         await Notifications.scheduleNotificationAsync({
@@ -86,9 +86,9 @@ export async function scheduleFeedingNotifications() {
           },
           trigger: { seconds: 10 }, // TESTING: Trigger after 10 seconds
         });
-        console.log(
+        /*console.log(
           `Scheduled feeding reminder for tomorrow (pet: ${petName})`
-        );
+        );*/
       } else if (feedingDate < today) {
         // Missed feeding reminder
         await Notifications.scheduleNotificationAsync({
@@ -99,16 +99,16 @@ export async function scheduleFeedingNotifications() {
           },
           trigger: { seconds: 10 }, // TESTING: Trigger after 10 seconds
         });
-        console.log(`Scheduled missed feeding alert (pet: ${petName})`);
+        //console.log(`Scheduled missed feeding alert (pet: ${petName})`);
       }
     }
   } catch (error) {
-    console.error("Error scheduling feeding notifications:", error);
+    //console.error("Error scheduling feeding notifications:", error);
   }
 }
 
 export async function triggerTestNotification() {
-  console.log("Triggering test notification...");
+  //console.log("Triggering test notification...");
   try {
     await Notifications.scheduleNotificationAsync({
       content: {
@@ -118,13 +118,13 @@ export async function triggerTestNotification() {
       },
       trigger: null, // Immediate trigger
     });
-    console.log("Notification should have been triggered.");
+    //console.log("Notification should have been triggered.");
   } catch (error) {
-    console.error("Error triggering test notification:", error);
+    //console.error("Error triggering test notification:", error);
   }
 }
 
 export async function checkScheduledNotifications() {
   const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-  console.log("Scheduled Notifications:", scheduled);
+  //console.log("Scheduled Notifications:", scheduled);
 }

@@ -8,6 +8,15 @@ jest.mock("@/hooks/useThemeColor", () => ({
   useThemeColor: jest.fn(),
 }));
 
+// Mock FONT constants
+jest.mock("@/constants/Theme", () => ({
+  FONT: {
+    regular: "System-Regular",
+    bold: "System-Bold",
+    medium: "System-Medium",
+  },
+}));
+
 describe("ThemedText", () => {
   beforeEach(() => {
     useThemeColor.mockImplementation(({ light, dark }, colorName) => "#000000"); // Always return black for text color
@@ -29,7 +38,11 @@ describe("ThemedText", () => {
     expect(textElement.props.style).toEqual(
       expect.arrayContaining([
         { color: "#000000" }, // From useThemeColor mock
-        expect.objectContaining({ fontSize: 32, lineHeight: 32 }), // Title style
+        expect.objectContaining({
+          fontSize: 32,
+          lineHeight: 32,
+          fontFamily: "System-Bold",
+        }), // Title style from FONT.bold
       ])
     );
   });
@@ -43,7 +56,27 @@ describe("ThemedText", () => {
     expect(textElement.props.style).toEqual(
       expect.arrayContaining([
         { color: "#000000" },
-        expect.objectContaining({ fontSize: 20 }), // Subtitle style
+        expect.objectContaining({
+          fontSize: 20,
+          fontFamily: "System-Bold",
+        }), // Subtitle style
+      ])
+    );
+  });
+
+  test("applies correct styles for type 'smDetail'", () => {
+    const { getByText } = render(
+      <ThemedText type="smDetail">Small Detail</ThemedText>
+    );
+
+    const textElement = getByText("Small Detail");
+    expect(textElement.props.style).toEqual(
+      expect.arrayContaining([
+        { color: "#000000" },
+        expect.objectContaining({
+          fontSize: 12,
+          fontFamily: "System-Medium",
+        }), // smDetail style
       ])
     );
   });
@@ -60,7 +93,8 @@ describe("ThemedText", () => {
         expect.objectContaining({
           fontSize: 16,
           lineHeight: 30,
-          color: "#0a7ea4",
+          fontFamily: "System-Regular",
+          opacity: 0.75,
         }), // Link style
       ])
     );

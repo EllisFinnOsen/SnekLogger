@@ -11,12 +11,13 @@ export const addPreyToFreezer = async (
       throw new Error("Missing required fields in addPreyToFreezer");
     }
 
-    console.log("Adding prey to DB:", {
+    /*
+   //console.log("Adding prey to DB:", {
       preyType,
       quantity,
       weight,
       weightType,
-    }); // 🛠 Log before DB call
+    }); // 🛠 Log before DB call*/
 
     const db = await openDatabase();
     const result = await db.runAsync(
@@ -25,11 +26,11 @@ export const addPreyToFreezer = async (
       [preyType, quantity, weight, weightType]
     );
 
-    console.log("Inserted prey, result:", result); // 🛠 Log DB result
+    //console.log("Inserted prey, result:", result); // 🛠 Log DB result
 
     return result.lastInsertRowId;
   } catch (error) {
-    console.error("Error adding prey to freezer:", error);
+    //console.error("Error adding prey to freezer:", error);
     throw error;
   }
 };
@@ -39,7 +40,7 @@ export const fetchFreezerItems = async () => {
     const db = await openDatabase();
     return await db.getAllAsync("SELECT * FROM freezer WHERE quantity > 0");
   } catch (error) {
-    console.error("Error fetching freezer items:", error);
+    //console.error("Error fetching freezer items:", error);
     throw error;
   }
 };
@@ -66,38 +67,21 @@ export const updateFreezerItemInDB = async (id, updatedData) => {
 
     return result; // Return updated object
   } catch (error) {
-    console.error("Error updating freezer item:", error);
+    //console.error("Error updating freezer item:", error);
     throw error;
   }
 };
 
-export const linkFeedingToFreezer = async (
-  feedingId,
-  freezerId,
-  quantityUsed
-) => {
+export const linkFeedingToFreezer = async (feedingId, freezerId) => {
   try {
     const db = await openDatabase();
     await db.runAsync(
-      `INSERT INTO feeding_freezer (feedingId, freezerId, quantityUsed)
-         VALUES (?, ?, ?)`,
-      [feedingId, freezerId, quantityUsed]
+      `INSERT INTO freezer_link (feedingId, freezerId) VALUES (?, ?);`,
+      [feedingId, freezerId]
     );
-
-    // Reduce the quantity in the freezer
-    const freezerItem = await db.getFirstAsync(
-      "SELECT quantity FROM freezer WHERE id = ?",
-      [freezerId]
-    );
-    if (freezerItem && freezerItem.quantity >= quantityUsed) {
-      const newQuantity = freezerItem.quantity - quantityUsed;
-      await updateFreezerItem(freezerId, newQuantity);
-    } else {
-      console.warn("Not enough prey in freezer!");
-    }
+    //console.log(`Linked Feeding ${feedingId} to Freezer Item ${freezerId}`);
   } catch (error) {
-    console.error("Error linking feeding to freezer:", error);
-    throw error;
+    //console.error("Error linking feeding to freezer:", error);
   }
 };
 
@@ -106,14 +90,14 @@ export const fetchFeedingFreezerUsage = async (feedingId) => {
     const db = await openDatabase();
     const result = await db.getAllAsync(
       `SELECT ffl.*, fr.preyType, fr.preyWeight, fr.preyWeightType 
-         FROM feeding_freezer_link ffl
+         FROM freezer_link_link ffl
          INNER JOIN freezer fr ON ffl.freezerId = fr.id
          WHERE ffl.feedingId = ?`,
       [feedingId]
     );
     return result;
   } catch (error) {
-    console.error("Error fetching feeding freezer usage:", error);
+    //console.error("Error fetching feeding freezer usage:", error);
     throw error;
   }
 };
@@ -122,9 +106,101 @@ export const deletePreyFromFreezer = async (freezerId) => {
   try {
     const db = await openDatabase();
     await db.runAsync("DELETE FROM freezer WHERE id = ?", [freezerId]);
-    console.log("Prey item deleted from freezer");
+    //console.log("Prey item deleted from freezer");
   } catch (error) {
-    console.error("Error deleting prey from freezer:", error);
+    //console.error("Error deleting prey from freezer:", error);
     throw error;
+  }
+};
+
+export const updateFreezerQuantityBasedOnFeeding = async (
+  feedingId,
+  isComplete
+) => {
+  try {
+    const db = await openDatabase();
+
+    // Fetch the linked freezer item
+    const result = await db.getFirstAsync(
+      `SELECT fr.id, fr.quantity FROM freezer_link fl
+       INNER JOIN freezer fr ON fl.freezerId = fr.id
+       WHERE fl.feedingId = ?`,
+      [feedingId]
+    );
+
+    if (!result) {
+      //console.log(`No freezer item linked to Feeding ID: ${feedingId}`);
+      return;
+    }
+
+    const { id: freezerId, quantity } = result;
+    const newQuantity = isComplete ? quantity - 1 : quantity + 1;
+
+    if (newQuantity < 0) {
+      /*//console.warn(
+        `Freezer quantity cannot be negative for Freezer ID: ${freezerId}`
+      );*/
+      return;
+    }
+
+    // Update the freezer quantity
+    await db.runAsync(`UPDATE freezer SET quantity = ? WHERE id = ?`, [
+      newQuantity,
+      freezerId,
+    ]);
+
+    /*//console.log(
+      `Updated freezer quantity for Freezer ID: ${freezerId}, New Quantity: ${newQuantity}`
+    );*/
+  } catch (error) {
+    //console.error("Error updating freezer quantity based on feeding:", error);
+  }
+};
+
+export const fetchFeedingFreezerIdFromDb = async (feedingId) => {
+  try {
+    const db = await openDatabase();
+    const result = await db.getFirstAsync(
+      "SELECT freezerId FROM freezer_link WHERE feedingId = ?",
+      [feedingId]
+    );
+
+    return result?.freezerId || null; // ✅ Return freezer ID if found, otherwise null
+  } catch (error) {
+    //console.error("Error fetching freezer ID from database:", error);
+    throw error;
+  }
+};
+
+export const unlinkFeedingFromFreezer = async (feedingId) => {
+  try {
+    const db = await openDatabase();
+
+    //console.log(`Attempting to remove freezer link for feedingId ${feedingId}`);
+
+    // Delete the freezer link
+    await db.runAsync("DELETE FROM freezer_link WHERE feedingId = ?", [
+      feedingId,
+    ]);
+
+    // ✅ Verify if the deletion was successful
+    const checkResult = await db.getFirstAsync(
+      "SELECT * FROM freezer_link WHERE feedingId = ?",
+      [feedingId]
+    );
+
+    if (!checkResult) {
+      /*console.log(
+        `✅ Successfully removed freezer link for feedingId ${feedingId}`
+      );*/
+    } else {
+      /*
+     //console.error(
+        `❌ Freezer link still exists for feedingId ${feedingId}:`,
+        checkResult
+      );*/
+    }
+  } catch (error) {
+    //console.error("Error unlinking feeding from freezer:", error);
   }
 };

@@ -37,8 +37,8 @@ export default function EditUserProfileScreen() {
 
   // Debug logs
   useEffect(() => {
-    console.log("Initial Redux state:", userProfileFromRedux);
-    console.log("Initial local state - Birthdate:", birthdate);
+    //console.log("Initial Redux state:", userProfileFromRedux);
+    //console.log("Initial local state - Birthdate:", birthdate);
   }, []);
 
   // Load user profile from the database if Redux state is empty
@@ -48,16 +48,16 @@ export default function EditUserProfileScreen() {
       try {
         if (!userProfileFromRedux) {
           const userData = await fetchUserProfileFromDb();
-          console.log("Fetched user profile from DB:", userData);
+          //console.log("Fetched user profile from DB:", userData);
           if (userData) {
             setName(userData.name || "");
             setPhoto(userData.photo || "");
             setBirthdate(userData.birthdate || "");
-            console.log("Setting birthdate from DB:", userData.birthdate);
+            //console.log("Setting birthdate from DB:", userData.birthdate);
           }
         }
       } catch (error) {
-        console.error("Error fetching user profile:", error);
+        //console.error("Error fetching user profile:", error);
       } finally {
         setIsLoading(false);
       }
@@ -69,10 +69,10 @@ export default function EditUserProfileScreen() {
   // Ensure Redux updates reflect in the state
   useEffect(() => {
     if (userProfileFromRedux) {
-      console.log(
+      /*//console.log(
         "Updated Redux state - Birthdate:",
         userProfileFromRedux.birthdate
-      );
+      );*/
       setName(userProfileFromRedux.name || "");
       setPhoto(userProfileFromRedux.photo || "");
       setBirthdate(userProfileFromRedux.birthdate || ""); // Ensure update
@@ -82,15 +82,15 @@ export default function EditUserProfileScreen() {
   // Save updated user profile
   const handleSave = async () => {
     const updatedUser = { name, photo, birthdate };
-    console.log("Saving profile with birthdate:", updatedUser);
+    //console.log("Saving profile with birthdate:", updatedUser);
 
     try {
       await updateUserProfileInDb(updatedUser);
       dispatch(updateUserProfile(updatedUser)); // Update Redux store
-      console.log("Updated Redux state with:", updatedUser);
+      //console.log("Updated Redux state with:", updatedUser);
       navigation.goBack();
     } catch (error) {
-      console.error("Error updating profile:", error);
+      //console.error("Error updating profile:", error);
     }
   };
 

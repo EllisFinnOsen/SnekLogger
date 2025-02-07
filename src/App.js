@@ -13,7 +13,12 @@ import { Provider as PaperProvider } from "react-native-paper";
 import { initializeDatabase } from "@/database";
 import { insertMockData } from "@/database/mockData";
 import { resetDatabase } from "@/database/reset";
-import { fetchPets, fetchUserProfile } from "@/redux/actions";
+import {
+  fetchFeedingsByPet,
+  fetchPets,
+  fetchUserProfile,
+} from "@/redux/actions";
+import { insertOnePet } from "./database/onepet";
 
 export default function App() {
   const colorScheme = useColorScheme();
@@ -33,20 +38,33 @@ export default function App() {
         //await insertMockData();
         setDbInitialized(true); // Mark database as ready
       } catch (error) {
-        console.error("Error setting up database:", error);
+        //console.error("Error setting up database:", error);
       }
     };
 
     setupDatabase();
   }, []);
 
-  // Fetch pets and user profile after database is ready
   useEffect(() => {
     if (dbInitialized) {
       store.dispatch(fetchPets());
       store.dispatch(fetchUserProfile());
     }
   }, [dbInitialized]);
+
+  useEffect(() => {
+    const unsubscribe = store.subscribe(() => {
+      const state = store.getState();
+      const pets = state.pets.pets || [];
+
+      if (pets.length > 0) {
+        pets.forEach((pet) => store.dispatch(fetchFeedingsByPet(pet.id)));
+        unsubscribe(); // Prevent unnecessary re-renders
+      }
+    });
+
+    return unsubscribe;
+  }, []);
 
   if (!loaded) {
     return null;

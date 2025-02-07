@@ -21,6 +21,9 @@ import { useThemeColor } from "@/hooks/useThemeColor";
 import { checkImageURL } from "@/utils/checkImage";
 import { updateFeeding } from "@/redux/actions";
 import { fetchFeedingByIdFromDb, updateFeedingInDb } from "@/database/feedings";
+import { fetchFeedingFreezerIdFromDb } from "@/database/freezer";
+import PreyDisplay from "@/components/global/feedings/PreyDisplay";
+import WeightDisplay from "@/components/global/feedings/WeightDisplay";
 
 export default function FeedingScreen() {
   const route = useRoute();
@@ -37,25 +40,44 @@ export default function FeedingScreen() {
 
   const feedings = useSelector((state) => state.feedings.feedings || []);
   const feedingFromRedux = feedings.find((f) => f.id === feedingId) || null;
+  const freezerLinks = useSelector((state) => state.freezer.freezerLinks);
+  const [selectedFreezerId, setSelectedFreezerId] = useState(null);
 
   // Function to fetch feeding details from the database
   const loadFeeding = async () => {
     try {
-      console.log("Fetching feeding from database:", feedingId);
+      //console.log("Fetching feeding from database:", feedingId);
       const dbFeeding = await fetchFeedingByIdFromDb(feedingId);
-      console.log("Database returned:", dbFeeding);
+      //console.log("Database returned:", dbFeeding);
       if (dbFeeding) {
         setLocalFeeding(dbFeeding);
         setIsComplete(dbFeeding.complete);
       }
     } catch (error) {
-      console.error("Error fetching feeding from database:", error);
+      //console.error("Error fetching feeding from database:", error);
     }
   };
 
   useFocusEffect(
     useCallback(() => {
-      loadFeeding();
+      const loadFeedingData = async () => {
+        try {
+          //console.log("Fetching feeding from database:", feedingId);
+          const dbFeeding = await fetchFeedingByIdFromDb(feedingId);
+          if (dbFeeding) {
+            setLocalFeeding(dbFeeding);
+            setIsComplete(dbFeeding.complete);
+
+            // ✅ Fetch freezer ID linked to this feeding
+            const freezerId = await fetchFeedingFreezerIdFromDb(feedingId);
+            setSelectedFreezerId(freezerId);
+          }
+        } catch (error) {
+          //console.error("Error fetching feeding details:", error);
+        }
+      };
+
+      loadFeedingData();
     }, [feedingId])
   );
 
@@ -79,11 +101,14 @@ export default function FeedingScreen() {
         newCompleteValue
       );
 
-      dispatch(updateFeeding({ ...feeding, complete: newCompleteValue })); // ✅ Use dispatch correctly
+      dispatch(updateFeeding({ ...feeding, complete: newCompleteValue }));
 
       setIsComplete(newCompleteValue);
+
+      // ✅ Refetch feeding details to ensure UI updates
+      await loadFeeding();
     } catch (error) {
-      console.error("Error updating feeding completion status:", error);
+      //console.error("Error updating feeding completion status:", error);
     }
   };
 
@@ -128,12 +153,14 @@ export default function FeedingScreen() {
 
       <View style={[styles.preyRow, { borderColor: fieldColor }]}>
         <View style={styles.preyWrap}>
-          <PreyTypeField preyType={feeding.preyType} isEditing={false} />
+          <PreyDisplay
+            preyType={feeding.preyType}
+            selectedFreezerId={selectedFreezerId}
+          />
         </View>
         <View style={styles.weightWrap}>
-          <WeightField
+          <WeightDisplay
             weight={feeding.preyWeight}
-            isEditing={false}
             weightType={feeding.preyWeightType}
           />
         </View>

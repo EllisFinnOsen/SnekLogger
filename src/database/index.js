@@ -69,7 +69,7 @@ export const initializeDatabase = async () => {
         weightType TEXT
       );
 
-      CREATE TABLE IF NOT EXISTS feeding_freezer (
+      CREATE TABLE IF NOT EXISTS freezer_link (
         feedingId INTEGER NOT NULL,
         freezerId INTEGER NOT NULL,
         quantityUsed INTEGER NOT NULL DEFAULT 1,
@@ -78,8 +78,8 @@ export const initializeDatabase = async () => {
       );
     `);
 
-    console.log("Database initialized");
+    //console.log("Database initialized");
   } catch (error) {
-    console.error("Error initializing database:", error);
+    //console.error("Error initializing database:", error);
   }
 };

@@ -17,6 +17,7 @@ import NotesField from "@/components/global/pets/add_pet/NotesField";
 import { checkImageURL } from "@/utils/checkImage";
 import { insertFeedingInDb } from "@/database/feedings";
 import { addFeeding } from "@/redux/actions";
+import { linkFeedingToFreezer } from "@/database/freezer";
 
 export default function AddFeedingScreen() {
   const dispatch = useDispatch();
@@ -37,22 +38,20 @@ export default function AddFeedingScreen() {
   const [isComplete, setIsComplete] = useState(false);
   const [showFeedingDatePicker, setShowFeedingDatePicker] = useState(false);
   const [showFeedingTimePicker, setShowFeedingTimePicker] = useState(false);
+  const [selectedFreezerId, setSelectedFreezerId] = useState(null);
 
   const cancelColor = useThemeColor({}, "field");
   const activeColor = useThemeColor({}, "active");
 
   const handleSave = async () => {
     if (!selectedPetId) {
-      console.error("Error: No pet selected for feeding.");
+      //console.error("Error: No pet selected for feeding.");
       return;
     }
 
-    // ✅ Ensure feedingDate is always in `YYYY-MM-DD` format
-    const formattedDate = feedingDate.split("T")[0];
-
     const newFeeding = {
       petId: selectedPetId,
-      feedingDate: formattedDate, // ✅ Ensures proper format
+      feedingDate,
       feedingTime,
       preyType,
       preyWeight,
@@ -62,20 +61,20 @@ export default function AddFeedingScreen() {
     };
 
     try {
-      // ✅ Insert into database first
       const insertedId = await insertFeedingInDb(newFeeding);
       if (!insertedId) {
-        console.error("Error inserting feeding into database.");
+        //console.error("Error inserting feeding into database.");
         return;
       }
 
-      // ✅ Dispatch Redux action only after successful DB write
-      dispatch(addFeeding({ id: insertedId, ...newFeeding }));
+      if (selectedFreezerId) {
+        await linkFeedingToFreezer(insertedId, selectedFreezerId);
+      }
 
-      console.log("Feeding added successfully:", newFeeding);
+      dispatch(addFeeding({ id: insertedId, ...newFeeding }));
       navigation.goBack();
     } catch (error) {
-      console.error("Error adding feeding:", error);
+      //console.error("Error adding feeding:", error);
     }
   };
 
@@ -129,6 +128,7 @@ export default function AddFeedingScreen() {
             isEditing={true}
             preyType={preyType}
             setPreyType={setPreyType}
+            onFreezerSelection={setSelectedFreezerId} // ✅ Capture selected freezer ID
           />
         </View>
         <View style={styles.weightWrap}>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 import { useSelector } from "react-redux";
 import { startOfToday, isSameDay, isAfter } from "date-fns";
@@ -7,12 +7,31 @@ import AddLogCard from "@/components/global/feedings/AddLogCard";
 
 export default function FeedingsByDaySections() {
   const allFeedings = useSelector((state) => state.feedings);
+  const [feedings, setFeedings] = useState([]);
 
-  // Separate completed and incomplete feedings
-  const incompleteFeedings = allFeedings.filter(
+  useEffect(() => {
+    if (allFeedings.length > 0) {
+      setFeedings(allFeedings);
+    }
+  }, [allFeedings]);
+
+  if (feedings.length === 0) {
+    return (
+      <View>
+        <FeedingsList
+          feedings={[{ id: "add-log-card" }]} // Always show AddLogCard if no feedings exist
+          title="Upcoming Feedings"
+          showAllLink={false}
+          noFeedingsText="No upcoming feedings available"
+        />
+      </View>
+    );
+  }
+
+  const incompleteFeedings = feedings.filter(
     (feeding) => feeding.complete === 0
   );
-  const pastCompletedFeedings = allFeedings.filter(
+  const pastCompletedFeedings = feedings.filter(
     (feeding) => feeding.complete === 1
   );
 
