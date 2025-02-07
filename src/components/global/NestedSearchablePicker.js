@@ -17,9 +17,10 @@ export default function NestedSearchablePicker({
   options = [],
   freezerItems = [],
   selectedValue,
+  selectedFreezerId = null, // ✅ New: Freezer ID for current selection
   onValueChange,
   onFreezerConfirm, // Callback for linking freezer item
-  onFreezerDecline,
+  onFreezerDecline = () => {},
   placeholder = "Select an option...",
   otherLabel = "Other (Enter custom option)",
   errorMessage = "",
@@ -94,12 +95,25 @@ export default function NestedSearchablePicker({
         onPress={() => setModalVisible(true)}
       >
         <View style={styles.pickerContent}>
-          <ThemedText
-            type="default"
-            style={{ color: selectedValue ? textColor : subtleColor }}
-          >
-            {selectedValue || placeholder}
-          </ThemedText>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <ThemedText
+              type="default"
+              style={{ color: selectedValue ? textColor : subtleColor }}
+            >
+              {selectedValue || placeholder}
+            </ThemedText>
+
+            {/* ✅ Show an icon if the selected prey type is linked to a freezer item */}
+            {selectedFreezerId && (
+              <Ionicons
+                name="snow-outline"
+                size={16}
+                color={iconColor}
+                style={{ marginLeft: 6 }}
+              />
+            )}
+          </View>
+
           <Ionicons name="chevron-down" size={20} color={iconColor} />
         </View>
       </TouchableOpacity>
@@ -118,6 +132,20 @@ export default function NestedSearchablePicker({
       <Modal visible={modalVisible} animationType="slide" transparent={true}>
         <View style={styles.modalOverlay}>
           <View style={[styles.modalContainer, { backgroundColor: bgColor }]}>
+            {/* ✅ Remove from Freezer Button (Only if Freezer ID exists) */}
+            {selectedFreezerId && (
+              <TouchableOpacity
+                style={styles.removeFreezerButton}
+                onPress={() => {
+                  onFreezerDecline && onFreezerDecline(); // ✅ Ensures it is never undefined
+                  closeModal(); // ✅ Close modal
+                }}
+              >
+                <ThemedText type="default" style={{ color: errorColor }}>
+                  Remove from Freezer
+                </ThemedText>
+              </TouchableOpacity>
+            )}
             {/* Custom Input Mode */}
             {customMode ? (
               <View style={styles.customInputContainer}>

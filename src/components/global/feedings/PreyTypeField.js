@@ -15,15 +15,17 @@ export default function PreyTypeField({
   setPreyType,
   isEditing,
   errorMessage,
-  onFreezerSelection = null, // ✅ Optional, prevents errors
+  onFreezerSelection = null, // ✅ Prevents errors
   hideFreezerItems = false, // ✅ Controls freezer logic visibility
+  selectedFreezerId: externalFreezerId = null, // ✅ New: Allow external freezer ID
 }) {
   const dispatch = useDispatch();
   const freezerItems = useSelector(selectFreezerItems);
-  const [selectedFreezerId, setSelectedFreezerId] = useState(null);
+  const [selectedFreezerId, setSelectedFreezerId] = useState(externalFreezerId); // ✅ Sync with external value
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
   const [tempPreyType, setTempPreyType] = useState(null);
   const [matchingFreezerItem, setMatchingFreezerItem] = useState(null);
+  const [pendingFreezerRemoval, setPendingFreezerRemoval] = useState(false);
 
   const iconColor = useThemeColor({}, "icon");
   const errorColor = useThemeColor({}, "error");
@@ -31,6 +33,13 @@ export default function PreyTypeField({
   useEffect(() => {
     dispatch(fetchFreezerItemsWithWarnings());
   }, [dispatch]);
+
+  // ✅ New: Ensure freezer ID updates when prop changes
+  useEffect(() => {
+    if (externalFreezerId !== null) {
+      setSelectedFreezerId(externalFreezerId);
+    }
+  }, [externalFreezerId]);
 
   const handlePreySelection = (selectedPrey) => {
     if (!hideFreezerItems) {
@@ -47,21 +56,20 @@ export default function PreyTypeField({
 
     setPreyType(selectedPrey);
     setSelectedFreezerId(null);
-    onFreezerSelection && onFreezerSelection(null); // ✅ Only call if function exists
+    onFreezerSelection && onFreezerSelection(null); // ✅ Update external state if needed
   };
 
   const handleConfirmFreezer = () => {
     setPreyType(tempPreyType);
     setSelectedFreezerId(matchingFreezerItem.id);
-    onFreezerSelection && onFreezerSelection(matchingFreezerItem.id); // ✅ Only call if function exists
+    onFreezerSelection && onFreezerSelection(matchingFreezerItem.id); // ✅ Update external state
     setConfirmModalVisible(false);
   };
 
   const handleDeclineFreezer = () => {
-    setPreyType(tempPreyType);
-    setSelectedFreezerId(null);
-    onFreezerSelection && onFreezerSelection(null); // ✅ Only call if function exists
-    setConfirmModalVisible(false);
+    setPendingFreezerRemoval(true); // ✅ Mark for removal (but not yet deleted)
+    setSelectedFreezerId(null); // ✅ Remove the freezer icon from UI
+    onFreezerSelection && onFreezerSelection(null); // ✅ Ensure parent state is updated
   };
 
   return (
@@ -75,15 +83,18 @@ export default function PreyTypeField({
 
       <NestedSearchablePicker
         options={PREY_TYPES}
-        freezerItems={hideFreezerItems ? [] : freezerItems} // ✅ Hide freezer items if needed
+        freezerItems={hideFreezerItems ? [] : freezerItems}
         selectedValue={preyType}
+        selectedFreezerId={selectedFreezerId} // ✅ Ensure freezer ID is passed
         onValueChange={handlePreySelection}
+        onFreezerConfirm={handleConfirmFreezer}
+        onFreezerDecline={handleDeclineFreezer} // ✅ Pass function to avoid undefined error
         placeholder="Select..."
         otherLabel="Other (Enter custom prey type)"
         errorMessage={errorMessage}
       />
 
-      {/* ✅ Confirmation Modal for Freezer Selection (Only if NOT hiding freezer logic) */}
+      {/* ✅ Confirmation Modal for Freezer Selection */}
       {!hideFreezerItems && (
         <Modal visible={confirmModalVisible} transparent={true}>
           <View style={styles.modalOverlay}>

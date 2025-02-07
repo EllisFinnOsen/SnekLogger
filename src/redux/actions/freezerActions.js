@@ -4,6 +4,7 @@ import {
   fetchFeedingFreezerUsage,
   fetchFreezerItems,
   linkFeedingToFreezer,
+  unlinkFeedingFromFreezer,
 } from "@/database/freezer";
 import {
   ADD_FREEZER_ITEM,
@@ -11,6 +12,7 @@ import {
   FETCH_FEEDING_LINK_LINKS,
   FETCH_FREEZER_ITEMS,
   LINK_FEEDING_TO_FREEZER,
+  REMOVE_FREEZER_LINK,
   SET_LOW_STOCK_WARNINGS,
 } from "./actionTypes";
 
@@ -132,3 +134,24 @@ export const updateFreezerItem =
       console.error("Error updating freezer item:", error);
     }
   };
+
+export const removeFreezerLink = (feedingId) => async (dispatch) => {
+  try {
+    console.log(`Removing freezer link for feeding ID: ${feedingId}`);
+
+    // ✅ Remove from database first
+    await unlinkFeedingFromFreezer(feedingId);
+
+    // ✅ Then update Redux state
+    dispatch({
+      type: REMOVE_FREEZER_LINK,
+      payload: feedingId,
+    });
+
+    console.log(
+      `✅ Successfully removed freezer link for feeding ID: ${feedingId}`
+    );
+  } catch (error) {
+    console.error("Error removing freezer link:", error);
+  }
+};

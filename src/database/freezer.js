@@ -155,3 +155,50 @@ export const updateFreezerQuantityBasedOnFeeding = async (
     console.error("Error updating freezer quantity based on feeding:", error);
   }
 };
+
+export const fetchFeedingFreezerIdFromDb = async (feedingId) => {
+  try {
+    const db = await openDatabase();
+    const result = await db.getFirstAsync(
+      "SELECT freezerId FROM freezer_link WHERE feedingId = ?",
+      [feedingId]
+    );
+
+    return result?.freezerId || null; // ✅ Return freezer ID if found, otherwise null
+  } catch (error) {
+    console.error("Error fetching freezer ID from database:", error);
+    throw error;
+  }
+};
+
+export const unlinkFeedingFromFreezer = async (feedingId) => {
+  try {
+    const db = await openDatabase();
+
+    console.log(`Attempting to remove freezer link for feedingId ${feedingId}`);
+
+    // Delete the freezer link
+    await db.runAsync("DELETE FROM freezer_link WHERE feedingId = ?", [
+      feedingId,
+    ]);
+
+    // ✅ Verify if the deletion was successful
+    const checkResult = await db.getFirstAsync(
+      "SELECT * FROM freezer_link WHERE feedingId = ?",
+      [feedingId]
+    );
+
+    if (!checkResult) {
+      console.log(
+        `✅ Successfully removed freezer link for feedingId ${feedingId}`
+      );
+    } else {
+      console.error(
+        `❌ Freezer link still exists for feedingId ${feedingId}:`,
+        checkResult
+      );
+    }
+  } catch (error) {
+    console.error("Error unlinking feeding from freezer:", error);
+  }
+};
