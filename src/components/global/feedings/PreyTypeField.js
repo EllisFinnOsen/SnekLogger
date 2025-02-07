@@ -15,8 +15,8 @@ export default function PreyTypeField({
   setPreyType,
   isEditing,
   errorMessage,
-  onFreezerSelection = null, // Pass selected freezer ID to parent
-  hideFreezerItems = false,
+  onFreezerSelection = null, // ✅ Optional, prevents errors
+  hideFreezerItems = false, // ✅ Controls freezer logic visibility
 }) {
   const dispatch = useDispatch();
   const freezerItems = useSelector(selectFreezerItems);
@@ -33,34 +33,34 @@ export default function PreyTypeField({
   }, [dispatch]);
 
   const handlePreySelection = (selectedPrey) => {
-    const freezerMatch = freezerItems.find(
-      (item) => item.preyType === selectedPrey
-    );
-
-    if (freezerMatch) {
-      // If prey exists in freezer, show confirmation modal
-      setMatchingFreezerItem(freezerMatch);
-      setTempPreyType(selectedPrey);
-      setConfirmModalVisible(true);
-    } else {
-      // No freezer match, just update preyType
-      setPreyType(selectedPrey);
-      setSelectedFreezerId(null);
-      onFreezerSelection(null); // Ensure freezer selection is cleared
+    if (!hideFreezerItems) {
+      const freezerMatch = freezerItems.find(
+        (item) => item.preyType === selectedPrey
+      );
+      if (freezerMatch) {
+        setMatchingFreezerItem(freezerMatch);
+        setTempPreyType(selectedPrey);
+        setConfirmModalVisible(true);
+        return;
+      }
     }
+
+    setPreyType(selectedPrey);
+    setSelectedFreezerId(null);
+    onFreezerSelection && onFreezerSelection(null); // ✅ Only call if function exists
   };
 
   const handleConfirmFreezer = () => {
     setPreyType(tempPreyType);
     setSelectedFreezerId(matchingFreezerItem.id);
-    onFreezerSelection(matchingFreezerItem.id); // Pass freezerId to parent
+    onFreezerSelection && onFreezerSelection(matchingFreezerItem.id); // ✅ Only call if function exists
     setConfirmModalVisible(false);
   };
 
   const handleDeclineFreezer = () => {
     setPreyType(tempPreyType);
     setSelectedFreezerId(null);
-    onFreezerSelection(null); // Clear freezer selection
+    onFreezerSelection && onFreezerSelection(null); // ✅ Only call if function exists
     setConfirmModalVisible(false);
   };
 
@@ -75,39 +75,39 @@ export default function PreyTypeField({
 
       <NestedSearchablePicker
         options={PREY_TYPES}
-        freezerItems={freezerItems}
+        freezerItems={hideFreezerItems ? [] : freezerItems} // ✅ Hide freezer items if needed
         selectedValue={preyType}
-        onValueChange={handlePreySelection} // Handle prey selection here
+        onValueChange={handlePreySelection}
         placeholder="Select..."
         otherLabel="Other (Enter custom prey type)"
         errorMessage={errorMessage}
-        onFreezerConfirm={handleConfirmFreezer}
-        onFreezerDecline={handleDeclineFreezer}
       />
 
-      {/* Confirmation Modal for Freezer Selection */}
-      <Modal visible={confirmModalVisible} transparent={true}>
-        <View style={styles.modalOverlay}>
-          <View style={[styles.modalContainer, { backgroundColor: "white" }]}>
-            <ThemedText type="default" style={{ textAlign: "center" }}>
-              You have {matchingFreezerItem?.quantity} of {tempPreyType} in your
-              freezer. Would you like to use them?
-            </ThemedText>
-            <TouchableOpacity
-              onPress={handleConfirmFreezer}
-              style={styles.confirmButton}
-            >
-              <ThemedText type="default">Yes</ThemedText>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={handleDeclineFreezer}
-              style={styles.cancelButton}
-            >
-              <ThemedText type="default">No</ThemedText>
-            </TouchableOpacity>
+      {/* ✅ Confirmation Modal for Freezer Selection (Only if NOT hiding freezer logic) */}
+      {!hideFreezerItems && (
+        <Modal visible={confirmModalVisible} transparent={true}>
+          <View style={styles.modalOverlay}>
+            <View style={[styles.modalContainer, { backgroundColor: "white" }]}>
+              <ThemedText type="default" style={{ textAlign: "center" }}>
+                You have {matchingFreezerItem?.quantity} of {tempPreyType} in
+                your freezer. Would you like to use them?
+              </ThemedText>
+              <TouchableOpacity
+                onPress={handleConfirmFreezer}
+                style={styles.confirmButton}
+              >
+                <ThemedText type="default">Yes</ThemedText>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleDeclineFreezer}
+                style={styles.cancelButton}
+              >
+                <ThemedText type="default">No</ThemedText>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
+      )}
     </View>
   );
 }
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)", // Dark overlay for contrast
+    backgroundColor: "rgba(0,0,0,0.5)",
   },
   modalContainer: {
     width: "90%",

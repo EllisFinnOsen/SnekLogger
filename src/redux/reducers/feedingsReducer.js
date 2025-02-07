@@ -24,7 +24,9 @@ export default function feedingsReducer(state = initialState, action) {
 
     case UPDATE_FEEDING:
       return state.map((feeding) =>
-        feeding.id === action.payload.id ? action.payload : feeding
+        feeding.id === action.payload.id
+          ? { ...feeding, ...action.payload }
+          : feeding
       );
 
     case ADD_FEEDING:

@@ -98,9 +98,6 @@ export const updateFeedingInDb = async (
       ]
     );
 
-    // ✅ Update freezer quantity based on the new feeding completion status
-    await updateFreezerQuantityBasedOnFeeding(feedingId, complete);
-
     return result;
   } catch (error) {
     console.error("Error updating feeding in DB:", error);

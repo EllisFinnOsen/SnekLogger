@@ -133,7 +133,7 @@ export const updateFreezerQuantityBasedOnFeeding = async (
     }
 
     const { id: freezerId, quantity } = result;
-    const newQuantity = isComplete ? quantity + 1 : quantity - 1;
+    const newQuantity = isComplete ? quantity - 1 : quantity + 1;
 
     if (newQuantity < 0) {
       console.warn(

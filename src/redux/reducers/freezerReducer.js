@@ -42,7 +42,7 @@ export default function freezerReducer(state = initialState, action) {
         ...state,
         items: state.items.map((item) =>
           item.id === action.payload.id
-            ? { ...item, ...action.payload } // Merge all updated fields
+            ? { ...item, quantity: Math.max(0, action.payload.newQuantity) } // ✅ No double decrement
             : item
         ),
       };
