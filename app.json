@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Test-Redux-App",
-    "slug": "Test-Redux-App",
+    "name": "VorTrack",
+    "slug": "VorTrack",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./src/assets/icon.png",
@@ -22,7 +22,7 @@
         "foregroundImage": "./src/assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.ellisosen.TestReduxApp"
+      "package": "com.ellisosen.VorTrack"
     },
     "web": {
       "favicon": "./src/assets/favicon.png"
@@ -33,7 +33,7 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "652b1a71-6884-4c40-a75d-ab7df77989ea"
+        "projectId": "d27cfb47-2202-4a4a-9605-bd1b46673cb9"
       }
     },
     "owner": "ellisosen",
@@ -41,7 +41,7 @@
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/652b1a71-6884-4c40-a75d-ab7df77989ea"
+      "url": "https://u.expo.dev/d27cfb47-2202-4a4a-9605-bd1b46673cb9"
     }
   }
 }
