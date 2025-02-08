@@ -8,13 +8,16 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { useFocusEffect } from "@react-navigation/native";
 import ViewByDateForPet from "./ViewByDateForPet";
 import PetParallaxScrollView from "@/components/global/pets/pet_profile/PetParallaxScrollView";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { ThemedText } from "@/components/global/ThemedText";
 import { fetchPetsFromDb } from "@/database/feedings";
 import { fetchFeedingsByPet } from "@/redux/actions";
+import PetDetailScreen from "@/components/global/pets/pet_profile/PetDetailScreen";
+import PetDataScreen from "@/components/global/pets/pet_profile/PetDataScreen";
+// Optionally, import a new component for the Data tab
+// import PetDataScreen from "@/components/global/pets/pet_profile/PetDataScreen";
 
 export default function PetProfileScreen({ route, navigation }) {
   const { petId } = route.params;
@@ -37,7 +40,7 @@ export default function PetProfileScreen({ route, navigation }) {
       const foundPet = pets.find((p) => p.id === petId);
       setPet(foundPet);
     } catch (error) {
-      //console.error("Error loading pet details:", error);
+      // console.error("Error loading pet details:", error);
     }
   };
 
@@ -48,7 +51,7 @@ export default function PetProfileScreen({ route, navigation }) {
       dispatch(fetchFeedingsByPet(petId));
       setHasFetchedFeedings(true);
     }
-  }, []); // Empty dependency array ensures it runs only once
+  }, []);
 
   if (!pet) return <Text>Loading pet details...</Text>;
 
@@ -59,7 +62,7 @@ export default function PetProfileScreen({ route, navigation }) {
       petName={pet?.name}
       petBirthdate={pet?.birthDate}
       petMorph={pet?.morph}
-      onEditPress={handleEditPress} // Pass the prop here
+      onEditPress={handleEditPress}
     >
       <View style={styles.container}>
         {/* Tabs Header */}
@@ -74,18 +77,32 @@ export default function PetProfileScreen({ route, navigation }) {
             isSelected={selectedTab === "Details"}
             onPress={() => setSelectedTab("Details")}
           />
+          <TabButton
+            title="Data"
+            isSelected={selectedTab === "Data"}
+            onPress={() => setSelectedTab("Data")}
+          />
         </View>
 
         {/* Tab Content */}
         {selectedTab === "Feedings" ? (
-          // Pass petId AND pet if needed. Remove pet if only petId is required.
           <ViewByDateForPet petId={petId} pet={pet} />
-        ) : (
+        ) : selectedTab === "Details" ? (
           <ScrollView>
-            <ThemedText>Details about {pet.name}</ThemedText>
-            {/* Add additional pet details as needed */}
+            <PetDetailScreen
+              petName={pet.name}
+              petCategory={pet.category}
+              petMorph={pet.morph}
+              petSpecies={pet.species}
+              petBirthdate={pet.birthDate}
+              onEditPress={handleEditPress}
+            />
           </ScrollView>
-        )}
+        ) : selectedTab === "Data" ? (
+          <ScrollView>
+            <PetDataScreen pet={pet} />
+          </ScrollView>
+        ) : null}
       </View>
     </PetParallaxScrollView>
   );
@@ -93,13 +110,13 @@ export default function PetProfileScreen({ route, navigation }) {
 
 // Reusable TabButton component
 const TabButton = ({ title, isSelected, onPress }) => {
-  const activeColor = useThemeColor({}, "active"); // Move inside component
-  const fieldColor = useThemeColor({}, "field"); // Move inside component
+  const activeColor = useThemeColor({}, "active");
+  const fieldColor = useThemeColor({}, "field");
   return (
     <TouchableOpacity
       style={[
         styles.tabButton,
-        { backgroundColor: isSelected ? activeColor : fieldColor }, // Apply active color dynamically
+        { backgroundColor: isSelected ? activeColor : fieldColor },
       ]}
       onPress={onPress}
     >
@@ -113,16 +130,15 @@ const TabButton = ({ title, isSelected, onPress }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    padding: 32,
   },
   tabContainer: {
     flexDirection: "row",
-    justifyContent: "flext-start",
+    justifyContent: "flex-start",
   },
   tabButton: {
     padding: 10,
     borderRadius: 5,
-    backgroundColor: "#ccc",
     marginRight: 16,
   },
 });

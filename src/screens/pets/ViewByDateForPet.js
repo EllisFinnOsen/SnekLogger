@@ -61,7 +61,7 @@ export default function ViewByDateForPet({ petId }) {
 
   return (
     <View>
-      <View style={{ height: 48 }}></View>
+      <View style={{ height: 24 }}></View>
 
       {/* Render Late Feedings */}
       {lateFeedings.length > 0 && (

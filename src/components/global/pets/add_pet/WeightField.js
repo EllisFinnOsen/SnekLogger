@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     flex: 1,
     borderWidth: 1,
     borderRadius: 5,
-    paddingVertical: 10,
+    paddingVertical: 13,
     paddingHorizontal: 12,
   },
   weightTypeContainer: {
