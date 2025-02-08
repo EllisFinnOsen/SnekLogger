@@ -46,8 +46,6 @@ export default function OnboardingScreen({ navigation }) {
   const completeOnboarding = async () => {
     await AsyncStorage.setItem("firstTimeUser", "false");
     dispatch(setFirstTimeUser(false));
-
-    navigation.navigate("Home");
   };
 
   const onViewableItemsChanged = useCallback(({ viewableItems }) => {
