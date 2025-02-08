@@ -8,10 +8,10 @@ const tintColorDark = "#fff";
 
 export const COLORS = {
   light: {
-    text: "#11181C",
+    text: "#323232",
     subtleText: "#414649",
     field: "#EDECE5",
-    fieldAccent: "E0DED2",
+    fieldAccent: "#E0DED2",
     background: "#fff",
     active: "#99f800",
     error: "#AC3222",

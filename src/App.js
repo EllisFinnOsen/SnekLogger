@@ -11,19 +11,13 @@ import StackNavigator from "@/navigation/StackNavigator";
 import useColorScheme from "@/hooks/useColorScheme";
 import { Provider as PaperProvider } from "react-native-paper";
 import { initializeDatabase } from "@/database";
-import { insertMockData } from "@/database/mockData";
-import { resetDatabase } from "@/database/reset";
-import {
-  fetchFeedingsByPet,
-  fetchPets,
-  fetchUserProfile,
-} from "@/redux/actions";
-import { insertOnePet } from "./database/onepet";
+import { fetchPets, fetchUserProfile } from "@/redux/actions";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+AsyncStorage.removeItem("firstTimeUser");
 
 export default function App() {
   const colorScheme = useColorScheme();
   const [dbInitialized, setDbInitialized] = useState(false);
-
   const [loaded] = useFonts({
     OutfitReg: require("./assets/fonts/Outfit-Regular.ttf"),
     OutfitMed: require("./assets/fonts/Outfit-Medium.ttf"),
@@ -33,41 +27,24 @@ export default function App() {
   useEffect(() => {
     const setupDatabase = async () => {
       try {
-        //await resetDatabase();
         await initializeDatabase();
-        //await insertMockData();
-        setDbInitialized(true); // Mark database as ready
+        setDbInitialized(true);
       } catch (error) {
-        //console.error("Error setting up database:", error);
+        console.error("Error setting up database:", error);
       }
     };
-
     setupDatabase();
   }, []);
 
   useEffect(() => {
     if (dbInitialized) {
       store.dispatch(fetchPets());
-      store.dispatch(fetchUserProfile());
+      store.dispatch(fetchUserProfile()); // Also fetches first-time flag
     }
   }, [dbInitialized]);
 
-  useEffect(() => {
-    const unsubscribe = store.subscribe(() => {
-      const state = store.getState();
-      const pets = state.pets.pets || [];
-
-      if (pets.length > 0) {
-        pets.forEach((pet) => store.dispatch(fetchFeedingsByPet(pet.id)));
-        unsubscribe(); // Prevent unnecessary re-renders
-      }
-    });
-
-    return unsubscribe;
-  }, []);
-
   if (!loaded) {
-    return null;
+    return null; // Prevent rendering before fonts load
   }
 
   return (

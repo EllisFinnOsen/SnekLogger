@@ -27,6 +27,7 @@ export const REMOVE_PET_FROM_GROUP = "REMOVE_PET_FROM_GROUP";
 //users
 export const FETCH_USER = "FETCH_USER";
 export const UPDATE_USER = "UPDATE_USER";
+export const SET_FIRST_TIME_USER = "SET_FIRST_TIME_USER";
 
 //freezerItems
 export const FETCH_FREEZER_ITEMS = "FETCH_FREEZER_ITEMS";
