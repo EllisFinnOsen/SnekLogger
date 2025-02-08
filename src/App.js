@@ -12,8 +12,8 @@ import useColorScheme from "@/hooks/useColorScheme";
 import { Provider as PaperProvider } from "react-native-paper";
 import { initializeDatabase } from "@/database";
 import { fetchPets, fetchUserProfile } from "@/redux/actions";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-AsyncStorage.removeItem("firstTimeUser");
+//import AsyncStorage from "@react-native-async-storage/async-storage";
+//AsyncStorage.removeItem("firstTimeUser");
 
 export default function App() {
   const colorScheme = useColorScheme();

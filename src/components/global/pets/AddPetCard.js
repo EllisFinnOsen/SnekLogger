@@ -9,26 +9,31 @@ import { useThemeColor } from "@/hooks/useThemeColor";
 export default function AddPetCard() {
   const iconColor = useThemeColor({}, "icon");
   const subtleColor = useThemeColor({}, "subtleText");
-
+  const fieldColor = useThemeColor({}, "field");
+  const fieldAccent = useThemeColor({}, "fieldAccent");
+  const textColor = useThemeColor({}, "text");
   //console.log("AddPetCard rendered");
 
   return (
-    <ThemedView
+    <View
       testID="add-pet-card"
-      style={[styles.card, { borderColor: iconColor }]}
+      style={[
+        styles.card,
+        { borderColor: fieldAccent, backgroundColor: fieldColor },
+      ]}
     >
-      <ThemedView style={styles.iconContainer}>
+      <View style={styles.iconContainer}>
         <Ionicons
           testID="add-pet-icon"
           name="add-circle-outline"
           size={48}
           color={iconColor}
         />
-      </ThemedView>
+      </View>
       <ThemedText style={{ color: subtleColor }} type="default">
         Add New Pet
       </ThemedText>
-    </ThemedView>
+    </View>
   );
 }
 

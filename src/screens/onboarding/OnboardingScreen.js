@@ -1,62 +1,100 @@
-import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import React, { useCallback, useRef } from "react";
+import {
+  View,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+} from "react-native";
+import Animated, {
+  useAnimatedRef,
+  useAnimatedScrollHandler,
+  useSharedValue,
+} from "react-native-reanimated";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch } from "react-redux";
 import { setFirstTimeUser } from "@/redux/actions/userActions";
-import Onboarding from "react-native-onboarding-swiper";
+import ListItem from "@/screens/onboarding/ListItem";
+import PaginationElement from "@/screens/onboarding/PaginationElement";
+import Button from "@/screens/onboarding/button";
+import { useNavigation } from "@react-navigation/native";
+import { CommonActions } from "@react-navigation/native";
 
-const OnboardingScreen = ({ navigation }) => {
+const pages = [
+  {
+    text: "Welcome to VorTrack!",
+    image: require("@/assets/onboarding1.png"),
+  },
+  {
+    text: "Manage your pet's feedings with ease.",
+    image: require("@/assets/onboarding2.png"),
+  },
+  {
+    text: "Track inventory and feeding history.",
+    image: require("@/assets/onboarding3.png"),
+  },
+];
+
+export default function OnboardingScreen({ navigation }) {
   const dispatch = useDispatch();
+  const x = useSharedValue(0);
+  const flatListIndex = useSharedValue(0);
+  const flatListRef = useAnimatedRef();
 
+  // Handle when user finishes onboarding
   const completeOnboarding = async () => {
     await AsyncStorage.setItem("firstTimeUser", "false");
     dispatch(setFirstTimeUser(false));
-    navigation.replace("HomeScreen");
+
+    navigation.navigate("Home");
   };
 
-  // Custom Next Button
-  const NextButton = ({ ...props }) => (
-    <TouchableOpacity {...props} style={{ padding: 10 }}>
-      <Text style={{ fontSize: 16, fontWeight: "bold" }}>Next</Text>
-    </TouchableOpacity>
-  );
+  const onViewableItemsChanged = useCallback(({ viewableItems }) => {
+    flatListIndex.value = viewableItems[0]?.index ?? 0;
+  }, []);
 
-  // Custom Done Button
-  const DoneButton = ({ ...props }) => (
-    <TouchableOpacity {...props} style={{ padding: 10 }}>
-      <Text style={{ fontSize: 16, fontWeight: "bold" }}>Done</Text>
-    </TouchableOpacity>
-  );
+  const scrollHandle = useAnimatedScrollHandler({
+    onScroll: (event) => {
+      x.value = event.contentOffset.x;
+    },
+  });
 
   return (
-    <Onboarding
-      onDone={completeOnboarding}
-      onSkip={completeOnboarding}
-      NextButtonComponent={NextButton}
-      DoneButtonComponent={DoneButton}
-      pages={[
-        {
-          backgroundColor: "#fff",
-          image: <Text>👤</Text>,
-          title: "Welcome to VorTrack",
-          subtitle:
-            "We make it easy to manage everything to do with your reptile's feedings",
-        },
-        {
-          backgroundColor: "#fdeb93",
-          image: <Text>🐶</Text>,
-          title: "Add Your First Pet",
-          subtitle: "Give your pet a name!",
-        },
-        {
-          backgroundColor: "#ffccbc",
-          image: <Text>✅</Text>,
-          title: "You're All Set!",
-          subtitle: "Let's get started.",
-        },
-      ]}
-    />
+    <SafeAreaView style={styles.container}>
+      <Animated.FlatList
+        ref={flatListRef}
+        onScroll={scrollHandle}
+        horizontal
+        pagingEnabled
+        data={pages}
+        keyExtractor={(_, index) => index.toString()}
+        bounces={false}
+        renderItem={({ item, index }) => (
+          <ListItem item={item} index={index} x={x} />
+        )}
+        showsHorizontalScrollIndicator={false}
+        onViewableItemsChanged={onViewableItemsChanged}
+        scrollEventThrottle={16}
+      />
+      <View style={styles.bottomContainer}>
+        <PaginationElement length={pages.length} x={x} />
+        <Button
+          currentIndex={flatListIndex}
+          length={pages.length}
+          flatListRef={flatListRef}
+          completeOnboarding={completeOnboarding}
+        />
+      </View>
+    </SafeAreaView>
   );
-};
+}
 
-export default OnboardingScreen;
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+  bottomContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+  },
+});
