@@ -13,7 +13,6 @@ export default function FeedingsByDaySections() {
 
   useEffect(() => {
     if (allFeedings.length === 0) {
-      // If there are no feedings yet, dispatch an action to fetch them.
       dispatch(fetchAllFeedingsfromDB());
     } else {
       setFeedings(allFeedings);
@@ -33,33 +32,49 @@ export default function FeedingsByDaySections() {
     );
   }
 
-  // Filter feedings by status
+  // Helper to parse the feeding date consistently
+  const parseFeedingDate = (feeding) =>
+    new Date(`${feeding.feedingDate}T00:00:00`);
+
+  // Separate incomplete and completed feedings
   const incompleteFeedings = feedings.filter(
     (feeding) => feeding.complete === 0
   );
-
-  // Filter completed feedings and sort them newest-to-oldest, then take the most recent 15.
   const pastCompletedFeedings = feedings.filter(
     (feeding) => feeding.complete === 1
   );
-  const sortedPastCompletedFeedings = pastCompletedFeedings.sort(
-    (a, b) => new Date(b.feedingDate) - new Date(a.feedingDate)
+
+  // Sort completed feedings using parseFeedingDate for consistency.
+  // If the dates are equal, convert the ids to strings (or fallback to empty strings) to avoid errors.
+  const sortedPastCompletedFeedings = [...pastCompletedFeedings].sort(
+    (a, b) => {
+      const diff = parseFeedingDate(b) - parseFeedingDate(a);
+      if (diff !== 0) return diff;
+
+      // Use feeding.id as a tie-breaker, ensuring it's a string (or an empty string if missing)
+      const idA = a.id != null ? String(a.id) : "";
+      const idB = b.id != null ? String(b.id) : "";
+      return idA.localeCompare(idB);
+    }
   );
   const limitedPastCompletedFeedings = sortedPastCompletedFeedings.slice(0, 15);
 
-  // Prepare date-based filtering for incomplete feedings
-  const today = startOfToday();
-  const parseFeedingDateForDay = (feeding) =>
-    new Date(`${feeding.feedingDate}T00:00:00`);
+  // Sort incomplete feedings in ascending order (sooner first)
+  const sortedIncompleteFeedings = [...incompleteFeedings].sort(
+    (a, b) => parseFeedingDate(a) - parseFeedingDate(b)
+  );
 
-  const lateFeedings = incompleteFeedings.filter(
-    (feeding) => parseFeedingDateForDay(feeding) < today
+  const today = startOfToday();
+
+  // Filter incomplete feedings into sections
+  const lateFeedings = sortedIncompleteFeedings.filter(
+    (feeding) => parseFeedingDate(feeding) < today
   );
-  const todaysFeedings = incompleteFeedings.filter((feeding) =>
-    isSameDay(parseFeedingDateForDay(feeding), today)
+  const todaysFeedings = sortedIncompleteFeedings.filter((feeding) =>
+    isSameDay(parseFeedingDate(feeding), today)
   );
-  const upcomingFeedings = incompleteFeedings.filter((feeding) =>
-    isAfter(parseFeedingDateForDay(feeding), today)
+  const upcomingFeedings = sortedIncompleteFeedings.filter((feeding) =>
+    isAfter(parseFeedingDate(feeding), today)
   );
 
   let firstValidSection = null;
@@ -73,7 +88,7 @@ export default function FeedingsByDaySections() {
     modifiedFeedings = [{ id: "add-log-card" }, ...upcomingFeedings];
   }
 
-  // Ensure AddLogCard is always shown in "Upcoming Feedings" if no other section has it
+  // Always ensure AddLogCard is available if needed
   const addLogCardOnly = [{ id: "add-log-card" }];
   const showAddLogCardInUpcoming =
     firstValidSection === null ||
@@ -103,7 +118,7 @@ export default function FeedingsByDaySections() {
         />
       )}
 
-      {/* Render Upcoming Feedings (Always has AddLogCard if no other section does) */}
+      {/* Render Upcoming Feedings */}
       {(firstValidSection === "upcoming" || showAddLogCardInUpcoming) && (
         <FeedingsList
           feedings={
@@ -115,7 +130,7 @@ export default function FeedingsByDaySections() {
         />
       )}
 
-      {/* Render Past Completed Feedings (Most recent 15, sorted newest-to-oldest) */}
+      {/* Render Past Completed Feedings */}
       {limitedPastCompletedFeedings.length > 0 && (
         <FeedingsList
           feedings={limitedPastCompletedFeedings}

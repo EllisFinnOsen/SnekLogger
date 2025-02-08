@@ -1,10 +1,15 @@
-// PetDataScreen.js
-import React, { useMemo } from "react";
-import { View, StyleSheet, Dimensions, ScrollView, Text } from "react-native";
+import React, { useMemo, useEffect, useState } from "react";
+import {
+  View,
+  StyleSheet,
+  Dimensions,
+  ScrollView,
+  Text,
+  ActivityIndicator,
+} from "react-native";
 import { useSelector } from "react-redux";
 import {
   LineChart,
-  BarChart,
   PieChart,
   ProgressChart,
   ContributionGraph,
@@ -28,24 +33,32 @@ const generateDateRange = (startDate, endDate) => {
 export default function PetDataScreen({ pet }) {
   const textColor = useThemeColor({}, "text");
   const screenWidth = Dimensions.get("window").width;
-
-  // Get all feedings from Redux
   const allFeedings = useSelector((state) => state.feedings);
 
-  // Filter feedings for the current pet
-  const petFeedings = useMemo(() => {
-    return allFeedings.filter(
+  // Local states
+  const [loading, setLoading] = useState(true);
+  const [petFeedings, setPetFeedings] = useState([]);
+
+  useEffect(() => {
+    // Filter feedings for the current pet
+    const filtered = allFeedings.filter(
       (feeding) => Number(feeding.petId) === Number(pet.id)
     );
+    setPetFeedings(filtered);
+    // Simulate a short delay for loading (adjust as needed)
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 500);
+    return () => clearTimeout(timer);
   }, [allFeedings, pet.id]);
+
+  // All hooks are always called even if loading is true
 
   /* 
     1. Dynamic Aggregated Data (Only include days with feedings):
-       Sum the preyWeight per day, but only use the dates that actually have feedings.
-       Then, format those dates as "D MMM YY".
+       Sum the preyWeight per day, and format those dates as "D MMM YY".
   */
   const aggregatedWeightData = useMemo(() => {
-    // We'll store an object for each date: { sum, weightType }
     const weightByDate = {};
     petFeedings.forEach((feeding) => {
       const dateKey = feeding.feedingDate.split("T")[0];
@@ -56,8 +69,6 @@ export default function PetDataScreen({ pet }) {
         };
       } else {
         weightByDate[dateKey].sum += feeding.preyWeight;
-        // (Optional) you might want to check if feeding.preyWeightType matches
-        // the already stored type and decide what to do if they differ.
       }
     });
     const existingDates = Object.keys(weightByDate).sort(
@@ -110,7 +121,6 @@ export default function PetDataScreen({ pet }) {
   /* 
     4. Dynamic Contribution Graph Data:
        Fill in all dates in the range with counts (0 if no feedings).
-       (For the contribution graph, we still show a continuous range.)
   */
   const contributionData = useMemo(() => {
     const countByDate = {};
@@ -147,10 +157,10 @@ export default function PetDataScreen({ pet }) {
     };
   }, [contributionData]);
 
-  // Dynamic width calculation for the first two charts based on number of labels
+  // Dynamic width calculation for the first chart based on number of labels
   const dynamicChartWidth = useMemo(() => {
     const minWidth = screenWidth - 32;
-    // Assume each label now requires at least 80 pixels
+    // Assume each label requires at least 80 pixels
     const calculatedWidth = aggregatedWeightData.labels.length * 80;
     return Math.max(minWidth, calculatedWidth);
   }, [aggregatedWeightData.labels.length, screenWidth]);
@@ -173,101 +183,131 @@ export default function PetDataScreen({ pet }) {
         description="View info about your pet and their feedings over time."
       />
 
-      {/* 1. Line Chart Display for Aggregated Prey Weight */}
-      <ThemedText style={[styles.chartTitle, { color: textColor }]}>
-        Prey Weight Over Time (Line Chart)
-      </ThemedText>
-      {aggregatedWeightData.labels.length > 0 ? (
-        <View style={{ position: "relative", overflow: "visible" }}>
-          <ScrollView horizontal>
-            <LineChart
-              data={{
-                labels: aggregatedWeightData.labels,
-                datasets: [
-                  { data: aggregatedWeightData.dataPoints, strokeWidth: 2 },
-                ],
-              }}
-              width={dynamicChartWidth}
-              height={300}
-              verticalLabelRotation={25}
-              chartConfig={chartConfig}
-              bezier
-              formatYLabel={(yValue) => `${yValue}`} // you can leave the y-axis as numbers
-              style={styles.chartStyle}
-              renderDotContent={({ x, y, index }) => {
-                // Get the numeric value and the corresponding preyWeightType for this dot
-                const value = aggregatedWeightData.dataPoints[index];
-                const weightType =
-                  aggregatedWeightData.weightTypes[index] || "";
-                const displayValue = value != null ? String(value) : "";
-                return (
-                  <View
-                    key={index}
-                    style={{
-                      position: "absolute",
-                      left: x - 10, // adjust as needed
-                      top: y - 300, // adjust as needed
-                      zIndex: 999,
-                      elevation: 10,
-                      backgroundColor: "rgba(255, 255, 255, 0.8)",
-                      paddingHorizontal: 4,
-                      borderRadius: 4,
-                    }}
-                  >
-                    <Text style={{ fontSize: 12, color: "#000" }}>
-                      {displayValue} {weightType}
-                    </Text>
-                  </View>
-                );
-              }}
-            />
-          </ScrollView>
+      {loading ? (
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color={textColor} />
         </View>
       ) : (
-        <ThemedText style={{ color: textColor }}>
-          No feeding data available.
-        </ThemedText>
-      )}
+        <>
+          {/* 1. Line Chart Display for Aggregated Prey Weight */}
+          <ThemedText style={[styles.chartTitle, { color: textColor }]}>
+            Prey Weight Over Time (Line Chart)
+          </ThemedText>
+          {aggregatedWeightData.labels.length > 0 ? (
+            <View style={{ position: "relative", overflow: "visible" }}>
+              <ScrollView horizontal>
+                <LineChart
+                  data={{
+                    labels: aggregatedWeightData.labels,
+                    datasets: [
+                      { data: aggregatedWeightData.dataPoints, strokeWidth: 2 },
+                    ],
+                  }}
+                  width={dynamicChartWidth}
+                  height={300}
+                  verticalLabelRotation={25}
+                  chartConfig={chartConfig}
+                  bezier
+                  formatYLabel={(yValue) => `${yValue}`}
+                  style={styles.chartStyle}
+                  renderDotContent={({ x, y, index }) => {
+                    const value = aggregatedWeightData.dataPoints[index];
+                    const weightType =
+                      aggregatedWeightData.weightTypes[index] || "";
+                    const displayValue = value != null ? String(value) : "";
+                    return (
+                      <View
+                        key={index}
+                        style={{
+                          position: "absolute",
+                          left: x - 10,
+                          top: y - 300,
+                          zIndex: 999,
+                          elevation: 10,
+                          backgroundColor: "rgba(255, 255, 255, 0.8)",
+                          paddingHorizontal: 4,
+                          borderRadius: 4,
+                        }}
+                      >
+                        <Text style={{ fontSize: 12, color: "#000" }}>
+                          {displayValue} {weightType}
+                        </Text>
+                      </View>
+                    );
+                  }}
+                />
+              </ScrollView>
+            </View>
+          ) : (
+            <ThemedText style={{ color: textColor }}>
+              No feeding data available.
+            </ThemedText>
+          )}
 
-      {/* 3. Pie Chart Display */}
-      <ThemedText style={[styles.chartTitle, { color: textColor }]}>
-        Prey Type by Feedings
-      </ThemedText>
-      {pieChartData.length > 0 ? (
-        <ScrollView horizontal>
-          <PieChart
-            data={pieChartData}
-            width={screenWidth - 32}
-            height={220}
-            chartConfig={chartConfig}
-            accessor="count"
-            backgroundColor="transparent"
-            paddingLeft="15"
-            absolute
-            style={styles.chartStyle}
-          />
-        </ScrollView>
-      ) : (
-        <ThemedText style={{ color: textColor }}>
-          No feeding data available.
-        </ThemedText>
-      )}
+          {/* 2. Pie Chart Display with Legend Above */}
+          <ThemedText style={[styles.chartTitle, { color: textColor }]}>
+            Prey Type by Feedings
+          </ThemedText>
+          {pieChartData.length > 0 ? (
+            <>
+              {/* Custom Legend */}
+              <View style={styles.legendContainer}>
+                {pieChartData.map((item, index) => (
+                  <View key={index} style={styles.legendItem}>
+                    <View
+                      style={[
+                        styles.legendColorBox,
+                        { backgroundColor: item.color },
+                      ]}
+                    />
+                    <Text
+                      style={[
+                        styles.legendText,
+                        { color: item.legendFontColor },
+                      ]}
+                    >
+                      {item.name} ({item.count})
+                    </Text>
+                  </View>
+                ))}
+              </View>
+              <ScrollView horizontal>
+                <PieChart
+                  data={pieChartData}
+                  width={screenWidth - 32}
+                  height={220}
+                  chartConfig={chartConfig}
+                  accessor="count"
+                  backgroundColor="transparent"
+                  paddingLeft="15"
+                  absolute
+                  style={styles.chartStyle}
+                />
+              </ScrollView>
+            </>
+          ) : (
+            <ThemedText style={{ color: textColor }}>
+              No feeding data available.
+            </ThemedText>
+          )}
 
-      {/* 5. Contribution Graph Display (Horizontal Scroll) */}
-      <ThemedText style={[styles.chartTitle, { color: textColor }]}>
-        Feeding Calendar (Contribution Graph)
-      </ThemedText>
-      <ScrollView horizontal>
-        <ContributionGraph
-          values={contributionData}
-          endDate={contributionEndDate}
-          numDays={numDays}
-          width={screenWidth * 1.5}
-          height={220}
-          chartConfig={chartConfig}
-          style={styles.chartStyle}
-        />
-      </ScrollView>
+          {/* 4. Contribution Graph Display (Horizontal Scroll) */}
+          <ThemedText style={[styles.chartTitle, { color: textColor }]}>
+            Feeding Calendar
+          </ThemedText>
+          <ScrollView horizontal>
+            <ContributionGraph
+              values={contributionData}
+              endDate={contributionEndDate}
+              numDays={numDays}
+              width={screenWidth * 1.5}
+              height={220}
+              chartConfig={chartConfig}
+              style={styles.chartStyle}
+            />
+          </ScrollView>
+        </>
+      )}
     </ScrollView>
   );
 }
@@ -276,6 +316,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    minHeight: 300,
   },
   sectionTitle: {
     fontSize: 18,
@@ -291,5 +337,25 @@ const styles = StyleSheet.create({
   chartStyle: {
     marginVertical: 8,
     borderRadius: 16,
+  },
+  legendContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    marginBottom: 8,
+  },
+  legendItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginHorizontal: 4,
+    marginVertical: 2,
+  },
+  legendColorBox: {
+    width: 12,
+    height: 12,
+    marginRight: 4,
+  },
+  legendText: {
+    fontSize: 12,
   },
 });
