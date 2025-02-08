@@ -19,6 +19,7 @@ import PaginationElement from "@/screens/onboarding/PaginationElement";
 import Button from "@/screens/onboarding/button";
 import { useNavigation } from "@react-navigation/native";
 import { CommonActions } from "@react-navigation/native";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 const pages = [
   {
@@ -40,7 +41,7 @@ export default function OnboardingScreen({ navigation }) {
   const x = useSharedValue(0);
   const flatListIndex = useSharedValue(0);
   const flatListRef = useAnimatedRef();
-
+  const backgroundColor = useThemeColor({}, "background");
   // Handle when user finishes onboarding
   const completeOnboarding = async () => {
     await AsyncStorage.setItem("firstTimeUser", "false");
@@ -76,7 +77,9 @@ export default function OnboardingScreen({ navigation }) {
         onViewableItemsChanged={onViewableItemsChanged}
         scrollEventThrottle={16}
       />
-      <View style={styles.bottomContainer}>
+      <View
+        style={[styles.bottomContainer, { backgroundColor: backgroundColor }]}
+      >
         <PaginationElement length={pages.length} x={x} />
         <Button
           currentIndex={flatListIndex}

@@ -14,7 +14,7 @@ export default function AddLogCard({ petId }) {
   const fieldAccent = useThemeColor({}, "fieldAccent");
   const iconColor = useThemeColor({}, "icon");
   const textColor = useThemeColor({}, "text");
-  const subtleColor = useThemeColor({}, "subtle");
+  const subtleColor = useThemeColor({}, "subtleText");
 
   const handlePress = () => {
     navigation.navigate("AddFeedingScreen", petId ? { petId } : {});

@@ -10,8 +10,9 @@
     "splash": {
       "image": "./src/assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#333333"
     },
+
     "ios": {
       "supportsTablet": true,
       "userInterfaceStyle": "automatic"
@@ -20,7 +21,7 @@
       "userInterfaceStyle": "automatic",
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#333333"
       },
       "package": "com.ellisosen.VorTrack",
       "versionCode": 1

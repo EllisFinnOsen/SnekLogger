@@ -11,6 +11,7 @@ import Animated, {
 const ListItem = ({ item, index, x }) => {
   const { width: SCREEN_WIDTH } = useWindowDimensions();
   const textColor = useThemeColor({}, "text");
+  const backgroundColor = useThemeColor({}, "background");
 
   const animatedImageStyle = useAnimatedStyle(() => {
     const translateY = interpolate(
@@ -37,7 +38,12 @@ const ListItem = ({ item, index, x }) => {
   });
 
   return (
-    <View style={[styles.itemContainer, { width: SCREEN_WIDTH }]}>
+    <View
+      style={[
+        styles.itemContainer,
+        { width: SCREEN_WIDTH, backgroundColor: backgroundColor },
+      ]}
+    >
       <Animated.Image
         source={item.image}
         style={[styles.image, animatedImageStyle]}
