@@ -1,19 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { startOfToday, isSameDay, isAfter } from "date-fns";
 import FeedingsList from "@/components/global/feedings/FeedingsList";
 import AddLogCard from "@/components/global/feedings/AddLogCard";
+import { fetchAllFeedingsfromDB } from "@/redux/actions";
 
 export default function FeedingsByDaySections() {
+  const dispatch = useDispatch();
   const allFeedings = useSelector((state) => state.feedings);
   const [feedings, setFeedings] = useState([]);
 
   useEffect(() => {
-    if (allFeedings.length > 0) {
+    if (allFeedings.length === 0) {
+      // If there are no feedings yet, dispatch an action to fetch them.
+      dispatch(fetchAllFeedingsfromDB());
+    } else {
       setFeedings(allFeedings);
     }
-  }, [allFeedings]);
+  }, [allFeedings, dispatch]);
 
   if (feedings.length === 0) {
     return (
@@ -28,13 +33,21 @@ export default function FeedingsByDaySections() {
     );
   }
 
+  // Filter feedings by status
   const incompleteFeedings = feedings.filter(
     (feeding) => feeding.complete === 0
   );
+
+  // Filter completed feedings and sort them newest-to-oldest, then take the most recent 15.
   const pastCompletedFeedings = feedings.filter(
     (feeding) => feeding.complete === 1
   );
+  const sortedPastCompletedFeedings = pastCompletedFeedings.sort(
+    (a, b) => new Date(b.feedingDate) - new Date(a.feedingDate)
+  );
+  const limitedPastCompletedFeedings = sortedPastCompletedFeedings.slice(0, 15);
 
+  // Prepare date-based filtering for incomplete feedings
   const today = startOfToday();
   const parseFeedingDateForDay = (feeding) =>
     new Date(`${feeding.feedingDate}T00:00:00`);
@@ -60,7 +73,7 @@ export default function FeedingsByDaySections() {
     modifiedFeedings = [{ id: "add-log-card" }, ...upcomingFeedings];
   }
 
-  // ✅ Ensure AddLogCard is always shown in "Upcoming Feedings" if no other section has it
+  // Ensure AddLogCard is always shown in "Upcoming Feedings" if no other section has it
   const addLogCardOnly = [{ id: "add-log-card" }];
   const showAddLogCardInUpcoming =
     firstValidSection === null ||
@@ -68,7 +81,7 @@ export default function FeedingsByDaySections() {
 
   return (
     <View>
-      <View style={{ height: 48 }}></View>
+      <View style={{ height: 48 }} />
 
       {/* Render Late Feedings */}
       {lateFeedings.length > 0 && (
@@ -102,10 +115,10 @@ export default function FeedingsByDaySections() {
         />
       )}
 
-      {/* Render Past Completed Feedings WITHOUT AddLogCard */}
-      {pastCompletedFeedings.length > 0 && (
+      {/* Render Past Completed Feedings (Most recent 15, sorted newest-to-oldest) */}
+      {limitedPastCompletedFeedings.length > 0 && (
         <FeedingsList
-          feedings={pastCompletedFeedings} // ❌ No AddLogCard here
+          feedings={limitedPastCompletedFeedings}
           title="Completed Feedings"
           showAllLink={false}
           noFeedingsText="No past feedings available"

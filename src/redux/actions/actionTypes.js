@@ -10,6 +10,7 @@ export const DELETE_PET = "DELETE_PET";
 //feedings
 export const ADD_FEEDING = "ADD_FEEDING";
 export const FETCH_FEEDINGS = "FETCH_FEEDINGS";
+export const FETCH_ALL_FEEDINGS = "FETCH_FEEDINGS";
 export const UPDATE_FEEDING = "UPDATE_FEEDING";
 export const UPDATE_FEEDING_PET = "UPDATE_FEEDING_PET";
 export const REMOVE_FEEDING = "REMOVE_FEEDING";

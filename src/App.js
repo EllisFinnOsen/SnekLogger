@@ -16,8 +16,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import SubscriptionScreen from "./screens/onboarding/SubscriptionScreen";
 import Purchases from "react-native-purchases";
 import CustomStatusBar from "./hooks/CustomStatusBar";
+import { resetDatabase } from "./database/reset";
+import { insertRobustMockData } from "./database/mockData";
 
-AsyncStorage.removeItem("firstTimeUser");
+//AsyncStorage.removeItem("firstTimeUser");
 
 export default function App() {
   const REVENUECAT_API_KEY = "your_revenuecat_api_key";
@@ -35,7 +37,9 @@ export default function App() {
   useEffect(() => {
     const setupDatabase = async () => {
       try {
+        await resetDatabase();
         await initializeDatabase();
+        await insertRobustMockData();
         setDbInitialized(true);
       } catch (error) {
         console.error("Error setting up database:", error);

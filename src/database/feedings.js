@@ -37,6 +37,19 @@ export const fetchFeedingsByPetFromDb = async (petId) => {
   }
 };
 
+// Fetch feedings by petId
+export const fetchAllFeedings = async () => {
+  try {
+    const db = await openDatabase();
+    const result = await db.getAllAsync("SELECT * FROM feedings");
+    console.log("Fetched all feedings from DB: ", result);
+    return result;
+  } catch (error) {
+    console.error("Error fetching feedings:", error);
+    throw error;
+  }
+};
+
 // Fetch a single feeding by its ID
 export const fetchFeedingByIdFromDb = async (feedingId) => {
   //console.log("Fetching feeding from DB for ID:", feedingId);

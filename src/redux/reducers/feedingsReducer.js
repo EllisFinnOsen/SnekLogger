@@ -3,6 +3,7 @@ import {
   UPDATE_FEEDING,
   ADD_FEEDING,
   REMOVE_FEEDING,
+  FETCH_ALL_FEEDINGS,
 } from "../actions/actionTypes";
 
 const initialState = [];
@@ -33,6 +34,10 @@ export default function feedingsReducer(state = initialState, action) {
 
     case REMOVE_FEEDING:
       return state.filter((feeding) => feeding.id !== action.payload);
+
+    case FETCH_ALL_FEEDINGS:
+      // Replace the entire feedings state with the payload.
+      return [...action.payload];
 
     default:
       return state;
