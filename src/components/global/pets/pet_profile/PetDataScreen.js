@@ -52,16 +52,14 @@ export default function PetDataScreen({ pet }) {
     return () => clearTimeout(timer);
   }, [allFeedings, pet.id]);
 
-  // All hooks are always called even if loading is true
-
-  /* 
-    1. Dynamic Aggregated Data (Only include days with feedings):
-       Sum the preyWeight per day, and format those dates as "D MMM YY".
-  */
+  // ─── 1. Dynamic Aggregated Data ───────────────────────────────────────────────
+  // Sum the preyWeight per day and format those dates as "D MMM YY".
+  // UPDATED: Use feedingTimestamp instead of feedingDate.
   const aggregatedWeightData = useMemo(() => {
     const weightByDate = {};
     petFeedings.forEach((feeding) => {
-      const dateKey = feeding.feedingDate.split("T")[0];
+      // Use the timestamp, then extract the date portion.
+      const dateKey = feeding.feedingTimestamp.split("T")[0];
       if (!weightByDate[dateKey]) {
         weightByDate[dateKey] = {
           sum: feeding.preyWeight,
@@ -87,10 +85,8 @@ export default function PetDataScreen({ pet }) {
     return { labels: formattedLabels, dataPoints, weightTypes };
   }, [petFeedings]);
 
-  /* 
-    2. Data for a Pie Chart:
-       Group feedings by preyType.
-  */
+  // ─── 2. Data for a Pie Chart ────────────────────────────────────────────────
+  // Group feedings by preyType.
   const pieChartData = useMemo(() => {
     const typeCounts = {};
     petFeedings.forEach((feeding) => {
@@ -107,10 +103,8 @@ export default function PetDataScreen({ pet }) {
     }));
   }, [petFeedings, textColor]);
 
-  /* 
-    3. Data for a Progress Chart:
-       Show the ratio of completed feedings.
-  */
+  // ─── 3. Data for a Progress Chart ─────────────────────────────────────────────
+  // Show the ratio of completed feedings.
   const progressData = useMemo(() => {
     const total = petFeedings.length;
     if (total === 0) return [0];
@@ -118,14 +112,13 @@ export default function PetDataScreen({ pet }) {
     return [completed / total];
   }, [petFeedings]);
 
-  /* 
-    4. Dynamic Contribution Graph Data:
-       Fill in all dates in the range with counts (0 if no feedings).
-  */
+  // ─── 4. Dynamic Contribution Graph Data ──────────────────────────────────────
+  // Fill in all dates in the range with counts (0 if no feedings).
   const contributionData = useMemo(() => {
     const countByDate = {};
     petFeedings.forEach((feeding) => {
-      const dateKey = feeding.feedingDate.split("T")[0];
+      // UPDATED: Use feedingTimestamp instead of feedingDate.
+      const dateKey = feeding.feedingTimestamp.split("T")[0];
       countByDate[dateKey] = (countByDate[dateKey] || 0) + 1;
     });
     if (Object.keys(countByDate).length === 0) return [];

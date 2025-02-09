@@ -23,6 +23,7 @@ import { startOfToday } from "date-fns";
 import { checkImageURL } from "@/utils/checkImage"; // Ensure this path is correct
 import { updateFeeding } from "@/redux/actions";
 import { updateFeedingInDb } from "@/database/feedings";
+import useFormattedDate from "@/hooks/useFormattedDate";
 
 export default function FeedingLogCard({
   item,
@@ -41,7 +42,6 @@ export default function FeedingLogCard({
     pet && checkImageURL(pet.imageURL)
       ? pet.imageURL
       : "https://files.oaiusercontent.com/file-DjW5L9b81xAoE1CS5dgfGf?se=2025-01-22T19%3A04%3A19Z&sp=r&sv=2024-08-04&sr=b&rscc=max-age%3D604800%2C%20immutable%2C%20private&rscd=attachment%3B%20filename%3D4bc93413-3775-4d04-bb36-d00efe395407.webp&sig=4s4GNu/F9s40L9WCGzcndpvr4bnYlv6ftC7%2BPRitiO0%3D";
-  const dateObj = toISODateTime(item.feedingDate, item.feedingTime);
 
   const [isChecked, setIsChecked] = useState(item.complete === 1);
 
@@ -56,8 +56,22 @@ export default function FeedingLogCard({
 
   // Determine if the feeding is "late" (i.e. incomplete and scheduled before today).
   const today = startOfToday();
-  const feedingDay = new Date(`${item.feedingDate}T00:00:00`);
-  const isLate = !isChecked && feedingDay < today;
+  const formattedFeedingDate = useFormattedDate(
+    item?.feedingTimestamp,
+    "P" // "P" gives the locale-specific date (e.g. 02/08/2024)
+  );
+  const formattedFeedingTime = useFormattedDate(
+    item?.feedingTimestamp,
+    "p" // "p" gives the locale-specific time (e.g. 8:00 AM)
+  );
+  // Convert the feedingTimestamp to a Date object, then extract just the date:
+  const feedingDay = new Date(item.feedingTimestamp);
+  const feedingDayOnly = new Date(
+    feedingDay.getFullYear(),
+    feedingDay.getMonth(),
+    feedingDay.getDate()
+  );
+  const isLate = !isChecked && feedingDayOnly < startOfToday();
 
   // Create animated values for horizontal slide (X axis) and fade (opacity)
   const slideAnim = useRef(new Animated.Value(isVisible ? 0 : -20)).current;
@@ -113,8 +127,7 @@ export default function FeedingLogCard({
       await updateFeedingInDb(
         item.id,
         item.petId,
-        item.feedingDate,
-        item.feedingTime,
+        item.feedingTimestamp,
         newCompleteValue
       );
       dispatch(updateFeeding({ ...item, complete: newCompleteValue }));
@@ -161,7 +174,7 @@ export default function FeedingLogCard({
               type="default"
               style={{ color: isChecked ? iconColor : textColor }}
             >
-              {formatDateString(dateObj, "MM/DD/YY")}
+              {formattedFeedingDate}
             </ThemedText>
           </View>
         </View>
@@ -179,7 +192,7 @@ export default function FeedingLogCard({
               type="smDetail"
               style={{ color: isChecked ? iconColor : textColor }}
             >
-              ({formatTimeString(dateObj)})
+              ({formattedFeedingTime})
             </ThemedText>
           </View>
           <TouchableOpacity

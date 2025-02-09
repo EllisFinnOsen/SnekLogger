@@ -4,7 +4,7 @@ let db;
 
 export const openDatabase = async () => {
   if (!db) {
-    db = await SQLite.openDatabaseAsync("mockData_2.db");
+    db = await SQLite.openDatabaseAsync("mockData_4.db");
   }
   return db;
 };
@@ -44,8 +44,7 @@ export const initializeDatabase = async () => {
       CREATE TABLE IF NOT EXISTS feedings (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         petId INTEGER NOT NULL,
-        feedingDate TEXT NOT NULL,
-        feedingTime TEXT NOT NULL,
+        feedingTimestamp TEXT NOT NULL,
         preyType TEXT NOT NULL,
         preyWeight REAL,
         preyWeightType TEXT NOT NULL,

@@ -11,10 +11,10 @@ export default function DateDisplay({
   label = "Prey Weight",
 }) {
   const iconColor = useThemeColor({}, "icon");
-  // Convert stored date string to Date object
-  const parsedDate = dateValue ? new Date(dateValue) : new Date();
-
-  // Format date display
+  // When a date is stored as "YYYY-MM-DD", we append "T00:00:00" so that
+  // the Date object is set to midnight local time.
+  const parsedDate = dateValue ? new Date(dateValue + "T00:00:00") : new Date();
+  // If dateValue is a string in "YYYY-MM-DD" format, split and reassemble it.
   const formattedDate = dateValue
     ? parsedDate.toLocaleDateString()
     : placeholder;
@@ -35,7 +35,7 @@ export default function DateDisplay({
 
       <View style={styles.valueContainer}>
         <ThemedText type="default">
-          {dateValue ? `${formattedDate}` : "Not Set"}
+          {dateValue ? formattedDate : "Not Set"}
         </ThemedText>
       </View>
     </View>

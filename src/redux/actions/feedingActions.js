@@ -39,8 +39,7 @@ export const updateFeeding = (updatedFeeding) => async (dispatch) => {
     await updateFeedingInDb(
       updatedFeeding.id,
       updatedFeeding.petId,
-      updatedFeeding.feedingDate,
-      updatedFeeding.feedingTime,
+      updatedFeeding.feedingTimestamp,
       updatedFeeding.preyType,
       updatedFeeding.preyWeight,
       updatedFeeding.preyWeightType,

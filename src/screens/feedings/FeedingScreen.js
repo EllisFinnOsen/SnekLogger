@@ -24,6 +24,7 @@ import { fetchFeedingByIdFromDb, updateFeedingInDb } from "@/database/feedings";
 import { fetchFeedingFreezerIdFromDb } from "@/database/freezer";
 import PreyDisplay from "@/components/global/feedings/PreyDisplay";
 import WeightDisplay from "@/components/global/feedings/WeightDisplay";
+import useFormattedDate from "@/hooks/useFormattedDate";
 
 export default function FeedingScreen() {
   const route = useRoute();
@@ -83,6 +84,15 @@ export default function FeedingScreen() {
 
   const feeding = feedingFromRedux || localFeeding;
 
+  const formattedFeedingDate = useFormattedDate(
+    feeding?.feedingTimestamp,
+    "P" // "P" gives the locale-specific date (e.g. 02/08/2024)
+  );
+  const formattedFeedingTime = useFormattedDate(
+    feeding?.feedingTimestamp,
+    "p" // "p" gives the locale-specific time (e.g. 8:00 AM)
+  );
+
   const handleToggleComplete = async () => {
     if (!feeding) return;
 
@@ -92,8 +102,7 @@ export default function FeedingScreen() {
       await updateFeedingInDb(
         feeding.id,
         feeding.petId,
-        feeding.feedingDate,
-        feeding.feedingTime,
+        feeding.feedingTimestamp,
         feeding.preyType,
         feeding.preyWeight,
         feeding.preyWeightType,
@@ -167,8 +176,8 @@ export default function FeedingScreen() {
       </View>
 
       <DateTimeFields
-        feedingDate={feeding.feedingDate}
-        feedingTime={feeding.feedingTime}
+        feedingDate={formattedFeedingDate}
+        feedingTime={formattedFeedingTime}
       />
 
       <NotesField notes={feeding.notes} isEditing={false} />

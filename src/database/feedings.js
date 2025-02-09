@@ -42,7 +42,7 @@ export const fetchAllFeedings = async () => {
   try {
     const db = await openDatabase();
     const result = await db.getAllAsync("SELECT * FROM feedings");
-    console.log("Fetched all feedings from DB: ", result);
+    //console.log("Fetched all feedings from DB: ", result);
     return result;
   } catch (error) {
     console.error("Error fetching feedings:", error);
@@ -62,8 +62,7 @@ export const fetchFeedingByIdFromDb = async (feedingId) => {
     return (
       result ?? {
         petId: null,
-        feedingDate: "",
-        feedingTime: "",
+        feedingTimestamp: "",
         preyType: "",
         preyWeight: 0, // Default to 0 if not found
         preyWeightType: "g",
@@ -80,8 +79,7 @@ export const fetchFeedingByIdFromDb = async (feedingId) => {
 export const updateFeedingInDb = async (
   feedingId,
   petId,
-  feedingDate,
-  feedingTime,
+  feedingTimestamp,
   preyType,
   preyWeight,
   preyWeightType,
@@ -93,8 +91,7 @@ export const updateFeedingInDb = async (
     const result = await db.runAsync(
       `UPDATE feedings 
        SET petId = ?, 
-           feedingDate = ?, 
-           feedingTime = ?, 
+           feedingTimestamp = ?, 
            preyType = ?, 
            preyWeight = ?, 
            preyWeightType = ?, 
@@ -103,8 +100,7 @@ export const updateFeedingInDb = async (
        WHERE id = ?`,
       [
         petId,
-        feedingDate,
-        feedingTime,
+        feedingTimestamp,
         preyType,
         preyWeight ?? 0,
         preyWeightType ?? "g",
@@ -123,8 +119,7 @@ export const updateFeedingInDb = async (
 
 export const insertFeedingInDb = async ({
   petId,
-  feedingDate,
-  feedingTime,
+  feedingTimestamp,
   preyType,
   preyWeight,
   preyWeightType,
@@ -135,8 +130,8 @@ export const insertFeedingInDb = async ({
     const db = await openDatabase();
     // Check if a feeding with the same petId, date, and time already exists
     const existingFeeding = await db.getFirstAsync(
-      "SELECT id FROM feedings WHERE petId = ? AND feedingDate = ? AND feedingTime = ?",
-      [petId, feedingDate, feedingTime]
+      "SELECT id FROM feedings WHERE petId = ? AND feedingTimestamp = ?",
+      [petId, feedingTimestamp]
     );
 
     if (existingFeeding) {
@@ -146,12 +141,11 @@ export const insertFeedingInDb = async ({
 
     const result = await db.runAsync(
       `INSERT INTO feedings 
-        (petId, feedingDate, feedingTime, preyType, preyWeight, preyWeightType, notes, complete)
+        (petId, feedingTimestamp, preyType, preyWeight, preyWeightType, notes, complete)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         petId,
-        feedingDate,
-        feedingTime,
+        feedingTimestamp,
         preyType,
         preyWeight ?? 0,
         preyWeightType ?? "g",

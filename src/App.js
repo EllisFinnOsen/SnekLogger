@@ -37,9 +37,9 @@ export default function App() {
   useEffect(() => {
     const setupDatabase = async () => {
       try {
-        //await resetDatabase();
+        await resetDatabase();
         await initializeDatabase();
-        //await insertRobustMockData();
+        await insertRobustMockData();
         setDbInitialized(true);
       } catch (error) {
         console.error("Error setting up database:", error);

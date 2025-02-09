@@ -24,6 +24,7 @@ export default function AddFeedingScreen() {
   const navigation = useNavigation();
   const pets = useSelector((state) => state.pets.pets || []);
 
+  // Get today's date and the current time for initial state.
   const todayDate = new Date().toISOString().split("T")[0];
   const currentTime = new Date().toTimeString().split(" ")[0].substring(0, 5);
 
@@ -45,14 +46,20 @@ export default function AddFeedingScreen() {
 
   const handleSave = async () => {
     if (!selectedPetId) {
-      //console.error("Error: No pet selected for feeding.");
+      // Optionally, display an error or a toast if no pet is selected.
       return;
     }
 
+    // ─── Combine feedingDate and feedingTime into a single ISO timestamp ─────────
+    // This creates a Date object from the date and time, then converts it to an ISO string.
+    const newFeedingTimestamp = new Date(
+      `${feedingDate}T${feedingTime}`
+    ).toISOString();
+
+    // ─── Build the new feeding object ─────────────────────────────────────────────
     const newFeeding = {
       petId: selectedPetId,
-      feedingDate,
-      feedingTime,
+      feedingTimestamp: newFeedingTimestamp, // New combined field.
       preyType,
       preyWeight,
       preyWeightType,
@@ -63,7 +70,7 @@ export default function AddFeedingScreen() {
     try {
       const insertedId = await insertFeedingInDb(newFeeding);
       if (!insertedId) {
-        //console.error("Error inserting feeding into database.");
+        // Handle error: insertion failed.
         return;
       }
 
@@ -71,10 +78,11 @@ export default function AddFeedingScreen() {
         await linkFeedingToFreezer(insertedId, selectedFreezerId);
       }
 
+      // Dispatch Redux action to add the new feeding.
       dispatch(addFeeding({ id: insertedId, ...newFeeding }));
       navigation.goBack();
     } catch (error) {
-      //console.error("Error adding feeding:", error);
+      // Handle error as needed (e.g., display an alert).
     }
   };
 
@@ -128,7 +136,7 @@ export default function AddFeedingScreen() {
             isEditing={true}
             preyType={preyType}
             setPreyType={setPreyType}
-            onFreezerSelection={setSelectedFreezerId} // ✅ Capture selected freezer ID
+            onFreezerSelection={setSelectedFreezerId} // Capture selected freezer ID.
           />
         </View>
         <View style={styles.weightWrap}>
@@ -142,6 +150,7 @@ export default function AddFeedingScreen() {
         </View>
       </View>
 
+      {/* DateTimeFields remains unchanged for UI editing */}
       <DateTimeFields
         feedingDate={feedingDate}
         setFeedingDate={setFeedingDate}

@@ -6,6 +6,11 @@ import FeedingsList from "@/components/global/feedings/FeedingsList";
 import AddLogCard from "@/components/global/feedings/AddLogCard";
 import { fetchAllFeedingsfromDB } from "@/redux/actions";
 
+// Updated helper using feedingTimestamp
+import { startOfDay } from "date-fns";
+const parseFeedingDate = (feeding) =>
+  startOfDay(new Date(feeding.feedingTimestamp));
+
 export default function FeedingsByDaySections() {
   const dispatch = useDispatch();
   const allFeedings = useSelector((state) => state.feedings);
@@ -32,10 +37,6 @@ export default function FeedingsByDaySections() {
     );
   }
 
-  // Helper to parse the feeding date consistently
-  const parseFeedingDate = (feeding) =>
-    new Date(`${feeding.feedingDate}T00:00:00`);
-
   // Separate incomplete and completed feedings
   const incompleteFeedings = feedings.filter(
     (feeding) => feeding.complete === 0
@@ -45,16 +46,11 @@ export default function FeedingsByDaySections() {
   );
 
   // Sort completed feedings using parseFeedingDate for consistency.
-  // If the dates are equal, convert the ids to strings (or fallback to empty strings) to avoid errors.
   const sortedPastCompletedFeedings = [...pastCompletedFeedings].sort(
     (a, b) => {
       const diff = parseFeedingDate(b) - parseFeedingDate(a);
       if (diff !== 0) return diff;
-
-      // Use feeding.id as a tie-breaker, ensuring it's a string (or an empty string if missing)
-      const idA = a.id != null ? String(a.id) : "";
-      const idB = b.id != null ? String(b.id) : "";
-      return idA.localeCompare(idB);
+      return String(a.id).localeCompare(String(b.id));
     }
   );
   const limitedPastCompletedFeedings = sortedPastCompletedFeedings.slice(0, 15);

@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo } from "react";
 import { View } from "react-native";
 import { useSelector } from "react-redux";
-import { startOfToday, isSameDay, isAfter } from "date-fns";
+import { startOfToday, startOfDay, isSameDay, isAfter } from "date-fns";
 import FeedingsList from "@/components/global/feedings/FeedingsList";
 import AddLogCard from "@/components/global/feedings/AddLogCard";
 
@@ -29,8 +29,10 @@ export default function ViewByDateForPet({ petId }) {
   );
 
   const today = startOfToday();
+
+  // UPDATED: Parse the feeding timestamp and reset to midnight.
   const parseFeedingDateForDay = (feeding) =>
-    new Date(`${feeding.feedingDate}T00:00:00`);
+    startOfDay(new Date(feeding.feedingTimestamp));
 
   const lateFeedings = incompleteFeedings.filter(
     (feeding) => parseFeedingDateForDay(feeding) < today
@@ -53,7 +55,7 @@ export default function ViewByDateForPet({ petId }) {
     modifiedFeedings = [{ id: "add-log-card" }, ...upcomingFeedings];
   }
 
-  // ✅ Ensure AddLogCard is always shown in "Upcoming Feedings" if no other section has it
+  // Ensure AddLogCard is always shown in "Upcoming Feedings" if no other section has it
   const addLogCardOnly = [{ id: "add-log-card" }];
   const showAddLogCardInUpcoming =
     firstValidSection === null ||
@@ -98,7 +100,7 @@ export default function ViewByDateForPet({ petId }) {
       {/* Render Past Completed Feedings WITHOUT AddLogCard */}
       {pastCompleteFeedings.length > 0 && (
         <FeedingsList
-          feedings={pastCompleteFeedings} // ❌ No AddLogCard here
+          feedings={pastCompleteFeedings} // No AddLogCard here
           title="Completed Feedings"
           showAllLink={false}
           noFeedingsText="No past feedings available"

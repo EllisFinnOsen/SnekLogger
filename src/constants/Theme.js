@@ -15,7 +15,7 @@ export const COLORS = {
     background: "#fff",
     active: "#ff8C01",
     error: "#C62C2C",
-    errorSubtle: "#2D2323",
+    errorSubtle: "#F4D5D5",
     tint: tintColorLight,
     icon: "#687076",
     tabIconDefault: "#687076",

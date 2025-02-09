@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { ThemedText } from "@/components/global/ThemedText";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { Ionicons } from "@expo/vector-icons";
+
 export default function TimePickerField({
   label = "Select Time",
   timeValue,
@@ -57,9 +58,13 @@ export default function TimePickerField({
           onChange={(event, selectedTime) => {
             setShowFeedingTimePicker(false);
             if (selectedTime) {
-              setTimeValue(
-                selectedTime.toISOString().split("T")[1].substring(0, 5)
-              );
+              // Use local hours and minutes to avoid timezone conversion to UTC
+              const hours = selectedTime.getHours().toString().padStart(2, "0");
+              const minutes = selectedTime
+                .getMinutes()
+                .toString()
+                .padStart(2, "0");
+              setTimeValue(`${hours}:${minutes}`);
             }
           }}
         />
@@ -74,6 +79,7 @@ const styles = StyleSheet.create({
   },
   label: {
     marginBottom: 4,
+    marginLeft: 8,
   },
   input: {
     borderWidth: 1,
@@ -83,10 +89,6 @@ const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: "row",
     alignItems: "center",
-  },
-  label: {
-    marginBottom: 4,
-    marginLeft: 8,
   },
   icon: {
     marginBottom: 6,
