@@ -142,7 +142,7 @@ export const insertFeedingInDb = async ({
     const result = await db.runAsync(
       `INSERT INTO feedings 
         (petId, feedingTimestamp, preyType, preyWeight, preyWeightType, notes, complete)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
       [
         petId,
         feedingTimestamp,

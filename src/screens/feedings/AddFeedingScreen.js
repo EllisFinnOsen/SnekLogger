@@ -46,7 +46,7 @@ export default function AddFeedingScreen() {
 
   const handleSave = async () => {
     if (!selectedPetId) {
-      // Optionally, display an error or a toast if no pet is selected.
+      console.error("No pet selected.");
       return;
     }
 
@@ -55,6 +55,7 @@ export default function AddFeedingScreen() {
     const newFeedingTimestamp = new Date(
       `${feedingDate}T${feedingTime}`
     ).toISOString();
+    console.log("newFeedingTimestamp:", newFeedingTimestamp);
 
     // ─── Build the new feeding object ─────────────────────────────────────────────
     const newFeeding = {
@@ -68,21 +69,25 @@ export default function AddFeedingScreen() {
     };
 
     try {
+      console.log("Attempting to insert new feeding:", newFeeding);
       const insertedId = await insertFeedingInDb(newFeeding);
+      console.log("insertedId:", insertedId);
       if (!insertedId) {
-        // Handle error: insertion failed.
+        console.error("Insertion failed. No ID returned.");
         return;
       }
 
       if (selectedFreezerId) {
         await linkFeedingToFreezer(insertedId, selectedFreezerId);
+        console.log("selectedFreezerId:", selectedFreezerId);
       }
 
       // Dispatch Redux action to add the new feeding.
       dispatch(addFeeding({ id: insertedId, ...newFeeding }));
+      console.log("Feeding added, navigating back.");
       navigation.goBack();
     } catch (error) {
-      // Handle error as needed (e.g., display an alert).
+      console.error("Error in handleSave:", error);
     }
   };
 

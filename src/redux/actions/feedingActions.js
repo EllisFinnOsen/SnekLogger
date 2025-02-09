@@ -20,10 +20,10 @@ import { updateFreezerQuantityBasedOnFeeding } from "@/database/freezer";
 export const addFeeding = (newFeeding) => async (dispatch) => {
   try {
     const feedingId = await insertFeedingInDb(newFeeding);
-    /*//console.log("Dispatching ADD_FEEDING for feeding:", {
+    console.log("Dispatching ADD_FEEDING for feeding:", {
       id: feedingId,
       ...newFeeding,
-    });*/
+    });
 
     dispatch({
       type: ADD_FEEDING,
