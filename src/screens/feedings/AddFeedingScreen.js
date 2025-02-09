@@ -24,6 +24,7 @@ export default function AddFeedingScreen() {
   const navigation = useNavigation();
   const pets = useSelector((state) => state.pets.pets || []);
 
+  // Get today's date and the current time for initial state.
   const todayDate = new Date().toISOString().split("T")[0];
   const currentTime = new Date().toTimeString().split(" ")[0].substring(0, 5);
 
@@ -45,14 +46,21 @@ export default function AddFeedingScreen() {
 
   const handleSave = async () => {
     if (!selectedPetId) {
-      //console.error("Error: No pet selected for feeding.");
+      console.error("No pet selected.");
       return;
     }
 
+    // ─── Combine feedingDate and feedingTime into a single ISO timestamp ─────────
+    // This creates a Date object from the date and time, then converts it to an ISO string.
+    const newFeedingTimestamp = new Date(
+      `${feedingDate}T${feedingTime}`
+    ).toISOString();
+    console.log("newFeedingTimestamp:", newFeedingTimestamp);
+
+    // ─── Build the new feeding object ─────────────────────────────────────────────
     const newFeeding = {
       petId: selectedPetId,
-      feedingDate,
-      feedingTime,
+      feedingTimestamp: newFeedingTimestamp, // New combined field.
       preyType,
       preyWeight,
       preyWeightType,
@@ -61,20 +69,25 @@ export default function AddFeedingScreen() {
     };
 
     try {
+      console.log("Attempting to insert new feeding:", newFeeding);
       const insertedId = await insertFeedingInDb(newFeeding);
+      console.log("insertedId:", insertedId);
       if (!insertedId) {
-        //console.error("Error inserting feeding into database.");
+        console.error("Insertion failed. No ID returned.");
         return;
       }
 
       if (selectedFreezerId) {
         await linkFeedingToFreezer(insertedId, selectedFreezerId);
+        console.log("selectedFreezerId:", selectedFreezerId);
       }
 
+      // Dispatch Redux action to add the new feeding.
       dispatch(addFeeding({ id: insertedId, ...newFeeding }));
+      console.log("Feeding added, navigating back.");
       navigation.goBack();
     } catch (error) {
-      //console.error("Error adding feeding:", error);
+      console.error("Error in handleSave:", error);
     }
   };
 
@@ -101,7 +114,7 @@ export default function AddFeedingScreen() {
               ? selectedPet.imageURL
               : "https://files.oaiusercontent.com/file-DjW5L9b81xAoE1CS5dgfGf?se=2025-01-22T19%3A04%3A19Z&sp=r&sv=2024-08-04&sr=b&rscc=max-age%3D604800%2C%20immutable%2C%20private&rscd=attachment%3B%20filename%3D4bc93413-3775-4d04-bb36-d00efe395407.webp&sig=4s4GNu/F9s40L9WCGzcndpvr4bnYlv6ftC7%2BPRitiO0%3D",
           }}
-          style={styles.petImage}
+          style={[styles.petImage, { backgroundColor: cancelColor }]}
         />
         <View style={[styles.fieldWrapper, { borderColor: cancelColor }]}>
           <ExistingPetPicker
@@ -128,7 +141,7 @@ export default function AddFeedingScreen() {
             isEditing={true}
             preyType={preyType}
             setPreyType={setPreyType}
-            onFreezerSelection={setSelectedFreezerId} // ✅ Capture selected freezer ID
+            onFreezerSelection={setSelectedFreezerId} // Capture selected freezer ID.
           />
         </View>
         <View style={styles.weightWrap}>
@@ -142,6 +155,7 @@ export default function AddFeedingScreen() {
         </View>
       </View>
 
+      {/* DateTimeFields remains unchanged for UI editing */}
       <DateTimeFields
         feedingDate={feedingDate}
         setFeedingDate={setFeedingDate}
@@ -174,7 +188,7 @@ export default function AddFeedingScreen() {
 
 const styles = StyleSheet.create({
   container: { flexGrow: 1, padding: 16 },
-  petImage: { width: 40, height: 40, borderRadius: 50, marginRight: 16 },
+  petImage: { width: 50, height: 50, borderRadius: 50, marginRight: 16 },
   petWrap: { flexDirection: "row", marginVertical: 30 },
   preyRow: {
     flexDirection: "row",

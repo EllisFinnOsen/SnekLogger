@@ -1,19 +1,28 @@
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { startOfToday, isSameDay, isAfter } from "date-fns";
 import FeedingsList from "@/components/global/feedings/FeedingsList";
 import AddLogCard from "@/components/global/feedings/AddLogCard";
+import { fetchAllFeedingsfromDB } from "@/redux/actions";
+
+// Updated helper using feedingTimestamp
+import { startOfDay } from "date-fns";
+const parseFeedingDate = (feeding) =>
+  startOfDay(new Date(feeding.feedingTimestamp));
 
 export default function FeedingsByDaySections() {
+  const dispatch = useDispatch();
   const allFeedings = useSelector((state) => state.feedings);
   const [feedings, setFeedings] = useState([]);
 
   useEffect(() => {
-    if (allFeedings.length > 0) {
+    if (allFeedings.length === 0) {
+      dispatch(fetchAllFeedingsfromDB());
+    } else {
       setFeedings(allFeedings);
     }
-  }, [allFeedings]);
+  }, [allFeedings, dispatch]);
 
   if (feedings.length === 0) {
     return (
@@ -28,6 +37,7 @@ export default function FeedingsByDaySections() {
     );
   }
 
+  // Separate incomplete and completed feedings
   const incompleteFeedings = feedings.filter(
     (feeding) => feeding.complete === 0
   );
@@ -35,18 +45,32 @@ export default function FeedingsByDaySections() {
     (feeding) => feeding.complete === 1
   );
 
-  const today = startOfToday();
-  const parseFeedingDateForDay = (feeding) =>
-    new Date(`${feeding.feedingDate}T00:00:00`);
+  // Sort completed feedings using parseFeedingDate for consistency.
+  const sortedPastCompletedFeedings = [...pastCompletedFeedings].sort(
+    (a, b) => {
+      const diff = parseFeedingDate(b) - parseFeedingDate(a);
+      if (diff !== 0) return diff;
+      return String(a.id).localeCompare(String(b.id));
+    }
+  );
+  const limitedPastCompletedFeedings = sortedPastCompletedFeedings.slice(0, 15);
 
-  const lateFeedings = incompleteFeedings.filter(
-    (feeding) => parseFeedingDateForDay(feeding) < today
+  // Sort incomplete feedings in ascending order (sooner first)
+  const sortedIncompleteFeedings = [...incompleteFeedings].sort(
+    (a, b) => parseFeedingDate(a) - parseFeedingDate(b)
   );
-  const todaysFeedings = incompleteFeedings.filter((feeding) =>
-    isSameDay(parseFeedingDateForDay(feeding), today)
+
+  const today = startOfToday();
+
+  // Filter incomplete feedings into sections
+  const lateFeedings = sortedIncompleteFeedings.filter(
+    (feeding) => parseFeedingDate(feeding) < today
   );
-  const upcomingFeedings = incompleteFeedings.filter((feeding) =>
-    isAfter(parseFeedingDateForDay(feeding), today)
+  const todaysFeedings = sortedIncompleteFeedings.filter((feeding) =>
+    isSameDay(parseFeedingDate(feeding), today)
+  );
+  const upcomingFeedings = sortedIncompleteFeedings.filter((feeding) =>
+    isAfter(parseFeedingDate(feeding), today)
   );
 
   let firstValidSection = null;
@@ -60,7 +84,7 @@ export default function FeedingsByDaySections() {
     modifiedFeedings = [{ id: "add-log-card" }, ...upcomingFeedings];
   }
 
-  // ✅ Ensure AddLogCard is always shown in "Upcoming Feedings" if no other section has it
+  // Always ensure AddLogCard is available if needed
   const addLogCardOnly = [{ id: "add-log-card" }];
   const showAddLogCardInUpcoming =
     firstValidSection === null ||
@@ -68,7 +92,7 @@ export default function FeedingsByDaySections() {
 
   return (
     <View>
-      <View style={{ height: 48 }}></View>
+      <View style={{ height: 48 }} />
 
       {/* Render Late Feedings */}
       {lateFeedings.length > 0 && (
@@ -90,7 +114,7 @@ export default function FeedingsByDaySections() {
         />
       )}
 
-      {/* Render Upcoming Feedings (Always has AddLogCard if no other section does) */}
+      {/* Render Upcoming Feedings */}
       {(firstValidSection === "upcoming" || showAddLogCardInUpcoming) && (
         <FeedingsList
           feedings={
@@ -102,10 +126,10 @@ export default function FeedingsByDaySections() {
         />
       )}
 
-      {/* Render Past Completed Feedings WITHOUT AddLogCard */}
-      {pastCompletedFeedings.length > 0 && (
+      {/* Render Past Completed Feedings */}
+      {limitedPastCompletedFeedings.length > 0 && (
         <FeedingsList
-          feedings={pastCompletedFeedings} // ❌ No AddLogCard here
+          feedings={limitedPastCompletedFeedings}
           title="Completed Feedings"
           showAllLink={false}
           noFeedingsText="No past feedings available"

@@ -28,10 +28,12 @@ export default function CategorySection({
           label="Category"
           selectedValue={category}
           onValueChange={(itemValue) => {
-            setCategory(itemValue);
-            // Reset species and morph if category changes.
-            setSpecies("");
-            setMorph("");
+            if (itemValue !== category) {
+              setCategory(itemValue);
+              // Only reset if the category is actually changed
+              setSpecies("");
+              setMorph("");
+            }
           }}
           items={PET_CATEGORIES}
         />
@@ -40,6 +42,7 @@ export default function CategorySection({
         <View style={styles.fieldContainer}>
           <CategoryPicker
             label="Species"
+            key={`species-picker-${category}-${species}`}
             selectedValue={species}
             onValueChange={(itemValue) => {
               setSpecies(itemValue);
@@ -55,6 +58,7 @@ export default function CategorySection({
             Morph
           </ThemedText>
           <SearchablePicker
+            key={`species-picker-${species}-${morph}`}
             options={MORPH_TYPES[species] || []}
             selectedValue={morph}
             onValueChange={setMorph}

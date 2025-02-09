@@ -2,7 +2,7 @@
   "expo": {
     "name": "VorTrack",
     "slug": "VorTrack",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./src/assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -10,8 +10,9 @@
     "splash": {
       "image": "./src/assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#333333"
     },
+
     "ios": {
       "supportsTablet": true,
       "userInterfaceStyle": "automatic"
@@ -20,28 +21,20 @@
       "userInterfaceStyle": "automatic",
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#333333"
       },
-      "package": "com.ellisosen.VorTrack"
+      "package": "com.ellisosen.VorTrack",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./src/assets/favicon.png"
     },
-    "plugins": [
-      "expo-sqlite",
-      "expo-localization"
-    ],
+    "plugins": ["expo-sqlite", "expo-localization"],
     "extra": {
       "eas": {
         "projectId": "d27cfb47-2202-4a4a-9605-bd1b46673cb9"
       }
     },
-    "owner": "ellisosen",
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
-    "updates": {
-      "url": "https://u.expo.dev/d27cfb47-2202-4a4a-9605-bd1b46673cb9"
-    }
+    "owner": "ellisosen"
   }
 }

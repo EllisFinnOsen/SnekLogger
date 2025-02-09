@@ -10,6 +10,7 @@ export const DELETE_PET = "DELETE_PET";
 //feedings
 export const ADD_FEEDING = "ADD_FEEDING";
 export const FETCH_FEEDINGS = "FETCH_FEEDINGS";
+export const FETCH_ALL_FEEDINGS = "FETCH_FEEDINGS";
 export const UPDATE_FEEDING = "UPDATE_FEEDING";
 export const UPDATE_FEEDING_PET = "UPDATE_FEEDING_PET";
 export const REMOVE_FEEDING = "REMOVE_FEEDING";
@@ -27,6 +28,7 @@ export const REMOVE_PET_FROM_GROUP = "REMOVE_PET_FROM_GROUP";
 //users
 export const FETCH_USER = "FETCH_USER";
 export const UPDATE_USER = "UPDATE_USER";
+export const SET_FIRST_TIME_USER = "SET_FIRST_TIME_USER";
 
 //freezerItems
 export const FETCH_FREEZER_ITEMS = "FETCH_FREEZER_ITEMS";

@@ -15,10 +15,7 @@ export const selectFeedingFreezerLinks = createSelector(
   (feedingFreezer, feedingId) => feedingFreezer[feedingId] || Object.freeze([])
 );
 
-export const selectFreezerItems = createSelector(
-  [(state) => state.freezer.items || []],
-  (items) => items // Keeps reference stable if `items` hasn't changed
-);
+export const selectFreezerItems = (state) => state.freezer.items || [];
 
 export const selectLowStockWarnings = createSelector(
   [freezerSelector],

@@ -14,6 +14,7 @@ export default function AddLogCard({ petId }) {
   const fieldAccent = useThemeColor({}, "fieldAccent");
   const iconColor = useThemeColor({}, "icon");
   const textColor = useThemeColor({}, "text");
+  const subtleColor = useThemeColor({}, "subtleText");
 
   const handlePress = () => {
     navigation.navigate("AddFeedingScreen", petId ? { petId } : {});
@@ -33,7 +34,7 @@ export default function AddLogCard({ petId }) {
           <ThemedText type="defaultSemiBold" style={{ color: textColor }}>
             Add New Feeding Log
           </ThemedText>
-          <ThemedText type="smDetail" style={{ color: textColor }}>
+          <ThemedText type="smDetail" style={{ color: subtleColor }}>
             {petId ? "For this pet" : "For any pet"}
           </ThemedText>
         </View>

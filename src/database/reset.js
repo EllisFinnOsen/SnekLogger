@@ -45,8 +45,7 @@ export const resetDatabase = async () => {
       CREATE TABLE IF NOT EXISTS feedings (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         petId INTEGER NOT NULL,
-        feedingDate TEXT NOT NULL,
-        feedingTime TEXT NOT NULL,
+        feedingTimestamp TEXT NOT NULL,
         preyType TEXT NOT NULL,
         preyWeight REAL,
         preyWeightType TEXT NOT NULL,

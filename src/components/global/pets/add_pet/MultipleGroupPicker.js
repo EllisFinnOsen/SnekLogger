@@ -55,7 +55,7 @@ export default function MultipleGroupPicker({
         </View>
       ))}
       <TouchableOpacity onPress={handleAddField} style={styles.addButton}>
-        <ThemedText type="default">Add Group</ThemedText>
+        <ThemedText type="default">Add To A Group</ThemedText>
       </TouchableOpacity>
     </View>
   );

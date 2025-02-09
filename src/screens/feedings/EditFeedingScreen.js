@@ -1,6 +1,6 @@
 // File: EditFeedingScreen.js
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Image } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { selectFeedingById } from "@/redux/selectors";
@@ -15,7 +15,6 @@ import NotesField from "@/components/global/pets/add_pet/NotesField";
 import HeaderSection from "@/components/global/pets/add_pet/HeaderSection";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { ThemedText } from "@/components/global/ThemedText";
-import { Image } from "react-native";
 import { checkImageURL } from "@/utils/checkImage";
 import ExistingPetPicker from "@/components/global/pets/add_pet/ExistingPetPicker";
 import { fetchFeedingByIdFromDb, updateFeedingInDb } from "@/database/feedings";
@@ -24,7 +23,7 @@ import {
   fetchFeedingFreezerIdFromDb,
   linkFeedingToFreezer,
 } from "@/database/freezer";
-import { removeFreezerLink } from "@/redux/actions"; // ✅ Import Redux action
+import { removeFreezerLink } from "@/redux/actions"; // Redux action for freezer link removal
 import { deleteFeeding } from "@/redux/actions";
 import DeleteButton from "@/components/global/DeleteButton";
 
@@ -39,24 +38,23 @@ export default function EditFeedingScreen() {
   const fieldColor = useThemeColor({}, "field");
   const activeColor = useThemeColor({}, "active");
 
-  // ✅ Get feeding from Redux first
+  // Get feeding from Redux first
   const reduxFeeding = useSelector((state) =>
     selectFeedingById(state, feedingId)
   );
   const [feeding, setFeeding] = useState(reduxFeeding);
 
+  // When no Redux feeding exists, fetch from DB
   useEffect(() => {
     if (!reduxFeeding) {
       const loadFeeding = async () => {
         try {
-          //console.log("Fetching feeding from database:", feedingId);
           const dbFeeding = await fetchFeedingByIdFromDb(feedingId);
           if (dbFeeding) {
-            //console.log("Database returned:", dbFeeding);
             setFeeding(dbFeeding);
           }
         } catch (error) {
-          //console.error("Error fetching feeding from database:", error);
+          // Handle error as needed
         }
       };
 
@@ -72,13 +70,20 @@ export default function EditFeedingScreen() {
     );
   }
 
-  // ✅ Ensure feedingDate is formatted correctly
-  const formattedDate = feeding.feedingDate.split("T")[0];
+  // ─── EXTRACT INITIAL DATE & TIME FROM THE SINGLE feedingTimestamp ────────
+  // Assume feeding.feedingTimestamp is an ISO string like "2024-02-08T08:00:00.000Z"
+  const dateObj = new Date(feeding.feedingTimestamp);
+  // Get date as "YYYY-MM-DD"
+  const initialDate = dateObj.toISOString().split("T")[0];
+  // Get time in HH:mm format
+  const hours = dateObj.getHours().toString().padStart(2, "0");
+  const minutes = dateObj.getMinutes().toString().padStart(2, "0");
+  const initialTime = `${hours}:${minutes}`;
 
-  // Populate fields with the fetched feeding data
+  // ─── SET UP STATE ─────────────────────────────────────────────────────────────
   const [selectedPetId, setSelectedPetId] = useState(feeding.petId);
-  const [feedingDate, setFeedingDate] = useState(formattedDate);
-  const [feedingTime, setFeedingTime] = useState(feeding.feedingTime);
+  const [feedingDate, setFeedingDate] = useState(initialDate);
+  const [feedingTime, setFeedingTime] = useState(initialTime);
   const [preyType, setPreyType] = useState(feeding.preyType);
   const [preyWeight, setPreyWeight] = useState(feeding.preyWeight);
   const [preyWeightType, setPreyWeightType] = useState(feeding.preyWeightType);
@@ -97,27 +102,29 @@ export default function EditFeedingScreen() {
         try {
           const freezerId = await fetchFeedingFreezerIdFromDb(feeding.id);
           setSelectedFreezerId(freezerId);
-          /* //console.log(
-            `Loaded Freezer ID: ${freezerId} for Feeding ID: ${feeding.id}`
-          );*/
         } catch (error) {
-          //console.error("Error fetching freezer ID:", error);
+          // Handle error as needed
         }
       }
     };
 
     loadFreezerId();
-  }, [feeding?.id]); // ✅ Fetch freezer ID when feeding is loaded
+  }, [feeding?.id]);
 
+  // ─── HANDLE SAVE ───────────────────────────────────────────────────────────────
   const handleSave = async () => {
     try {
-      const formattedFeedingDate = feedingDate.split("T")[0];
+      // Combine the edited date and time into a single ISO timestamp.
+      const updatedFeedingTimestamp = new Date(
+        `${feedingDate}T${feedingTime}`
+      ).toISOString();
 
+      // Build an updated feeding object.
+      // (If your database still expects separate fields, you could also pass feedingDate and feedingTime.)
       const updatedFeeding = {
         id: feeding.id,
         petId: selectedPetId,
-        feedingDate: formattedFeedingDate,
-        feedingTime,
+        feedingTimestamp: updatedFeedingTimestamp,
         preyType,
         preyWeight,
         preyWeightType,
@@ -125,12 +132,11 @@ export default function EditFeedingScreen() {
         complete: isComplete ? 1 : 0,
       };
 
-      // ✅ Update feeding in DB
+      // Update feeding in DB. (Ensure your updateFeedingInDb function is updated to use the new feedingTimestamp.)
       await updateFeedingInDb(
         feeding.id,
         selectedPetId,
-        formattedFeedingDate,
-        feedingTime,
+        updatedFeedingTimestamp, // Passing the single timestamp
         preyType,
         preyWeight,
         preyWeightType,
@@ -138,25 +144,19 @@ export default function EditFeedingScreen() {
         isComplete ? 1 : 0
       );
 
-      // ✅ Ensure freezer link is removed if necessary
+      // Ensure freezer link is updated as needed.
       if (selectedFreezerId) {
-        /* //console.log(
-          `🔗 Linking Feeding ID ${feeding.id} to Freezer ID ${selectedFreezerId}`
-        );*/
         await linkFeedingToFreezer(feeding.id, selectedFreezerId);
       } else {
-        //console.log(`❄️ Removing freezer link for Feeding ID: ${feeding.id}`);
         await dispatch(removeFreezerLink(feeding.id));
       }
 
-      // ✅ Dispatch Redux update
+      // Dispatch Redux update.
       dispatch(updateFeeding(updatedFeeding));
-
-      //console.log(`✅ Feeding updated successfully:`, updatedFeeding);
 
       navigation.goBack();
     } catch (error) {
-      //console.error("❌ Error updating feeding:", error);
+      // Handle error as needed
     }
   };
 
@@ -166,10 +166,10 @@ export default function EditFeedingScreen() {
 
   const handleDelete = async () => {
     try {
-      await dispatch(deleteFeeding(feedingId)); // ✅ Delete from DB and Redux
+      await dispatch(deleteFeeding(feedingId));
       navigation.popToTop();
     } catch (error) {
-      console.error("Error deleting feeding:", error);
+      // Handle error as needed
     }
   };
 
@@ -219,8 +219,8 @@ export default function EditFeedingScreen() {
             isEditing={true}
             preyType={preyType}
             setPreyType={setPreyType}
-            onFreezerSelection={setSelectedFreezerId} // ✅ Capture selected freezer ID
-            selectedFreezerId={selectedFreezerId} // ✅ Pass existing freezer ID if available
+            onFreezerSelection={setSelectedFreezerId}
+            selectedFreezerId={selectedFreezerId}
           />
         </View>
         <View style={styles.weightWrap}>
@@ -234,6 +234,7 @@ export default function EditFeedingScreen() {
         </View>
       </View>
 
+      {/* Pass the derived date and time to DateTimeFields */}
       <DateTimeFields
         feedingDate={feedingDate}
         setFeedingDate={setFeedingDate}
@@ -272,7 +273,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginTop: 16,
   },
-
   preyRow: {
     flexDirection: "row",
     borderTopWidth: 1,

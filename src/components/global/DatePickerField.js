@@ -18,10 +18,11 @@ export default function DatePickerField({
   const iconColor = useThemeColor({}, "icon");
   const bgColor = useThemeColor({}, "background");
 
-  // Convert stored date string to Date object
-  const parsedDate = dateValue ? new Date(dateValue) : new Date();
+  // When a date is stored as "YYYY-MM-DD", we append "T00:00:00" so that
+  // the Date object is set to midnight local time.
+  const parsedDate = dateValue ? new Date(dateValue + "T00:00:00") : new Date();
 
-  // Format date display
+  // Format date display using the locale’s date format.
   const formattedDate = dateValue
     ? parsedDate.toLocaleDateString()
     : placeholder;
@@ -56,13 +57,20 @@ export default function DatePickerField({
 
       {showDatePicker && (
         <DateTimePicker
-          value={parsedDate} // ✅ Ensure it always receives a Date object
+          value={parsedDate} // Ensure it always receives a Date object
           mode="date"
           display="default"
           onChange={(event, selectedDate) => {
             setShowDatePicker(false);
             if (selectedDate) {
-              setDateValue(selectedDate.toISOString()); // ✅ Store as ISO format
+              // Instead of storing a full ISO string (which includes a time),
+              // we extract and store only the date portion (YYYY-MM-DD)
+              const year = selectedDate.getFullYear();
+              const month = (selectedDate.getMonth() + 1)
+                .toString()
+                .padStart(2, "0");
+              const day = selectedDate.getDate().toString().padStart(2, "0");
+              setDateValue(`${year}-${month}-${day}`);
             }
           }}
         />

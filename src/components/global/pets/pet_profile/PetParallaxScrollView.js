@@ -29,7 +29,15 @@ export default function PetParallaxScrollView({
   petBirthdate,
   petMorph,
   onEditPress, // Add onEditPress prop
+  placeholder = "Birthday Not Set",
 }) {
+  // Convert stored date string to Date object
+  const parsedDate = petBirthdate ? new Date(petBirthdate) : new Date();
+
+  // Format date display
+  const formattedDate = petBirthdate
+    ? parsedDate.toLocaleDateString()
+    : placeholder;
   const colorScheme = useColorScheme() ?? "light";
   const scrollRef = useAnimatedRef();
   const scrollOffset = useScrollViewOffset(scrollRef);
@@ -64,7 +72,9 @@ export default function PetParallaxScrollView({
             >
               <View style={styles.overlay}>
                 <ThemedText style={styles.petName}>{petName}</ThemedText>
-                <ThemedText style={styles.petDetail}>{petBirthdate}</ThemedText>
+                <ThemedText style={styles.petDetail}>
+                  {formattedDate}
+                </ThemedText>
                 <ThemedText style={styles.petDetail}>{petMorph}</ThemedText>
                 <TouchableOpacity style={styles.editIcon} onPress={onEditPress}>
                   <Ionicons name="pencil" size={24} color="#fff" />

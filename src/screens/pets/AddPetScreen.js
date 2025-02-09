@@ -130,24 +130,23 @@ export default function AddPetScreen({ navigation, route }) {
         required={true}
         errorMessage={nameError}
       />
+
       <DatePickerField
-        birthDate={birthDate}
-        setBirthDate={setBirthDate}
+        dateValue={birthDate}
+        setDateValue={setBirthDate}
         showDatePicker={showDatePicker}
         setShowDatePicker={setShowDatePicker}
+        placeholder="Select Birth Date"
+        icon="calendar"
+        label="Birth Date"
       />
       <WeightField
         weight={weight}
         setWeight={setWeight}
         weightType={weightType}
         setWeightType={setWeightType}
-      />
-
-      {/* Render the multiple group picker */}
-      <MultipleGroupPicker
-        selectedGroups={selectedGroups}
-        setSelectedGroups={setSelectedGroups}
-        availableGroups={availableGroups}
+        isEditing={true}
+        label="Pet Weight"
       />
 
       <CategorySection
@@ -157,6 +156,12 @@ export default function AddPetScreen({ navigation, route }) {
         setSpecies={setSpecies}
         morph={morph}
         setMorph={setMorph}
+      />
+      {/* Render the multiple group picker */}
+      <MultipleGroupPicker
+        selectedGroups={selectedGroups}
+        setSelectedGroups={setSelectedGroups}
+        availableGroups={availableGroups}
       />
 
       <CustomButton

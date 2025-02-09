@@ -28,7 +28,7 @@ export default function FeedingsList({
   if (loading) {
     return (
       <ThemedView>
-        <ThemedText type="default">Loading feedings...</ThemedText>
+        <ThemedText type="subtitle">Upcoming Feedings</ThemedText>
         <LoadingCard />
       </ThemedView>
     );

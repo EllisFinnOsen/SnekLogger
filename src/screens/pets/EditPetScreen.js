@@ -17,6 +17,7 @@ import { deletePetFromDb, fetchPetById, updatePetToDb } from "@/database/pets";
 import { fetchGroupsForPetFromDb } from "@/database/groups";
 import { deletePet, updatePet } from "@/redux/actions";
 import { addPetToGroupAction, removePetFromGroupAction } from "@/redux/actions";
+import CategorySection from "@/components/global/pets/add_pet/CategorySection";
 
 export default function EditPetScreen({ route, navigation }) {
   const { petId } = route.params;
@@ -27,7 +28,7 @@ export default function EditPetScreen({ route, navigation }) {
   const [name, setName] = useState("");
   const [nameError, setNameError] = useState("");
   const [category, setCategory] = useState("");
-  const [species, setSpecies] = useState("");
+  const [species, setSpecies] = useState([]);
   const [morph, setMorph] = useState("");
   const [birthDate, setBirthDate] = useState("");
   const [weight, setWeight] = useState(0);
@@ -152,27 +153,42 @@ export default function EditPetScreen({ route, navigation }) {
         required={true}
         errorMessage={nameError}
       />
+
       <DatePickerField
-        birthDate={birthDate}
-        setBirthDate={setBirthDate}
+        dateValue={birthDate}
+        setDateValue={setBirthDate}
         showDatePicker={showDatePicker}
         setShowDatePicker={setShowDatePicker}
+        placeholder="Select Birth Date"
+        icon="calendar"
+        label="Birth Date"
       />
       <WeightField
         weight={weight}
         setWeight={setWeight}
         weightType={weightType}
         setWeightType={setWeightType}
+        isEditing={true}
+        label="Pet Weight"
       />
+
+      {/* Category Section */}
+      <View style={styles.categorySection}>
+        <CategorySection
+          category={category}
+          setCategory={setCategory}
+          species={species}
+          setSpecies={setSpecies}
+          morph={morph}
+          setMorph={setMorph}
+        />
+      </View>
+
       <MultipleGroupPicker
         selectedGroups={selectedGroups}
         setSelectedGroups={setSelectedGroups}
         availableGroups={availableGroups}
       />
-      {/* Category Section */}
-      <View style={styles.categorySection}>
-        {/* You might include CategorySection here if needed */}
-      </View>
 
       <CustomButton
         title="Save"

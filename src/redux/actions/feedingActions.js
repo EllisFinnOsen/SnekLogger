@@ -1,11 +1,13 @@
 import {
   deleteFeedingFromDb,
+  fetchAllFeedings,
   fetchFeedingsByPetFromDb,
   insertFeedingInDb,
   updateFeedingInDb,
 } from "@/database/feedings";
 import {
   ADD_FEEDING,
+  FETCH_ALL_FEEDINGS,
   FETCH_FEEDINGS,
   REMOVE_FEEDING,
   REMOVE_FREEZER_LINK,
@@ -18,10 +20,10 @@ import { updateFreezerQuantityBasedOnFeeding } from "@/database/freezer";
 export const addFeeding = (newFeeding) => async (dispatch) => {
   try {
     const feedingId = await insertFeedingInDb(newFeeding);
-    /*//console.log("Dispatching ADD_FEEDING for feeding:", {
+    console.log("Dispatching ADD_FEEDING for feeding:", {
       id: feedingId,
       ...newFeeding,
-    });*/
+    });
 
     dispatch({
       type: ADD_FEEDING,
@@ -37,8 +39,7 @@ export const updateFeeding = (updatedFeeding) => async (dispatch) => {
     await updateFeedingInDb(
       updatedFeeding.id,
       updatedFeeding.petId,
-      updatedFeeding.feedingDate,
-      updatedFeeding.feedingTime,
+      updatedFeeding.feedingTimestamp,
       updatedFeeding.preyType,
       updatedFeeding.preyWeight,
       updatedFeeding.preyWeightType,
@@ -70,6 +71,21 @@ export const fetchFeedingsByPet = (petId) => async (dispatch) => {
     //console.log(`Fetched feedings for pet ${petId}:`, feedings); // 🔍 Debugging log
 
     dispatch({ type: FETCH_FEEDINGS, payload: feedings });
+
+    //console.log("Dispatched feedings to Redux:", feedings);
+  } catch (error) {
+    //console.error("Error fetching feedings:", error);
+  }
+};
+
+export const fetchAllFeedingsfromDB = (petId) => async (dispatch) => {
+  try {
+    //console.log(`Fetching feedings for pet ID: ${petId}`);
+
+    const feedings = await fetchAllFeedings();
+    //console.log(`Fetched feedings for pet ${petId}:`, feedings); // 🔍 Debugging log
+
+    dispatch({ type: FETCH_ALL_FEEDINGS, payload: feedings });
 
     //console.log("Dispatched feedings to Redux:", feedings);
   } catch (error) {

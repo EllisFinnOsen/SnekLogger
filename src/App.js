@@ -11,18 +11,22 @@ import StackNavigator from "@/navigation/StackNavigator";
 import useColorScheme from "@/hooks/useColorScheme";
 import { Provider as PaperProvider } from "react-native-paper";
 import { initializeDatabase } from "@/database";
-import { insertMockData } from "@/database/mockData";
-import { resetDatabase } from "@/database/reset";
-import {
-  fetchFeedingsByPet,
-  fetchPets,
-  fetchUserProfile,
-} from "@/redux/actions";
-import { insertOnePet } from "./database/onepet";
+import { fetchPets, fetchUserProfile } from "@/redux/actions";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import SubscriptionScreen from "./screens/onboarding/SubscriptionScreen";
+import Purchases from "react-native-purchases";
+import CustomStatusBar from "./hooks/CustomStatusBar";
+import { resetDatabase } from "./database/reset";
+import { insertRobustMockData } from "./database/mockData";
+
+//AsyncStorage.removeItem("firstTimeUser");
 
 export default function App() {
+  const REVENUECAT_API_KEY = "your_revenuecat_api_key";
   const colorScheme = useColorScheme();
   const [dbInitialized, setDbInitialized] = useState(false);
+  const [trialActive, setTrialActive] = useState(true);
+  const TRIAL_DAYS = 30; // Number of days in trial
 
   const [loaded] = useFonts({
     OutfitReg: require("./assets/fonts/Outfit-Regular.ttf"),
@@ -33,41 +37,60 @@ export default function App() {
   useEffect(() => {
     const setupDatabase = async () => {
       try {
-        //await resetDatabase();
+        await resetDatabase();
         await initializeDatabase();
-        //await insertMockData();
-        setDbInitialized(true); // Mark database as ready
+        //await insertRobustMockData();
+        setDbInitialized(true);
       } catch (error) {
-        //console.error("Error setting up database:", error);
+        console.error("Error setting up database:", error);
       }
     };
-
     setupDatabase();
   }, []);
 
   useEffect(() => {
     if (dbInitialized) {
       store.dispatch(fetchPets());
-      store.dispatch(fetchUserProfile());
+      store.dispatch(fetchUserProfile()); // Fetch user profile info
     }
   }, [dbInitialized]);
 
   useEffect(() => {
-    const unsubscribe = store.subscribe(() => {
-      const state = store.getState();
-      const pets = state.pets.pets || [];
+    const checkTrialPeriod = async () => {
+      try {
+        const storedStartDate = await AsyncStorage.getItem("trialStartDate");
 
-      if (pets.length > 0) {
-        pets.forEach((pet) => store.dispatch(fetchFeedingsByPet(pet.id)));
-        unsubscribe(); // Prevent unnecessary re-renders
+        if (!storedStartDate) {
+          const startDate = new Date().toISOString();
+          await AsyncStorage.setItem("trialStartDate", startDate);
+          setTrialActive(true);
+        } else {
+          const startDate = new Date(storedStartDate);
+          const currentDate = new Date();
+          const differenceInDays = Math.floor(
+            (currentDate - startDate) / (1000 * 60 * 60 * 24)
+          );
+
+          if (differenceInDays < TRIAL_DAYS) {
+            setTrialActive(true);
+          } else {
+            setTrialActive(false);
+          }
+        }
+      } catch (error) {
+        console.error("Error checking trial period:", error);
       }
-    });
+    };
 
-    return unsubscribe;
+    checkTrialPeriod();
   }, []);
 
   if (!loaded) {
-    return null;
+    return null; // Prevent rendering before fonts load
+  }
+
+  if (!trialActive) {
+    return <SubscriptionScreen />; // Redirect to payment screen if trial expired
   }
 
   return (
@@ -76,6 +99,7 @@ export default function App() {
         <ThemeProvider
           value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
         >
+          <CustomStatusBar />
           <StackNavigator />
         </ThemeProvider>
       </PaperProvider>
