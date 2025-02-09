@@ -1,47 +1,65 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
 import { useSelector } from "react-redux";
 import { startOfToday, startOfDay, isSameDay, isAfter } from "date-fns";
 import FeedingsList from "@/components/global/feedings/FeedingsList";
-import AddLogCard from "@/components/global/feedings/AddLogCard";
+import { selectAllRecurringFeedings } from "@/redux/selectors/recurringFeedingSelectors";
+
+// Helper function for parsing feeding dates
+const parseFeedingDate = (feeding) =>
+  startOfDay(new Date(feeding.feedingTimestamp));
 
 export default function ViewByDateForPet({ petId }) {
-  const allFeedings = useSelector(
-    (state) => state.feedings,
-    (prev, next) => JSON.stringify(prev) === JSON.stringify(next)
-  );
+  const allFeedings = useSelector((state) => state.feedings);
+  const recurringFeedings = useSelector(selectAllRecurringFeedings);
 
+  const [feedings, setFeedings] = useState([]);
+
+  /** ✅ Merge, deduplicate, and sort feedings */
   useEffect(() => {
-    //console.log("Current Redux Feedings:", allFeedings);
-  }, [allFeedings]);
+    const mergedFeedings = [...allFeedings, ...recurringFeedings];
 
+    // ✅ Remove duplicates based on `id`
+    const uniqueFeedings = Array.from(
+      new Map(mergedFeedings.map((f) => [f.id, f])).values()
+    );
+
+    // ✅ Sort feedings by timestamp before setting state
+    const sortedFeedings = uniqueFeedings.sort(
+      (a, b) => parseFeedingDate(a) - parseFeedingDate(b)
+    );
+
+    if (JSON.stringify(feedings) !== JSON.stringify(sortedFeedings)) {
+      console.log("🔄 Updating Feedings State for Pet...");
+      setFeedings(sortedFeedings);
+    }
+  }, [allFeedings, recurringFeedings]);
+
+  /** ✅ Filter feedings by petId */
   const petFeedings = useMemo(() => {
-    return allFeedings.filter(
+    return feedings.filter(
       (feeding) => Number(feeding.petId) === Number(petId)
     );
-  }, [allFeedings, petId]);
+  }, [feedings, petId]);
 
+  /** ✅ Sorting and filtering logic */
   const incompleteFeedings = petFeedings.filter(
-    (feeding) => feeding.complete === 0
+    (feeding) => feeding.complete !== 1
   );
-  const pastCompleteFeedings = petFeedings.filter(
+  const pastCompletedFeedings = petFeedings.filter(
     (feeding) => feeding.complete === 1
   );
 
   const today = startOfToday();
 
-  // UPDATED: Parse the feeding timestamp and reset to midnight.
-  const parseFeedingDateForDay = (feeding) =>
-    startOfDay(new Date(feeding.feedingTimestamp));
-
   const lateFeedings = incompleteFeedings.filter(
-    (feeding) => parseFeedingDateForDay(feeding) < today
+    (feeding) => parseFeedingDate(feeding) < today
   );
   const todaysFeedings = incompleteFeedings.filter((feeding) =>
-    isSameDay(parseFeedingDateForDay(feeding), today)
+    isSameDay(parseFeedingDate(feeding), today)
   );
   const upcomingFeedings = incompleteFeedings.filter((feeding) =>
-    isAfter(parseFeedingDateForDay(feeding), today)
+    isAfter(parseFeedingDate(feeding), today)
   );
 
   let firstValidSection = null;
@@ -55,17 +73,16 @@ export default function ViewByDateForPet({ petId }) {
     modifiedFeedings = [{ id: "add-log-card" }, ...upcomingFeedings];
   }
 
-  // Ensure AddLogCard is always shown in "Upcoming Feedings" if no other section has it
   const addLogCardOnly = [{ id: "add-log-card" }];
   const showAddLogCardInUpcoming =
     firstValidSection === null ||
-    (lateFeedings.length > 0 && pastCompleteFeedings.length > 0);
+    (lateFeedings.length > 0 && pastCompletedFeedings.length > 0);
 
   return (
     <View>
-      <View style={{ height: 24 }}></View>
+      <View style={{ height: 24 }} />
 
-      {/* Render Late Feedings */}
+      {/* Late Feedings */}
       {lateFeedings.length > 0 && (
         <FeedingsList
           feedings={lateFeedings}
@@ -75,7 +92,7 @@ export default function ViewByDateForPet({ petId }) {
         />
       )}
 
-      {/* Render Today's Feedings */}
+      {/* Today's Feedings */}
       {firstValidSection === "today" && (
         <FeedingsList
           feedings={modifiedFeedings}
@@ -85,7 +102,7 @@ export default function ViewByDateForPet({ petId }) {
         />
       )}
 
-      {/* Render Upcoming Feedings (Always has AddLogCard if no other section does) */}
+      {/* Upcoming Feedings */}
       {(firstValidSection === "upcoming" || showAddLogCardInUpcoming) && (
         <FeedingsList
           feedings={
@@ -97,10 +114,10 @@ export default function ViewByDateForPet({ petId }) {
         />
       )}
 
-      {/* Render Past Completed Feedings WITHOUT AddLogCard */}
-      {pastCompleteFeedings.length > 0 && (
+      {/* Completed Feedings */}
+      {pastCompletedFeedings.length > 0 && (
         <FeedingsList
-          feedings={pastCompleteFeedings} // No AddLogCard here
+          feedings={pastCompletedFeedings}
           title="Completed Feedings"
           showAllLink={false}
           noFeedingsText="No past feedings available"

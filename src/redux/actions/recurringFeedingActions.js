@@ -15,7 +15,10 @@ export const addRecurringFeedingAction = (feedingData) => async (dispatch) => {
   try {
     await addRecurringFeeding(feedingData);
     console.log("🚀 Dispatching fetchRecurringFeedingsAction after adding...");
-    dispatch(fetchRecurringFeedingsAction()); // Ensure Redux updates
+
+    // Fetch latest recurring feedings
+    const updatedFeedings = await getUpcomingFeedings();
+    dispatch({ type: FETCH_RECURRING_FEEDINGS, payload: updatedFeedings });
   } catch (error) {
     console.error("❌ Error adding recurring feeding:", error);
   }

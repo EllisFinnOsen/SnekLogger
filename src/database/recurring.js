@@ -109,9 +109,9 @@ export const getUpcomingFeedings = async () => {
           new Date(Date.now() + 14 * 24 * 60 * 60 * 1000) // Next 2 weeks
         );
 
-        occurrences.forEach((date) => {
+        occurrences.forEach((date, index) => {
           upcomingFeedings.push({
-            id: `${row.id}-${date.toISOString()}`,
+            id: `${row.id}-${date.toISOString()}`, // Ensure unique ID per occurrence
             petId: row.petId,
             feedingTimestamp: date.toISOString(),
             preyType: row.preyType,

@@ -39,7 +39,7 @@ export default function App() {
   useEffect(() => {
     const setupDatabase = async () => {
       try {
-        await resetDatabase();
+        //await resetDatabase();
         await initializeDatabase();
         //await insertRobustMockData();
         setDbInitialized(true);

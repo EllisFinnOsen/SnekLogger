@@ -2,8 +2,8 @@ import { createSelector } from "reselect";
 
 const recurringFeedingsSelector = (state) => state.recurringFeedings;
 
-// Select all recurring feedings
+// ✅ Return a new array to ensure memoization works correctly
 export const selectAllRecurringFeedings = createSelector(
   [recurringFeedingsSelector],
-  (recurringFeedings) => recurringFeedings
+  (recurringFeedings) => (recurringFeedings ? [...recurringFeedings] : [])
 );

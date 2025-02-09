@@ -1,37 +1,50 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { startOfToday, isSameDay, isAfter, startOfDay } from "date-fns";
 import FeedingsList from "@/components/global/feedings/FeedingsList";
-import AddLogCard from "@/components/global/feedings/AddLogCard";
 import { fetchAllFeedingsfromDB } from "@/redux/actions";
 import { selectAllRecurringFeedings } from "@/redux/selectors/recurringFeedingSelectors";
 import { fetchRecurringFeedingsAction } from "@/redux/actions/recurringFeedingActions";
 
-// Helper function for date parsing
+// Helper function for parsing feeding dates
 const parseFeedingDate = (feeding) =>
-  startOfDay(new Date(feeding.feedingTimestamp || feeding.feedingTime));
+  startOfDay(new Date(feeding.feedingTimestamp));
 
 export default function FeedingsByDaySections() {
   const dispatch = useDispatch();
-  const hasFetched = useRef(false);
 
-  // Fetch both regular and recurring feedings
   const allFeedings = useSelector((state) => state.feedings);
   const recurringFeedings = useSelector(selectAllRecurringFeedings);
 
   const [feedings, setFeedings] = useState([]);
 
+  /** ✅ Dispatch actions only on first mount */
   useEffect(() => {
-    if (!hasFetched.current) {
-      hasFetched.current = true; // Mark fetch as done
+    if (allFeedings.length === 0) {
+      console.log("🚀 Fetching Regular Feedings...");
       dispatch(fetchAllFeedingsfromDB());
+    }
+
+    if (recurringFeedings.length === 0) {
+      console.log("🚀 Fetching Recurring Feedings...");
       dispatch(fetchRecurringFeedingsAction());
     }
-  }, [dispatch]);
+  }, []); // ✅ Runs only on mount
 
+  /** ✅ Merge feedings and remove duplicates */
   useEffect(() => {
-    setFeedings([...allFeedings, ...recurringFeedings]);
+    const mergedFeedings = [...allFeedings, ...recurringFeedings];
+
+    // ✅ Remove duplicates based on the `id`
+    const uniqueFeedings = Array.from(
+      new Map(mergedFeedings.map((f) => [f.id, f])).values()
+    );
+
+    if (JSON.stringify(feedings) !== JSON.stringify(uniqueFeedings)) {
+      console.log("🔄 Updating Feedings State...");
+      setFeedings(uniqueFeedings);
+    }
   }, [allFeedings, recurringFeedings]);
 
   if (feedings.length === 0) {
@@ -47,7 +60,7 @@ export default function FeedingsByDaySections() {
     );
   }
 
-  // Separate incomplete and completed feedings
+  /** ✅ Sorting and filtering logic */
   const incompleteFeedings = feedings.filter(
     (feeding) => feeding.complete !== 1
   );
@@ -55,20 +68,17 @@ export default function FeedingsByDaySections() {
     (feeding) => feeding.complete === 1
   );
 
-  // Sort completed feedings by date
   const sortedPastCompletedFeedings = [...pastCompletedFeedings].sort(
     (a, b) => parseFeedingDate(b) - parseFeedingDate(a)
   );
   const limitedPastCompletedFeedings = sortedPastCompletedFeedings.slice(0, 15);
 
-  // Sort incomplete feedings in ascending order
   const sortedIncompleteFeedings = [...incompleteFeedings].sort(
     (a, b) => parseFeedingDate(a) - parseFeedingDate(b)
   );
 
   const today = startOfToday();
 
-  // Filter incomplete feedings into sections
   const lateFeedings = sortedIncompleteFeedings.filter(
     (feeding) => parseFeedingDate(feeding) < today
   );
@@ -99,7 +109,6 @@ export default function FeedingsByDaySections() {
     <View>
       <View style={{ height: 48 }} />
 
-      {/* Render Late Feedings */}
       {lateFeedings.length > 0 && (
         <FeedingsList
           feedings={lateFeedings}
@@ -109,7 +118,6 @@ export default function FeedingsByDaySections() {
         />
       )}
 
-      {/* Render Today's Feedings */}
       {firstValidSection === "today" && (
         <FeedingsList
           feedings={modifiedFeedings}
@@ -119,7 +127,6 @@ export default function FeedingsByDaySections() {
         />
       )}
 
-      {/* Render Upcoming Feedings */}
       {(firstValidSection === "upcoming" || showAddLogCardInUpcoming) && (
         <FeedingsList
           feedings={
@@ -131,7 +138,6 @@ export default function FeedingsByDaySections() {
         />
       )}
 
-      {/* Render Past Completed Feedings */}
       {limitedPastCompletedFeedings.length > 0 && (
         <FeedingsList
           feedings={limitedPastCompletedFeedings}
