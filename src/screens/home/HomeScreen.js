@@ -9,6 +9,7 @@ import FeedingsByDaySections from "@/components/global/feedings/FeedingsByDaySec
 import { HelloWave } from "@/components/global/HelloWave";
 import { SIZES } from "@/constants/Theme";
 import { fetchFeedingsByPet } from "@/redux/actions";
+import RecurringFeedingsList from "./RecurringFeedingsList";
 
 export default function HomeScreen({ navigation }) {
   const dispatch = useDispatch();

@@ -54,6 +54,7 @@
     "redux": "^5.0.1",
     "redux-thunk": "^3.1.0",
     "reselect": "^5.1.1",
+    "rrule": "^2.8.1",
     "victory-native": "^41.16.1"
   },
   "devDependencies": {

@@ -12,12 +12,14 @@ import useColorScheme from "@/hooks/useColorScheme";
 import { Provider as PaperProvider } from "react-native-paper";
 import { initializeDatabase } from "@/database";
 import { fetchPets, fetchUserProfile } from "@/redux/actions";
+import { logRecurringFeedingsAction } from "@/redux/actions/recurringFeedingActions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import SubscriptionScreen from "./screens/onboarding/SubscriptionScreen";
 import Purchases from "react-native-purchases";
 import CustomStatusBar from "./hooks/CustomStatusBar";
 import { resetDatabase } from "./database/reset";
 import { insertRobustMockData } from "./database/mockData";
+import { AppState } from "react-native";
 
 //AsyncStorage.removeItem("firstTimeUser");
 
@@ -51,7 +53,8 @@ export default function App() {
   useEffect(() => {
     if (dbInitialized) {
       store.dispatch(fetchPets());
-      store.dispatch(fetchUserProfile()); // Fetch user profile info
+      store.dispatch(fetchUserProfile());
+      store.dispatch(logRecurringFeedingsAction()); // ✅ Log recurring feedings on app start
     }
   }, [dbInitialized]);
 
@@ -71,11 +74,7 @@ export default function App() {
             (currentDate - startDate) / (1000 * 60 * 60 * 24)
           );
 
-          if (differenceInDays < TRIAL_DAYS) {
-            setTrialActive(true);
-          } else {
-            setTrialActive(false);
-          }
+          setTrialActive(differenceInDays < TRIAL_DAYS);
         }
       } catch (error) {
         console.error("Error checking trial period:", error);
@@ -83,6 +82,25 @@ export default function App() {
     };
 
     checkTrialPeriod();
+  }, []);
+
+  useEffect(() => {
+    const handleAppStateChange = (nextAppState) => {
+      if (nextAppState === "active") {
+        store.dispatch(logRecurringFeedingsAction()); // ✅ Log feedings when app is reopened
+      }
+    };
+
+    // Add event listener for app state changes
+    const appStateSubscription = AppState.addEventListener(
+      "change",
+      handleAppStateChange
+    );
+
+    // Cleanup the event listener when the component unmounts
+    return () => {
+      appStateSubscription.remove();
+    };
   }, []);
 
   if (!loaded) {

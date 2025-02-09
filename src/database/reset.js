@@ -16,6 +16,9 @@ export const resetDatabase = async () => {
       DROP TABLE IF EXISTS users;
       DROP TABLE IF EXISTS freezer;
       DROP TABLE IF EXISTS freezer_link;
+      DROP TABLE IF EXISTS recurring_feedings;
+
+      
 
       CREATE TABLE IF NOT EXISTS pets (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -76,12 +79,26 @@ export const resetDatabase = async () => {
         FOREIGN KEY (feedingId) REFERENCES feedings (id) ON DELETE CASCADE,
         FOREIGN KEY (freezerId) REFERENCES freezer (id) ON DELETE CASCADE
       );
+
+
+      CREATE TABLE IF NOT EXISTS recurring_feedings (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        petId INTEGER NOT NULL,
+        rrule TEXT NOT NULL,
+        feedingTimestamp TEXT NOT NULL,
+        preyType TEXT NOT NULL,
+        preyWeight REAL,
+        preyWeightType TEXT NOT NULL,
+        notes TEXT,
+        complete INTEGER DEFAULT 0,
+        FOREIGN KEY (petId) REFERENCES pets (id) ON DELETE CASCADE
+      );
     `);
 
     //console.log("Tables reset successfully. Now inserting mock data...");
 
     //console.log("Database reset complete with fresh mock data.");
   } catch (error) {
-    //console.error("Error resetting database:", error);
+    console.error("Error resetting database:", error);
   }
 };

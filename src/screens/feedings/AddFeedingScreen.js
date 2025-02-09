@@ -18,6 +18,8 @@ import { checkImageURL } from "@/utils/checkImage";
 import { insertFeedingInDb } from "@/database/feedings";
 import { addFeeding } from "@/redux/actions";
 import { linkFeedingToFreezer } from "@/database/freezer";
+import RecurringFields from "@/components/global/feedings/RecurringFields";
+import { addRecurringFeedingAction } from "@/redux/actions/recurringFeedingActions";
 
 export default function AddFeedingScreen() {
   const dispatch = useDispatch();
@@ -41,6 +43,14 @@ export default function AddFeedingScreen() {
   const [showFeedingTimePicker, setShowFeedingTimePicker] = useState(false);
   const [selectedFreezerId, setSelectedFreezerId] = useState(null);
 
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [frequency, setFrequency] = useState("weekly"); // 'daily', 'weekly', etc.
+  const [interval, setInterval] = useState(1); // Every X weeks, days, etc.
+  const [customUnit, setCustomUnit] = useState("day"); // Used if frequency is 'custom'
+  const [endType, setEndType] = useState("never"); // 'never', 'on', 'after'
+  const [endDate, setEndDate] = useState(""); // Used if endType is 'on'
+  const [occurrenceCount, setOccurrenceCount] = useState(10); // Used if endType is 'after'
+
   const cancelColor = useThemeColor({}, "field");
   const activeColor = useThemeColor({}, "active");
 
@@ -50,45 +60,61 @@ export default function AddFeedingScreen() {
       return;
     }
 
-    // ─── Combine feedingDate and feedingTime into a single ISO timestamp ─────────
-    // This creates a Date object from the date and time, then converts it to an ISO string.
+    // Combine feedingDate and feedingTime into a single ISO timestamp
     const newFeedingTimestamp = new Date(
       `${feedingDate}T${feedingTime}`
     ).toISOString();
-    console.log("newFeedingTimestamp:", newFeedingTimestamp);
 
-    // ─── Build the new feeding object ─────────────────────────────────────────────
-    const newFeeding = {
-      petId: selectedPetId,
-      feedingTimestamp: newFeedingTimestamp, // New combined field.
-      preyType,
-      preyWeight,
-      preyWeightType,
-      notes,
-      complete: isComplete ? 1 : 0,
-    };
+    if (isRecurring) {
+      // ─── Create a Recurring Feeding ─────────────────────────────
+      const recurringFeeding = {
+        petId: selectedPetId,
+        frequency,
+        interval,
+        customUnit,
+        endType,
+        endDate: endDate ? new Date(endDate).toISOString() : null,
+        occurrenceCount: endType === "after" ? occurrenceCount : null,
+        feedingTimestamp: newFeedingTimestamp,
+        preyType,
+        preyWeight,
+        preyWeightType,
+        notes,
+      };
 
-    try {
-      console.log("Attempting to insert new feeding:", newFeeding);
-      const insertedId = await insertFeedingInDb(newFeeding);
-      console.log("insertedId:", insertedId);
-      if (!insertedId) {
-        console.error("Insertion failed. No ID returned.");
-        return;
+      console.log("Adding Recurring Feeding:", recurringFeeding);
+      dispatch(addRecurringFeedingAction(recurringFeeding));
+    } else {
+      // ─── Create a Regular Feeding ─────────────────────────────
+      const newFeeding = {
+        petId: selectedPetId,
+        feedingTimestamp: newFeedingTimestamp,
+        preyType,
+        preyWeight,
+        preyWeightType,
+        notes,
+        complete: isComplete ? 1 : 0,
+      };
+
+      try {
+        const insertedId = await insertFeedingInDb(newFeeding);
+        if (!insertedId) {
+          console.error("Insertion failed. No ID returned.");
+          return;
+        }
+
+        if (selectedFreezerId) {
+          await linkFeedingToFreezer(insertedId, selectedFreezerId);
+        }
+
+        dispatch(addFeeding({ id: insertedId, ...newFeeding }));
+        console.log("Feeding added, navigating back.");
+      } catch (error) {
+        console.error("Error in handleSave:", error);
       }
-
-      if (selectedFreezerId) {
-        await linkFeedingToFreezer(insertedId, selectedFreezerId);
-        console.log("selectedFreezerId:", selectedFreezerId);
-      }
-
-      // Dispatch Redux action to add the new feeding.
-      dispatch(addFeeding({ id: insertedId, ...newFeeding }));
-      console.log("Feeding added, navigating back.");
-      navigation.goBack();
-    } catch (error) {
-      console.error("Error in handleSave:", error);
     }
+
+    navigation.goBack();
   };
 
   const handleCancel = () => {
@@ -106,7 +132,6 @@ export default function AddFeedingScreen() {
         label="Add Feeding"
         description="Fill out feeding details and press save."
       />
-
       <View style={styles.petWrap}>
         <Image
           source={{
@@ -129,10 +154,25 @@ export default function AddFeedingScreen() {
           />
         </View>
       </View>
-
       <CompletionToggle
         isComplete={isComplete}
         onToggle={() => setIsComplete(!isComplete)}
+      />
+      <RecurringFields
+        isRecurring={isRecurring}
+        setIsRecurring={setIsRecurring}
+        frequency={frequency}
+        setFrequency={setFrequency}
+        interval={interval}
+        setInterval={setInterval}
+        customUnit={customUnit}
+        setCustomUnit={setCustomUnit}
+        endType={endType}
+        setEndType={setEndType}
+        endDate={endDate}
+        setEndDate={setEndDate}
+        occurrenceCount={occurrenceCount}
+        setOccurrenceCount={setOccurrenceCount}
       />
 
       <View style={styles.preyRow}>
@@ -154,7 +194,6 @@ export default function AddFeedingScreen() {
           />
         </View>
       </View>
-
       {/* DateTimeFields remains unchanged for UI editing */}
       <DateTimeFields
         feedingDate={feedingDate}
@@ -167,9 +206,7 @@ export default function AddFeedingScreen() {
         setShowFeedingTimePicker={setShowFeedingTimePicker}
         isEditing={true}
       />
-
       <NotesField notes={notes} setNotes={setNotes} />
-
       <View style={styles.buttonRow}>
         <CustomButton
           title="Save"

@@ -4,7 +4,7 @@ let db;
 
 export const openDatabase = async () => {
   if (!db) {
-    db = await SQLite.openDatabaseAsync("mockData_4.db");
+    db = await SQLite.openDatabaseAsync("mockData_5.db");
   }
   return db;
 };
@@ -75,10 +75,24 @@ export const initializeDatabase = async () => {
         FOREIGN KEY (feedingId) REFERENCES feedings (id) ON DELETE CASCADE,
         FOREIGN KEY (freezerId) REFERENCES freezer (id) ON DELETE CASCADE
       );
+     
+      CREATE TABLE IF NOT EXISTS recurring_feedings (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        petId INTEGER NOT NULL,
+        rrule TEXT NOT NULL,
+        feedingTimestamp TEXT NOT NULL,
+        preyType TEXT NOT NULL,
+        preyWeight REAL,
+        preyWeightType TEXT NOT NULL,
+        notes TEXT,
+        complete INTEGER DEFAULT 0,
+        FOREIGN KEY (petId) REFERENCES pets (id) ON DELETE CASCADE
+      );
+      
     `);
 
     //console.log("Database initialized");
   } catch (error) {
-    //console.error("Error initializing database:", error);
+    console.error("Error initializing database:", error);
   }
 };
